@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="theme-color" content="#000000">
+    <!--
+      manifest.json provides metadata used when your web App is added to the
+      homescreen on Android. See https://developers.google.com/web/fundamentals/engage-and-retain/web-app-manifest/
+    -->
+    <link rel="manifest" href="%PUBLIC_URL%/manifest.json">
+    <link rel="shortcut icon" href="%PUBLIC_URL%/favicon.ico">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+    <!--
+      Notice the use of %PUBLIC_URL% in the tags above.
+      It will be replaced with the URL of the `public` folder during the build.
+      Only files inside the `public` folder can be referenced from the HTML.
+
+      Unlike "/favicon.ico" or "favicon.ico", "%PUBLIC_URL%/favicon.ico" will
+      work correctly both with client-side routing and a non-root public URL.
+      Learn how to configure a non-root public URL by running `npm run build`.
+    -->
+    <title>React App</title>
+  </head>
+  <body>
+    <noscript>
+      You need to enable JavaScript to run this app.
+    </noscript>
+    <div id="root"></div>
+    <!--
+      This HTML file is a template.
+      If you open it directly in the browser, you will see an empty page.
+
+      You can add webfonts, meta tags, or analytics to this file.
+      The build step will place the bundled scripts into the <body> tag.
+
+      To begin the development, run `npm start` or `yarn start`.
+      To create a production bundle, use `npm run build` or `yarn build`.
+    -->
+    <section style="text-align:left">
+      <hr>
+      <h2>About</h2>
+      <p>Need to capture a short musical idea or share it with others? Just tap some notes or play your MIDI keyboard, and click <i>Save to URL</i>. You can share the resulting page URL or bookmark it.</p>
+      <p><a href="https://github.com/mrclay/Piano/tree/piano_prod">Source</a></p>
+      <h3>Limitations</h3>
+      <p><strong>No velocity is captured (yet).</strong> There are a <i>lot</i> of piano samples and I'd have to pull a ton more of them in on the initial page load, or hack the velocity by playing the existing ones at different volumes, probably not sounding great. I've also considered just bailing on the piano sound and generating something pleasant with Tone.js. I'm open to suggestions.</p>
+      <p><strong>Captured timing is imperfect</strong>. Due to the reliance on setTimeout() to play back notes, timing was never going to be great, plus, more exact timing makes the URLs much bigger, so I've sacrificed some granularity. This isn't for professional work.</p>
+      <h3>Credits</h3>
+      <ul>
+        <li><a href="https://yotammann.info/">Yotam Mann</a>: <a href="https://github.com/tambien/Piano">API modeling a piano</a> using <a href="https://archive.org/details/SalamanderGrandPianoV3">Salamander samples</a>, based on <a href="https://tonejs.github.io/">Tone.js</a>.</li>
+        <li><a href="http://www.mrclay.org/">Steve Clay</a>: Page UI, logic to play the piano API, capture notes, encode to URLs.</li>
+      </ul>
+    </section>
+  </body>
+</html>

@@ -1,0 +1,19 @@
+{
+  "name": "piano2",
+  "version": "0.1.0",
+  "private": true,
+  "homepage": "http://machine1.test/piano2/build/",
+  "dependencies": {
+    "react": "^16.0.0",
+    "react-dom": "^16.0.0",
+    "react-router-dom": "^4.2.2",
+    "react-scripts": "1.0.14",
+    "tone-piano": "^0.0.11"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject"
+  }
+}

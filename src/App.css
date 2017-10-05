@@ -1,0 +1,107 @@
+body {
+  width: 1246px;
+  text-align: center;
+  margin: 50px auto;
+}
+
+h1 {
+  font-style: italic;
+}
+h1.unsaved {
+  color: #ccc;
+}
+
+#piano {
+  width: 1246px;
+  margin: 0 auto;
+  position: relative;
+  background: #444;
+}
+.white {
+  z-index: 1;
+  padding-left: 10px;
+  border: 1px solid #ccc;
+  overflow: auto;
+}
+.black {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+.white a {
+  float: left;
+  margin-left: 2px;
+  width: 32px;
+  height: 160px;
+  -moz-border-radius: 2px 2px 5px 5px;
+  -webkit-border-radius: 2px 2px 5px 5px;
+  border-radius: 2px 2px 5px 5px;
+  background: #fff;
+  color: #000;
+  font-weight: 700;
+}
+.black a {
+  position: absolute;
+  top: 0;
+  width: 16px;
+  height: 100px;
+  border: 2px solid #000;
+  -moz-border-radius: 0 0 5px 5px;
+  -webkit-border-radius: 0 0 5px 5px;
+  border-radius: 0 0 5px 5px;
+  background: #000;
+  color: #fff;
+}
+.white > a.active,
+.black > a.active {
+  background: #74c674;
+}
+
+section {
+  margin: 20px auto;
+  width: 600px;
+}
+
+#play, #stop {
+  width: 300px;
+}
+#record {
+  display: inline-block;
+  width: 150px;
+  padding: 6px 12px;
+  opacity: .5;
+}
+#record.new_recording {
+  color: #600;
+  opacity: 1;
+}
+
+#record.new_recording i {
+  animation: record-pulse 1s infinite;
+}
+
+@keyframes record-pulse {
+  0% {
+    color: #fff;
+  }
+  50% {
+    color: #900;
+  }
+  100% {
+    color: #fff;
+  }
+}
+
+#record.active {
+  background: #600;
+}
+
+.progress-bar {
+  transition: none;
+}​
+
+#chord {
+  width: 7em;
+  font-size: inherit;
+}
+
