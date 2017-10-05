@@ -2,7 +2,7 @@
   "name": "piano2",
   "version": "0.1.0",
   "private": true,
-  "homepage": "http://machine1.test/piano2/build/",
+  "homepage": "http://mrclay.org/piano2/",
   "dependencies": {
     "react": "^16.0.0",
     "react-dom": "^16.0.0",
