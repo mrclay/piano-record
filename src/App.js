@@ -18,7 +18,8 @@ export default class App extends Component {
       playState: C.NEW_RECORDING,
       progress: 0,
       firstTime: null,
-      hasOperations: false
+      hasOperations: false,
+      activeKeys: {}
     };
 
     this.piano = new Piano(C.RANGE, C.VELOCITIES, C.USE_RELEASE).toMaster();
@@ -26,7 +27,6 @@ export default class App extends Component {
     this.keyTimeouts = {};
     this.playAllIntervals = [];
     this.progressInterval = null;
-    this.activeKeys = {};
     this.$one = document.querySelector.bind(document);
 
     this.handleSave = this.handleSave.bind(this);
@@ -127,13 +127,11 @@ export default class App extends Component {
         this.playAll();
         break;
 
-      default: throw new Error();
+      default: throw new Error('Invalid state');
     }
 
     this.setState(newComponentState, () => {
       after && after();
-      // TODO just don't
-      document.querySelector('body').dataset.state = newState;
     });
   }
 
@@ -143,17 +141,11 @@ export default class App extends Component {
     }
     this.playAllIntervals.forEach(clearTimeout);
 
-    // DOM write!
-    document.querySelectorAll('[data-note].active').forEach((el) => {
-      el.classList.remove('active');
+    Object.keys(this.state.activeKeys).forEach((key) => {
+      this.piano.keyUp(Ops.noteForKey(key));
     });
 
-    Object.keys(this.activeKeys).forEach((key) => {
-      const note = parseInt(key.substr(1), 10);
-      this.piano.keyUp(note);
-    });
-
-    this.activeKeys = {};
+    this.setState({ activeKeys: {}});
 
     this.playAllIntervals = [];
   }
@@ -222,13 +214,12 @@ export default class App extends Component {
     const note = parseInt(target.dataset.note, 10);
     let op;
 
-    if (this.keyTimeouts['z' + note]) {
-      clearTimeout(this.keyTimeouts['z' + note]);
-      delete this.keyTimeouts['z' + note];
+    if (this.keyTimeouts[Ops.keyForNote(note)]) {
+      clearTimeout(this.keyTimeouts[Ops.keyForNote(note)]);
+      delete this.keyTimeouts[Ops.keyForNote(note)];
     }
 
-    // TODO ugh, DOM read
-    if (target.classList.contains('active')) {
+    if (this.state.activeKeys[Ops.keyForNote(note)]) {
       op = Ops.operationFromMidi([C.MIDI0_NOTE_OFF, note, 0]);
       this.addOperation(op, e.timeStamp);
       this.performOperation(op);
@@ -240,8 +231,8 @@ export default class App extends Component {
 
     this.performOperation(op);
 
-    this.keyTimeouts['z' + note] = setTimeout(() => {
-      if (this.keyTimeouts['z' + note]) {
+    this.keyTimeouts[Ops.keyForNote(note)] = setTimeout(() => {
+      if (this.keyTimeouts[Ops.keyForNote(note)]) {
         op = Ops.operationFromMidi([C.MIDI0_NOTE_OFF, note, 0]);
         this.addOperation(op, e.timeStamp + 1000);
         this.performOperation(op);
@@ -252,6 +243,8 @@ export default class App extends Component {
   }
 
   performOperation(op) {
+    let activeKeys = Object.assign({}, this.state.activeKeys);
+
     switch (op[0]) {
       case C.OP_PEDAL_DOWN:
         return this.piano.pedalDown();
@@ -261,19 +254,23 @@ export default class App extends Component {
 
       case C.OP_NOTE_DOWN:
         this.piano.keyDown(op[1]);
-        this.activeKeys['k' + op[1]] = true;
 
-        // DOM write!
-        this.$one('[data-note="' + op[1] + '"]').classList.add('active');
+        activeKeys[Ops.keyForNote(op[1])] = true;
+
+        this.setState({
+          activeKeys
+        });
 
         return;
 
       case C.OP_NOTE_UP:
         this.piano.keyUp(op[1]);
-        delete this.activeKeys['k' + op[1]];
 
-        // DOM write!
-        this.$one('[data-note="' + op[1] + '"]').classList.remove('active');
+        delete activeKeys[Ops.keyForNote(op[1])];
+
+        this.setState({
+          activeKeys
+        });
 
         return;
 
@@ -306,7 +303,7 @@ export default class App extends Component {
           “{this.state.title ? this.state.title : C.DEFAULT_TITLE }”
         </h1>
         <Keyboard
-          actives={[]}
+          activeKeys={this.state.activeKeys}
           handleKey={this.handleKey}
         />
         <section>

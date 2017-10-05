@@ -2,6 +2,14 @@ import * as C from './constants';
 
 const Ops = {
 
+  keyForNote(note) {
+    return 'k' + note;
+  },
+
+  noteForKey(key) {
+    return parseInt(key.substr(1), 10);
+  },
+
   encodeOp(op, time) {
     return [
       String.fromCharCode(op[0] + C.ORD_A_UPPER),
