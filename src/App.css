@@ -6,6 +6,7 @@ body {
 
 h1 {
   font-style: italic;
+  text-align: left;
 }
 h1.unsaved {
   color: #ccc;
@@ -105,3 +106,7 @@ section {
   font-size: inherit;
 }
 
+#big-play {
+  font-size: 3rem;
+  margin-right: 2rem;
+}

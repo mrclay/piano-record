@@ -4,8 +4,10 @@ import {Piano} from 'tone-piano';
 import Keyboard from './App/Keyboard';
 import Controls from './App/Controls';
 import Progress from './App/Progress';
+import BigPlay from './App/BigPlay';
 import * as C from './App/constants';
 import Ops from './App/Ops';
+import Title from "./App/Title";
 
 const location = window.location;
 
@@ -36,7 +38,7 @@ export default class App extends Component {
 
     this.handleSave = this.handleSave.bind(this);
     this.handleReset = this.handleReset.bind(this);
-    this.handleTitleChange = this.handleTitleChange.bind(this);
+    this.setTitle = this.setTitle.bind(this);
     this.handleKey = this.handleKey.bind(this);
   }
 
@@ -190,9 +192,9 @@ export default class App extends Component {
     this.setPlayState(C.NEW_RECORDING);
   }
 
-  handleTitleChange(e) {
+  setTitle(props) {
     this.setState({
-      title: e.target.value
+      title: props.text
     });
   }
 
@@ -296,15 +298,52 @@ export default class App extends Component {
   }
 
   render() {
+    const keyboard = (
+      <Keyboard
+        activeKeys={this.state.activeKeys}
+        handleKey={this.handleKey}
+      />
+    );
+    const progress = (
+      <section>
+        <Progress
+          ratio={this.state.progress}
+        />
+      </section>
+    );
+
+    if (this.props.layout === 'playback') {
+      return (
+        <div data-state={this.state.playState}>
+          <section>
+            <BigPlay
+              playState={this.state.playState}
+              handlePlay={() => { this.setPlayState(C.PLAYING); }}
+              handleStop={() => { this.setPlayState(C.STOPPED); }}
+            />
+            {this.state.title}
+            <Title
+              title={this.state.title}
+              saved={!!this.operations.length}
+              onChange={this.setTitle}
+            />
+          </section>
+          {keyboard}
+          {progress}
+        </div>
+      );
+    }
+
     return (
       <div data-state={this.state.playState}>
-        <h1 className={this.operations.length ? '' : 'unsaved'}>
-          “{this.state.title ? this.state.title : C.DEFAULT_TITLE }”
-        </h1>
-        <Keyboard
-          activeKeys={this.state.activeKeys}
-          handleKey={this.handleKey}
-        />
+        <section>
+          <Title
+            title={this.state.title}
+            saved={!!this.operations.length}
+            onChange={this.setTitle}
+          />
+        </section>
+        {keyboard}
         <section>
           <Controls
             playState={this.state.playState}
@@ -314,11 +353,7 @@ export default class App extends Component {
             handlePlay={() => { this.setPlayState(C.PLAYING); }}
           />
         </section>
-        <section>
-          <Progress
-            ratio={this.state.progress}
-          />
-        </section>
+        {progress}
         <section>
           <div className="input-group input-group-lg">
             <input id="title" type="text" className="form-control" placeholder="Title"
@@ -327,9 +362,9 @@ export default class App extends Component {
             />
             <span className="input-group-btn">
             <button onClick={this.handleSave} id="save" className="btn btn-default" type="button">
-                <i className="fa fa-floppy-o" aria-hidden="true" /> Save to URL
+              <i className="fa fa-floppy-o" aria-hidden="true" /> Save to URL
             </button>
-            </span>
+          </span>
           </div>
         </section>
       </div>
