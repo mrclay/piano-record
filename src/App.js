@@ -13,13 +13,19 @@ export default class App extends Component {
 
   constructor(props) {
     super(props);
+
+    let activeKeys = {};
+    for (let note = C.RANGE[0]; note <= C.RANGE[1]; note++) {
+      activeKeys[Ops.keyForNote(note)] = false;
+    }
+
     this.state = {
       title: '',
       playState: C.NEW_RECORDING,
       progress: 0,
       firstTime: null,
       hasOperations: false,
-      activeKeys: {}
+      activeKeys: activeKeys
     };
 
     this.piano = new Piano(C.RANGE, C.VELOCITIES, C.USE_RELEASE).toMaster();
@@ -27,12 +33,9 @@ export default class App extends Component {
     this.keyTimeouts = {};
     this.playAllIntervals = [];
     this.progressInterval = null;
-    this.$one = document.querySelector.bind(document);
 
     this.handleSave = this.handleSave.bind(this);
     this.handleReset = this.handleReset.bind(this);
-    this.handlePlay = this.handlePlay.bind(this);
-    this.handleStop = this.handleStop.bind(this);
     this.handleTitleChange = this.handleTitleChange.bind(this);
     this.handleKey = this.handleKey.bind(this);
   }
@@ -62,14 +65,6 @@ export default class App extends Component {
     }
 
     this.piano.load(C.RAWGIT_URL).then(this.init.bind(this));
-  }
-
-  handlePlay() {
-    this.setPlayState(C.PLAYING);
-  }
-
-  handleStop() {
-    this.setPlayState(C.STOPPED);
   }
 
   init() {
@@ -141,11 +136,15 @@ export default class App extends Component {
     }
     this.playAllIntervals.forEach(clearTimeout);
 
+    let newActiveKeys = {};
     Object.keys(this.state.activeKeys).forEach((key) => {
       this.piano.keyUp(Ops.noteForKey(key));
+      newActiveKeys[key] = false;
     });
 
-    this.setState({ activeKeys: {}});
+    this.setState({
+      activeKeys: newActiveKeys
+    });
 
     this.playAllIntervals = [];
   }
@@ -266,7 +265,7 @@ export default class App extends Component {
       case C.OP_NOTE_UP:
         this.piano.keyUp(op[1]);
 
-        delete activeKeys[Ops.keyForNote(op[1])];
+        activeKeys[Ops.keyForNote(op[1])] = false;
 
         this.setState({
           activeKeys
@@ -311,8 +310,8 @@ export default class App extends Component {
             playState={this.state.playState}
             hasOperations={this.state.hasOperations}
             handleReset={this.handleReset}
-            handleStop={this.handleStop}
-            handlePlay={this.handlePlay}
+            handleStop={() => { this.setPlayState(C.STOPPED); }}
+            handlePlay={() => { this.setPlayState(C.PLAYING); }}
           />
         </section>
         <section>
