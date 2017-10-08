@@ -79,24 +79,6 @@ section {
     animation: record-pulse 1s infinite;
 }
 
-#play, #stop {
-    width: 300px;
-}
-#record {
-    display: inline-block;
-    width: 150px;
-    padding: 6px 12px;
-    opacity: .5;
-}
-#record.recording {
-    color: #600;
-    opacity: 1;
-}
-
-#record.recording i {
-    animation: record-pulse 1s infinite;
-}
-
 @keyframes record-pulse {
     0% {
         color: #fff;
@@ -107,10 +89,6 @@ section {
     100% {
         color: #fff;
     }
-}
-
-#record.active {
-    background: #600;
 }
 
 .progress-bar {
