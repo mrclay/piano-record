@@ -1,7 +1,29 @@
-import {RANGE} from './constants';
+import {RANGE} from '../constants';
+import Ops from "../Ops";
 import React from 'react';
 
 export default class Keyboard extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.handleKey = this.handleKey.bind(this);
+  }
+
+  handleKey(e) {
+    e.preventDefault();
+
+    const target = e.target;
+    if (!target.dataset.note) {
+      return;
+    }
+
+    const note = parseInt(target.dataset.note, 10);
+    const key = Ops.keyForNote(note);
+
+    if (this.props.onKeyClick) {
+      this.props.onKeyClick(key, note);
+    }
+  }
 
   static renderKey(props) {
     const style = {};
@@ -50,7 +72,10 @@ export default class Keyboard extends React.Component {
     }
 
     return (
-      <div onClick={this.props.handleKey} id="piano">
+      <div onClick={this.handleKey}
+           id="piano"
+           className={this.props.onKeyClick ? '' : 'noinput'}
+      >
         <div className="white">{whites}</div>
         <div className="black">{blacks}</div>
       </div>

@@ -7,7 +7,7 @@ export const TIME_RESOLUTION_DIVISOR = 4;
 export const ORD_A_UPPER = 'A'.charCodeAt(0);
 
 export const STOPPED = 'stopped';
-export const NEW_RECORDING = 'new_recording';
+export const RECORDING = 'recording';
 export const PLAYING = 'playing';
 
 export const OP_PEDAL_DOWN = 0;

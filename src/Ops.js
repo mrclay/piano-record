@@ -26,6 +26,14 @@ const Ops = {
     return [op, time];
   },
 
+  keyDownOperation(note) {
+    return Ops.operationFromMidi([C.MIDI0_NOTE_ON, note, 254]);
+  },
+
+  keyUpOperation(note) {
+    return Ops.operationFromMidi([C.MIDI0_NOTE_OFF, note, 0]);
+  },
+
   operationFromMidi(data) {
     const op = data[0];
     const note = data[1];
@@ -46,17 +54,24 @@ const Ops = {
     }
   },
 
-  getHash(operations, title) {
-    const encoded = operations.map((el) => {
+  streamFromOperations(operations) {
+    return operations.map((el) => {
       return Ops.encodeOp(el[0], el[1]);
     }).join('');
+  },
 
-    let hash = '#s=' + encoded;
-    if (title) {
-      hash += '&t=' + encodeURIComponent(title);
+  operationsFromStream(stream) {
+    const pattern = /[A-Z][a-z0-9]+/g;
+    let token;
+    let operations = [];
+
+    // eslint-disable-next-line
+    while (token = pattern.exec(stream)) {
+      let opTime = Ops.decodeOp(token[0]);
+      operations.push([opTime[0], opTime[1]]);
     }
 
-    return hash;
+    return operations;
   }
 };
 

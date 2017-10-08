@@ -1,48 +1,39 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import SongsPage from './pages/SongsPage';
+import RecordPage from './pages/RecordPage';
+import {BrowserRouter as Router, Route, Redirect, Switch} from 'react-router-dom';
 import './index.css';
-import App from './App';
-//import registerServiceWorker from './registerServiceWorker';
-import {BrowserRouter as Router, Route, Redirect, Link} from 'react-router-dom';
+import Paths from './Paths';
 
-function Playback(props) {
-  const location = window.location;
-  if (!location.hash) {
-    return (
-      <Redirect to={{
-        pathname: '/record',
-        state: { from: props.location }
-      }}/>
-    );
+function Index({location}) {
+  if (location.hash) {
+    // legacy URLs
+    const m = location.hash.match(/s=(\w+)(?:&t=(.*))?/);
+    if (m) {
+      const path = m[2] ? `/songs/${m[1]}/${m[2]}` : `/songs/${m[1]}`;
+      return (
+        <Redirect to={Paths.prefix(path)} />
+      );
+    }
   }
 
   return (
-    <div>
-      <App layout={'playback'} />
-    </div>
+    <Redirect to={Paths.prefix('/record')} />
   );
 }
 
-const Record = () => (
-  <div>
-    <h2>Record a song!</h2>
-    <App layout={'record'} />
-  </div>
-);
-
-const BasicExample = () => (
+const Page = () => (
   <Router>
     <div>
-      {/*<ul>*/}
-        {/*<li><Link to="/">Playback</Link></li>*/}
-        {/*<li><Link to="/record">Record</Link></li>*/}
-      {/*</ul>*/}
-      <Route exact path="/" component={Playback}/>
-      <Route path="/record" component={Record}/>
+      <Switch>
+        <Route path={Paths.prefix('/songs/:stream/:title')} component={SongsPage} />
+        <Route path={Paths.prefix('/songs/:stream')} component={SongsPage} />
+        <Route path={Paths.prefix('/record')} component={RecordPage} />
+        <Route path='*' render={Index} />
+      </Switch>
     </div>
   </Router>
 );
 
-
-ReactDOM.render(<BasicExample />, document.getElementById('root'));
-//registerServiceWorker();
+ReactDOM.render(<Page />, document.getElementById('root'));

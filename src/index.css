@@ -1,0 +1,174 @@
+body {
+    width: 1246px;
+    margin: 20px auto;
+}
+
+h2.Title {
+    font-style: italic;
+    display: inline-block;
+    cursor: pointer;
+    margin: 0;
+}
+h2.Title.untitled, h1.Title.untitled span {
+    color: #ccc;
+}
+h2.Title input {
+    color: #000;
+}
+
+#piano {
+    width: 1246px;
+    margin: 0 auto;
+    position: relative;
+    background: #444;
+}
+.white {
+    z-index: 1;
+    padding-left: 10px;
+    border: 1px solid #ccc;
+    overflow: auto;
+}
+.black {
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+.white a {
+    float: left;
+    margin-left: 2px;
+    width: 32px;
+    height: 160px;
+    -moz-border-radius: 2px 2px 5px 5px;
+    -webkit-border-radius: 2px 2px 5px 5px;
+    border-radius: 2px 2px 5px 5px;
+    background: #fff;
+    color: #000;
+    font-weight: 700;
+}
+.black a {
+    position: absolute;
+    top: 0;
+    width: 16px;
+    height: 100px;
+    border: 2px solid #000;
+    -moz-border-radius: 0 0 5px 5px;
+    -webkit-border-radius: 0 0 5px 5px;
+    border-radius: 0 0 5px 5px;
+    background: #000;
+    color: #fff;
+}
+.white > a.active,
+.black > a.active {
+    background: #74c674;
+}
+#piano.noinput a {
+    cursor: default;
+}
+
+section {
+    margin: 20px auto;
+}
+
+#status {
+    text-align: right;
+    font: 30px monospace;
+    font-style: italic;
+}
+
+#status.recording i {
+    animation: record-pulse 1s infinite;
+}
+
+#play, #stop {
+    width: 300px;
+}
+#record {
+    display: inline-block;
+    width: 150px;
+    padding: 6px 12px;
+    opacity: .5;
+}
+#record.recording {
+    color: #600;
+    opacity: 1;
+}
+
+#record.recording i {
+    animation: record-pulse 1s infinite;
+}
+
+@keyframes record-pulse {
+    0% {
+        color: #fff;
+    }
+    50% {
+        color: #900;
+    }
+    100% {
+        color: #fff;
+    }
+}
+
+#record.active {
+    background: #600;
+}
+
+.progress-bar {
+    transition: none;
+}​
+
+#chord {
+     width: 7em;
+     font-size: inherit;
+}
+
+.urls td input {
+    width: 100%;
+    border: 0;
+    background: transparent;
+}
+
+button .progress {
+    display: inline-block;
+    vertical-align: text-bottom;
+    margin: 0;
+    border-radius: 0;
+    box-shadow: none;
+    position: relative;
+    top: -1px;
+}
+
+#preview .progress {
+    width: 3.45em;
+    height: 1em;
+}
+
+#big-play .progress {
+    width: .8em;
+    height: 1em;
+}
+
+.piano-2col {
+    display: flex;
+    align-items: flex-end;
+    min-height: 4.5em;
+    margin-top: 10px;
+}
+.piano-2col > div {
+    width: 50%;
+}
+
+#reset, #save, #preview {
+    font-size: 1.5em;
+    margin-right: .3em;
+}
+
+#big-play {
+    vertical-align: baseline;
+    font-size: 3rem;
+    margin-right: 1em;
+}
+
+#reset, #save, #preview {
+    vertical-align: baseline;
+}
