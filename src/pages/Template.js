@@ -13,7 +13,7 @@ const ListItemLink = ({ to, ...rest }) => (
 const Template = (props) => (
   <div>
     <h1>Phrase Recorder <small>by <a href='http://www.mrclay.org/'>mrclay.org</a></small></h1>
-    <p>Wanna capture a <a href={Paths.prefix('/songs/C370D376yC41abD41h9C40l3D40s1C3ctfC39xnD3c10dD3914l/Somewhere')}>short musical idea</a> or share it with others? Tap some notes or play your MIDI keyboard (Chrome only), and click <i>Save</i>. You can share the resulting page URL or bookmark it. <a href="https://github.com/mrclay/piano-record">Source available!</a></p>
+    <p>Wanna capture a <a href={Paths.prefix('/songs/C370D376yC41abD41h9C40l3D40s1C3ctfC39xnD3c10dD3914l/Somewhere')}>short musical idea</a> or share it with others? Tap some notes or play your MIDI keyboard (Chrome only), and click <i>Save</i>. You can share the resulting page URL or bookmark it. <a href="https://github.com/mrclay/piano-record">Source</a>.</p>
     <nav className="nav nav-tabs">
       <ListItemLink to={Paths.prefix('/record')} >Record New</ListItemLink>
       <ListItemLink to={Paths.prefix('/songs')} >Play</ListItemLink>

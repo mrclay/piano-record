@@ -23,42 +23,32 @@ export default class Record extends React.Component {
       state: this.recorder.getState(),
       progress: 0,
     };
-
-    this.stop = this.stop.bind(this);
-    this.play = this.play.bind(this);
-    this.reset = this.reset.bind(this);
-    this.save = this.save.bind(this);
-    this.onKeyClick = this.onKeyClick.bind(this);
-    this.onActiveKeysChange = this.onActiveKeysChange.bind(this);
-    this.onPianoOperation = this.onPianoOperation.bind(this);
-    this.onRecorderState = this.onRecorderState.bind(this);
-    this.onRecorderProgress = this.onRecorderProgress.bind(this);
   }
 
-  onRecorderProgress(progress) {
+  onRecorderProgress = (progress) => {
     this.setState({progress});
-  }
+  };
 
-  onActiveKeysChange(activeKeys) {
+  onActiveKeysChange = (activeKeys) => {
     this.setState({
       activeKeys
     });
-  }
+  };
 
-  onRecorderState(state) {
+  onRecorderState = (state) => {
     let newState = {state};
     if (state === C.STOPPED) {
       newState.waiting = false;
     }
     this.setState(newState);
-  }
+  };
 
-  onPianoOperation(op) {
+  onPianoOperation = (op) => {
     // just to let us know the user is recording
     this.setState({
       waiting: false
     });
-  }
+  };
 
   componentDidMount() {
     this.recorder.addEventListener('state', this.onRecorderState);
@@ -78,15 +68,15 @@ export default class Record extends React.Component {
     piano.removeEventListener('operation', this.onPianoOperation);
   }
 
-  play() {
+  play = () => {
     this.recorder.play();
-  }
+  };
 
-  stop() {
+  stop = () => {
     this.recorder.stop();
-  }
+  };
 
-  save() {
+  save = () => {
     if (this.state.waiting) {
       return;
     }
@@ -94,9 +84,9 @@ export default class Record extends React.Component {
     this.recorder.stop();
     const stream = Ops.streamFromOperations(this.recorder.getOperations());
     this.props.history.push(Paths.prefix(`/songs/${stream}`));
-  }
+  };
 
-  reset(e) {
+  reset = (e) => {
     this.recorder.stop();
     this.recorder.startRecording();
     this.setState({
@@ -104,11 +94,11 @@ export default class Record extends React.Component {
     }, () => {
       this.props.history.replace(Paths.prefix('/record'));
     });
-  }
+  };
 
-  onKeyClick(key, note) {
+  onKeyClick = (key, note) => {
     this.recorder.clickNote(key, note);
-  }
+  };
 
   render() {
     return (

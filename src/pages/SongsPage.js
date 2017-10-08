@@ -29,29 +29,21 @@ export default class SongsPage extends React.Component {
       state: this.recorder.getState(),
       progress: 0,
     };
-
-    this.setTitle = this.setTitle.bind(this);
-    this.stop = this.stop.bind(this);
-    this.play = this.play.bind(this);
-    this.reset = this.reset.bind(this);
-    this.onActiveKeysChange = this.onActiveKeysChange.bind(this);
-    this.onRecorderState = this.onRecorderState.bind(this);
-    this.onRecorderProgress = this.onRecorderProgress.bind(this);
   }
 
-  onRecorderProgress(progress) {
+  onRecorderProgress = (progress) => {
     this.setState({progress});
-  }
+  };
 
-  onActiveKeysChange(activeKeys) {
+  onActiveKeysChange = (activeKeys) => {
     this.setState({
       activeKeys
     });
-  }
+  };
 
-  onRecorderState(state) {
+  onRecorderState = (state) => {
     this.setState({state});
-  }
+  };
 
   componentDidMount() {
     this.recorder.addEventListener('state', this.onRecorderState);
@@ -69,22 +61,22 @@ export default class SongsPage extends React.Component {
     piano.removeEventListener('reset', this.reset);
   }
 
-  play() {
+  play = () => {
     this.recorder.play();
     this.setState({playing: true});
-  }
+  };
 
-  stop() {
+  stop = () => {
     this.recorder.stop();
     this.setState({playing: false});
-  }
+  };
 
-  reset() {
+  reset = () => {
     this.recorder.stop();
     this.setState({playing: false}, () => {
       this.props.history.push(Paths.prefix('/record'));
     });
-  }
+  };
 
   static encodeMoreURIComponents(str) {
     return str.replace(/[!'()*]/g, function(c) {
@@ -103,7 +95,7 @@ export default class SongsPage extends React.Component {
       .replace(/</g, '&lt;').replace(/>/g, '&gt;');
   }
 
-  setTitle(props) {
+  setTitle = (props) => {
     const title = props.title.trim();
 
     this.setState({
@@ -117,11 +109,11 @@ export default class SongsPage extends React.Component {
 
       this.props.history.push(Paths.prefix(`/songs/${s}/${t}`));
     });
-  }
+  };
 
-  handleFocus(e) {
+  handleFocus = (e) => {
     e.target.select();
-  }
+  };
 
   render() {
     const htmlize = SongsPage.encodeHtml;

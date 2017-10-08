@@ -26,8 +26,6 @@ export default class PianoRecorder extends EventTarget {
     this.startedRecording = false;
     this.keyTimeouts = {};
     this.state = C.STOPPED;
-
-    this.onPianoOperation = this.onPianoOperation.bind(this);
   }
 
   setState(state) {
@@ -54,13 +52,13 @@ export default class PianoRecorder extends EventTarget {
     }, duration);
   }
 
-  onPianoOperation(op) {
+  onPianoOperation = (op) => {
     if (this.state !== C.RECORDING) {
       return;
     }
 
     this.recordOperation(op, (new Date()).getTime());
-  }
+  };
 
   startRecording() {
     this.piano.stopAll();
