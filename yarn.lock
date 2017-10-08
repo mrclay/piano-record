@@ -6166,12 +6166,6 @@ to-fast-properties@^1.0.3:
   dependencies:
     tone "^0.12.5"
 
-"tone-piano@https://github.com/tambien/Piano.git#35fddef":
-  version "0.0.11"
-  resolved "https://github.com/tambien/Piano.git#35fddefe8426736b4ab63dc5b891e1c0124b9e5f"
-  dependencies:
-    tone "^0.12.5"
-
 tone@^0.12.5:
   version "0.12.6"
   resolved "https://registry.yarnpkg.com/tone/-/tone-0.12.6.tgz#c08a4cd809556e85e4b1f607c85a065d8630dc3a"
