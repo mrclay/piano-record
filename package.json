@@ -9,7 +9,7 @@
     "react-dom": "^16.0.0",
     "react-router-dom": "^4.2.2",
     "react-scripts": "1.0.14",
-    "tone-piano": "^0.0.11"
+    "tone-piano": "https://github.com/mrclay/Piano.git#f97f6c636b7595467e697fbda64f69337955fb61"
   },
   "scripts": {
     "start": "react-scripts start",

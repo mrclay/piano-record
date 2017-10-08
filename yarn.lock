@@ -6160,9 +6160,15 @@ to-fast-properties@^1.0.3:
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/to-fast-properties/-/to-fast-properties-1.0.3.tgz#b83571fa4d8c25b82e231b06e3a3055de4ca1a47"
 
-tone-piano@^0.0.11:
+"tone-piano@https://github.com/mrclay/Piano.git#f97f6c636b7595467e697fbda64f69337955fb61":
   version "0.0.11"
-  resolved "https://registry.yarnpkg.com/tone-piano/-/tone-piano-0.0.11.tgz#7b2b6613bdacbeb05a2a6619e1fdef6139a9284b"
+  resolved "https://github.com/mrclay/Piano.git#f97f6c636b7595467e697fbda64f69337955fb61"
+  dependencies:
+    tone "^0.12.5"
+
+"tone-piano@https://github.com/tambien/Piano.git#35fddef":
+  version "0.0.11"
+  resolved "https://github.com/tambien/Piano.git#35fddefe8426736b4ab63dc5b891e1c0124b9e5f"
   dependencies:
     tone "^0.12.5"
 
