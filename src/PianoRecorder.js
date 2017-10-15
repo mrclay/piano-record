@@ -28,6 +28,11 @@ export default class PianoRecorder extends EventTarget {
     this.state = C.STOPPED;
   }
 
+  setOperations(operations) {
+    this.stop();
+    this.operations = operations;
+  }
+
   setState(state) {
     this.send('state', state);
     this.state = state;
@@ -37,22 +42,22 @@ export default class PianoRecorder extends EventTarget {
     return this.state;
   }
 
-  clickNote(key, note, duration = 1000) {
-    if (this.keyTimeouts[key]) {
-      clearTimeout(this.keyTimeouts[key]);
-      delete this.keyTimeouts[key];
+  clickNote(note, duration = 1000) {
+    if (this.keyTimeouts[note]) {
+      clearTimeout(this.keyTimeouts[note]);
+      delete this.keyTimeouts[note];
     }
 
-    this.piano.startNote(key);
+    this.piano.startNote(note);
 
-    this.keyTimeouts[key] = setTimeout(() => {
-      if (this.keyTimeouts[key]) {
-        this.piano.stopNote(key);
+    this.keyTimeouts[note] = setTimeout(() => {
+      if (this.keyTimeouts[note]) {
+        this.piano.stopNote(note);
       }
     }, duration);
   }
 
-  onPianoOperation = (op) => {
+  onPianoOperation = op => {
     if (this.state !== C.RECORDING) {
       return;
     }
@@ -106,7 +111,7 @@ export default class PianoRecorder extends EventTarget {
       this.send("progress", (now - startTime) / lastTime);
     }, this.progressPeriod);
 
-    this.operations.forEach((el) => {
+    this.operations.forEach(el => {
       // relying on the timer is awful, but tone-piano's "time" arguments just don't work.
       this.playAllIntervals.push(
         setTimeout(() => {
@@ -131,8 +136,8 @@ export default class PianoRecorder extends EventTarget {
       clearInterval(interval);
     }
 
-    Object.keys(this.keyTimeouts).forEach((key) => {
-      clearTimeout(this.keyTimeouts[key]);
+    Object.keys(this.keyTimeouts).forEach(note => {
+      clearTimeout(this.keyTimeouts[note]);
     });
     this.keyTimeouts = {};
 

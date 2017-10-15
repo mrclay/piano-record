@@ -3,17 +3,21 @@ import {homepage} from '../package.json';
 const m = homepage.match(/^(https?:\/\/[^/]+)(.*)/);
 
 const Paths = {
-  base: m[2],
+  home: m[1],
 
-  prefix(path) {
+  pianoPath: m[2],
+
+  chordPath: '/chord/',
+
+  pianoPrefix(path = '') {
     path = path.replace(/^\//, '');
-    return m[2] + path;
+    return Paths.pianoPath + path;
   },
 
-  url(path) {
+  chordPrefix(path = '') {
     path = path.replace(/^\//, '');
-    return m[1] + m[2] + path;
-  }
+    return Paths.chordPath + path;
+  },
 };
 
 export default Paths;

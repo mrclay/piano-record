@@ -2,14 +2,6 @@ import * as C from './constants';
 
 const Ops = {
 
-  keyForNote(note) {
-    return 'k' + note;
-  },
-
-  noteForKey(key) {
-    return parseInt(key.substr(1), 10);
-  },
-
   encodeOp(op, time) {
     return [
       String.fromCharCode(op[0] + C.ORD_A_UPPER),
@@ -27,10 +19,12 @@ const Ops = {
   },
 
   keyDownOperation(note) {
+    note = parseInt(note, 10);
     return Ops.operationFromMidi([C.MIDI0_NOTE_ON, note, 254]);
   },
 
   keyUpOperation(note) {
+    note = parseInt(note, 10);
     return Ops.operationFromMidi([C.MIDI0_NOTE_OFF, note, 0]);
   },
 
@@ -61,6 +55,10 @@ const Ops = {
   },
 
   operationsFromStream(stream) {
+    if (!stream) {
+      return [];
+    }
+
     const pattern = /[A-Z][a-z0-9]+/g;
     let token;
     let operations = [];
@@ -72,6 +70,23 @@ const Ops = {
     }
 
     return operations;
+  },
+
+  encodeMoreURIComponents(str) {
+    return str.replace(/[!'()*]/g, function(c) {
+      return '%' + c.charCodeAt(0).toString(16);
+    });
+  },
+
+  fixedEncodeURIComponent(str) {
+    return encodeURIComponent(str).replace(/[!'()*]/g, function(c) {
+      return '%' + c.charCodeAt(0).toString(16);
+    });
+  },
+
+  encodeHtml(str) {
+    return str.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/'/g, '&#39;')
+      .replace(/</g, '&lt;').replace(/>/g, '&gt;');
   }
 };
 

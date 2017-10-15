@@ -8,7 +8,7 @@ tonePiano.load(C.RAWGIT_URL);
 
 let activeKeys = {};
 for (let note = C.RANGE[0]; note <= C.RANGE[1]; note++) {
-  activeKeys[Ops.keyForNote(note)] = false;
+  activeKeys[note] = false;
 }
 
 /**
@@ -27,30 +27,28 @@ export default class Piano extends EventTarget {
   }
 
   static getActiveKeys() {
-    return activeKeys;
+    return Object.assign({}, activeKeys);
   }
 
-  startNote(key) {
-    this.stopNote(key);
+  startNote(note) {
+    this.stopNote(note);
 
-    const note = Ops.noteForKey(key);
     const op = Ops.keyDownOperation(note);
     this.performOperation(op);
   }
 
-  stopNote(key) {
-    if (!activeKeys[key]) {
+  stopNote(note) {
+    if (!activeKeys[note]) {
       return;
     }
 
-    const note = Ops.noteForKey(key);
     const op = Ops.keyUpOperation(note);
     this.performOperation(op);
   }
 
   stopAll() {
-    Object.keys(activeKeys).forEach((key) => {
-      this.stopNote(key);
+    Object.keys(activeKeys).forEach(note => {
+      this.stopNote(note);
     });
   }
 
@@ -66,13 +64,13 @@ export default class Piano extends EventTarget {
 
       case C.OP_NOTE_DOWN:
         tonePiano.keyDown(op[1]);
-        activeKeys[Ops.keyForNote(op[1])] = true;
+        activeKeys[op[1]] = true;
         this.send('activeKeysChange', activeKeys);
         return;
 
       case C.OP_NOTE_UP:
         tonePiano.keyUp(op[1]);
-        activeKeys[Ops.keyForNote(op[1])] = false;
+        activeKeys[op[1]] = false;
         this.send('activeKeysChange', activeKeys);
         return;
 
@@ -87,9 +85,9 @@ export default class Piano extends EventTarget {
       return;
     }
 
-    navigator.requestMIDIAccess().then((midiAccess) => {
-      midiAccess.inputs.forEach((input) => {
-        input.addEventListener('midimessage', (e) => {
+    navigator.requestMIDIAccess().then(midiAccess => {
+      midiAccess.inputs.forEach(input => {
+        input.addEventListener('midimessage', e => {
 
           if (!this.monitorMidi) {
             return;
