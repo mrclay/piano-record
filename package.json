@@ -2,7 +2,7 @@
   "name": "piano2",
   "version": "0.1.0",
   "private": true,
-  "homepage": "http://mrclay.org/piano2/",
+  "homepage": "http://mrclay.org/piano/",
   "dependencies": {
     "dom-event-target": "^1.0.0",
     "react": "^16.0.0",
