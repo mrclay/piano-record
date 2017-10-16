@@ -1,11 +1,8 @@
-import {homepage} from '../package.json';
-
-const m = homepage.match(/^(https?:\/\/[^/]+)(.*)/);
 
 const Paths = {
-  home: m[1],
+  home: 'http://mrclay.org',
 
-  pianoPath: m[2],
+  pianoPath: '/piano/',
 
   chordPath: '/chord/',
 
