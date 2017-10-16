@@ -137,7 +137,7 @@ export default class ChordPage extends React.Component {
       if (m) {
         const path = m[2] ? `/${m[1]}/${m[2]}` : `/${m[1]}`;
 
-        return <Redirect to={Paths.pianoPrefix(path)} />;
+        return <Redirect to={Paths.chordPrefix(path)} />;
       }
     }
 
