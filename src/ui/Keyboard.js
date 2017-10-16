@@ -1,5 +1,4 @@
 import {RANGE} from '../constants';
-import Ops from "../Ops";
 import React from 'react';
 
 export default class Keyboard extends React.Component {
@@ -18,10 +17,9 @@ export default class Keyboard extends React.Component {
     }
 
     const note = parseInt(target.dataset.note, 10);
-    const key = Ops.keyForNote(note);
 
     if (this.props.onKeyClick) {
-      this.props.onKeyClick(key, note);
+      this.props.onKeyClick(note);
     }
   }
 
@@ -40,16 +38,14 @@ export default class Keyboard extends React.Component {
   }
 
   render() {
-    let whites = [], blacks = [], note, mod, left = 36, key, active;
+    let whites = [], blacks = [], note, mod, left = 36, active;
 
     for (note = RANGE[0]; note <= RANGE[1]; note++) {
       mod = note % 12;
-      key = 'k' + note;
-      active = !!this.props.activeKeys[key];
+      active = !!this.props.activeKeys[note];
       if (mod === 1 || mod === 3 || mod === 6 || mod === 8 || mod === 10) {
         blacks.push(
           Keyboard.renderKey({
-            key,
             note,
             left,
             active
@@ -63,7 +59,6 @@ export default class Keyboard extends React.Component {
       } else {
         whites.push(
           Keyboard.renderKey({
-            key,
             note,
             active
           })

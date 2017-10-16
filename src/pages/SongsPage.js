@@ -6,6 +6,7 @@ import Paths from '../Paths';
 import Piano from "../Piano";
 import PianoRecorder from "../PianoRecorder";
 import React from 'react';
+import {Redirect} from 'react-router-dom';
 import Template from "../pages/Template";
 import Title from '../ui/Title';
 
@@ -13,37 +14,34 @@ export default class SongsPage extends React.Component {
   constructor(props) {
     super(props);
 
-    const params = this.props.match.params;
+    this.recorder = new PianoRecorder();
+    this.state = this.stateFromProps(props, this.recorder);
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (this.props.location !== nextProps.location) {
+      this.recorder.stop();
+      this.setState(this.stateFromProps(nextProps, this.recorder));
+    }
+  }
+
+  stateFromProps({match}, recorder) {
+    const {params} = match;
     const stream = params.stream;
-    const titleEncoded = params.title ? params.title : '';
+    const title = params.title ? decodeURIComponent(params.title) : '';
 
-    this.recorder = new PianoRecorder({
-      operations: Ops.operationsFromStream(stream),
-    });
+    if (recorder) {
+      recorder.setOperations(Ops.operationsFromStream(stream));
+    }
 
-    this.state = {
+    return {
       stream,
-      title: decodeURIComponent(titleEncoded),
-      titleEncoded,
+      title,
       activeKeys: Piano.getActiveKeys(),
-      state: this.recorder.getState(),
+      state: C.STOPPED,
       progress: 0,
     };
   }
-
-  onRecorderProgress = (progress) => {
-    this.setState({progress});
-  };
-
-  onActiveKeysChange = (activeKeys) => {
-    this.setState({
-      activeKeys
-    });
-  };
-
-  onRecorderState = (state) => {
-    this.setState({state});
-  };
 
   componentDidMount() {
     this.recorder.addEventListener('state', this.onRecorderState);
@@ -61,6 +59,20 @@ export default class SongsPage extends React.Component {
     piano.removeEventListener('reset', this.reset);
   }
 
+  onRecorderProgress = progress => {
+    this.setState({progress});
+  };
+
+  onActiveKeysChange = activeKeys => {
+    this.setState({
+      activeKeys
+    });
+  };
+
+  onRecorderState = state => {
+    this.setState({state});
+  };
+
   play = () => {
     this.recorder.play();
     this.setState({playing: true});
@@ -74,57 +86,44 @@ export default class SongsPage extends React.Component {
   reset = () => {
     this.recorder.stop();
     this.setState({playing: false}, () => {
-      this.props.history.push(Paths.prefix('/record'));
+      this.props.history.push(Paths.pianoPrefix('/record'));
     });
   };
 
-  static encodeMoreURIComponents(str) {
-    return str.replace(/[!'()*]/g, function(c) {
-      return '%' + c.charCodeAt(0).toString(16);
-    });
-  }
-
-  static fixedEncodeURIComponent(str) {
-    return encodeURIComponent(str).replace(/[!'()*]/g, function(c) {
-      return '%' + c.charCodeAt(0).toString(16);
-    });
-  }
-
-  static encodeHtml(str) {
-    return str.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/'/g, '&#39;')
-      .replace(/</g, '&lt;').replace(/>/g, '&gt;');
-  }
-
-  setTitle = (props) => {
+  setTitle = props => {
     const title = props.title.trim();
 
     this.setState({
-      title,
-      titleEncoded: SongsPage.fixedEncodeURIComponent(title),
-
-
+      title
     }, () => {
       const s = this.state.stream;
-      const t = this.state.titleEncoded;
+      const t = Ops.fixedEncodeURIComponent(title);
 
-      this.props.history.push(Paths.prefix(`/songs/${s}/${t}`));
+      this.props.history.replace(Paths.pianoPrefix(`/songs/${s}/${t}`));
     });
   };
 
-  handleFocus = (e) => {
+  handleFocus = e => {
     e.target.select();
   };
 
   render() {
-    const htmlize = SongsPage.encodeHtml;
+    if (window.location.hash) {
+      // legacy URLs
+      const m = window.location.hash.match(/s=(\w+)(?:&t=(.*))?/);
+      if (m) {
+        const path = m[2] ? `/songs/${m[1]}/${m[2]}` : `/songs/${m[1]}`;
 
+        return <Redirect to={Paths.pianoPrefix(path)} />;
+      }
+    }
+
+    const htmlize = Ops.encodeHtml;
     // encode parens in titles, for markdown's sake
-    const url = SongsPage.encodeMoreURIComponents(window.location.href);
+    const url = Ops.encodeMoreURIComponents(window.location.href);
 
     const title = this.state.title || C.DEFAULT_TITLE;
-
     const markdownLink = `[${htmlize(title)}](${htmlize(url)})`;
-
     const htmlLink = `<a href="${htmlize(url)}">${htmlize(title)}</a>`;
 
     return (
@@ -141,6 +140,15 @@ export default class SongsPage extends React.Component {
             onChange={this.setTitle}
           />
           {!this.state.title && '(click to rename)'}
+          <button
+            onClick={this.reset}
+            id="reset"
+            disabled={this.state.waiting}
+            className="btn btn-danger"
+            style={{marginLeft: '1em'}}
+            >
+            <i className="fa fa-circle" aria-hidden="true"/> <span>New Song</span>
+          </button>
         </section>
         <Keyboard
           activeKeys={this.state.activeKeys}

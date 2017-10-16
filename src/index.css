@@ -133,10 +133,13 @@ button .progress {
     margin-top: 10px;
 }
 .piano-2col > div {
-    width: 50%;
+    flex: 3;
+}
+.piano-2col > div + div {
+    flex: 1;
 }
 
-#reset, #save, #preview {
+#reset, #save, #preview, #chord-play {
     font-size: 1.5em;
     margin-right: .3em;
 }
@@ -144,9 +147,9 @@ button .progress {
 #big-play {
     vertical-align: baseline;
     font-size: 3rem;
-    margin-right: 1em;
+    margin-right: 20px;
 }
 
-#reset, #save, #preview {
+#reset, #save, #preview, #chord-play {
     vertical-align: baseline;
 }

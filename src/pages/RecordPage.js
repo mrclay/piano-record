@@ -9,7 +9,7 @@ import React from 'react';
 import Status from "../ui/Status";
 import Template from "../pages/Template";
 
-export default class Record extends React.Component {
+export default class RecordPage extends React.Component {
 
   constructor(props) {
     super(props);
@@ -25,17 +25,17 @@ export default class Record extends React.Component {
     };
   }
 
-  onRecorderProgress = (progress) => {
+  onRecorderProgress = progress => {
     this.setState({progress});
   };
 
-  onActiveKeysChange = (activeKeys) => {
+  onActiveKeysChange = activeKeys => {
     this.setState({
       activeKeys
     });
   };
 
-  onRecorderState = (state) => {
+  onRecorderState = state => {
     let newState = {state};
     if (state === C.STOPPED) {
       newState.waiting = false;
@@ -43,7 +43,7 @@ export default class Record extends React.Component {
     this.setState(newState);
   };
 
-  onPianoOperation = (op) => {
+  onPianoOperation = op => {
     // just to let us know the user is recording
     this.setState({
       waiting: false
@@ -83,21 +83,21 @@ export default class Record extends React.Component {
 
     this.recorder.stop();
     const stream = Ops.streamFromOperations(this.recorder.getOperations());
-    this.props.history.push(Paths.prefix(`/songs/${stream}`));
+    this.props.history.push(Paths.pianoPrefix(`/songs/${stream}`));
   };
 
-  reset = (e) => {
+  reset = e => {
     this.recorder.stop();
     this.recorder.startRecording();
     this.setState({
       waiting: true,
     }, () => {
-      this.props.history.replace(Paths.prefix('/record'));
+      this.props.history.replace(Paths.pianoPrefix('/record'));
     });
   };
 
-  onKeyClick = (key, note) => {
-    this.recorder.clickNote(key, note);
+  onKeyClick = note => {
+    this.recorder.clickNote(note);
   };
 
   render() {
@@ -124,7 +124,7 @@ export default class Record extends React.Component {
               id="reset"
               disabled={this.state.waiting}
               className="btn btn-danger">
-              <i className="fa fa-circle" aria-hidden="true"/> <span>Start over</span>
+              <i className="fa fa-circle" aria-hidden="true"/> <span>Reset</span>
             </button>
           </div>
           <div>
