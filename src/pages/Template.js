@@ -23,7 +23,7 @@ const Template = props => {
     header = (
       <div>
         <h1>Simple Piano <small>by <a href='http://www.mrclay.org/'>mrclay.org</a></small></h1>
-        <p>Wanna capture a <a href={Paths.pianoPrefix('/songs/C370D376yC41abD41h9C40l3D40s1C3ctfC39xnD3c10dD3914l/Somewhere')}>short musical idea</a> or share it with others? Tap some notes or play your MIDI keyboard (Chrome only), and click <i>Save</i>. You can share the resulting page URL or bookmark it. <a href="https://github.com/mrclay/piano-record">Source</a>.</p>
+        <p>Wanna capture a <a href={Paths.pianoPrefix('/songs/C320C3c30C3e3bC423hC454bD3c8gC448uC3b8xD4299D459cC40eaC3aedD44elD3berD3ejnC42l8D3al9C39laD40lhD39ohC40oiC38oiD42p5C3eqtD40quC37tgD38thC40tlD3eu1C42wnD40x3D3713nC3613zC3e144D4214cD3e1fuD361gaD321gf/Hello%20World')}>short musical idea</a> or share it with others? Tap some notes or play your MIDI keyboard (Chrome only), and click <i>Save</i>. You can share the resulting page URL or bookmark it. <a href="https://github.com/mrclay/piano-record">Source</a>.</p>
       </div>
     );
   }

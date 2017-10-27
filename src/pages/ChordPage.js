@@ -48,6 +48,7 @@ export default class ChordPage extends React.Component {
   }
 
   componentDidMount() {
+    document.title = 'Simple Chord';
     this.piano.addEventListener('reset', this.reset);
   }
 

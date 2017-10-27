@@ -51,6 +51,7 @@ export default class RecordPage extends React.Component {
   };
 
   componentDidMount() {
+    document.title = 'Simple Piano';
     this.recorder.addEventListener('state', this.onRecorderState);
     this.recorder.addEventListener('progress', this.onRecorderProgress);
     const piano = this.recorder.getPiano();
