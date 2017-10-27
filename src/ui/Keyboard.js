@@ -30,10 +30,11 @@ export default class Keyboard extends React.Component {
     }
 
     const className = props.active ? 'active' : '';
+    const label = ''; //props.note.toString(16);
 
     return (
       // eslint-disable-next-line
-      <a href="#" key={props.note} data-note={props.note} className={className} style={style} />
+      <a href="#" key={props.note} data-note={props.note} className={className} style={style}>{label}</a>
     );
   }
 

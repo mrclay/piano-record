@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import SongsPage from './pages/SongsPage';
 import ChordPage from './pages/ChordPage';
 import RecordPage from './pages/RecordPage';
-import {BrowserRouter as Router, Route, Switch} from 'react-router-dom';
+import {BrowserRouter as Router, Route, Switch, Redirect} from 'react-router-dom';
 import './index.css';
 import Paths from './Paths';
 
@@ -18,6 +18,9 @@ const Page = () => (
         <Route path={Paths.chordPrefix('/:notes/:title')} component={ChordPage} />
         <Route path={Paths.chordPrefix('/:notes')} component={ChordPage} />
         <Route path={Paths.chordPrefix('/')} component={ChordPage} />
+        <Route path='/' render={() => {
+          return <Redirect to={Paths.pianoPrefix('/')} />
+        }} />
       </Switch>
     </div>
   </Router>

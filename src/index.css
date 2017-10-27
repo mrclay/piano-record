@@ -33,6 +33,10 @@ h2.Title input {
     top: 0;
     left: 0;
 }
+#piano [data-note] {
+    text-align: center;
+    text-decoration: none;
+}
 .white a {
     float: left;
     margin-left: 2px;
@@ -44,6 +48,7 @@ h2.Title input {
     background: #fff;
     color: #000;
     font-weight: 700;
+    padding-top: 120px;
 }
 .black a {
     position: absolute;
@@ -56,6 +61,8 @@ h2.Title input {
     border-radius: 0 0 5px 5px;
     background: #000;
     color: #fff;
+    padding-top: 58px;
+    font-size: 10px;
 }
 .white > a.active,
 .black > a.active {
