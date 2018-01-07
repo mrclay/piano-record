@@ -105,17 +105,23 @@ export default class SongsPage extends React.Component {
   };
 
   handleFocus = e => {
-    e.target.select();
+    // const el = e.target;
+    // el.focus();
+    // setTimeout(() => {el.setSelectionRange(0, 99999); }, 0);
   };
 
   render() {
+    // legacy URLs
     if (window.location.hash) {
-      // legacy URLs
       const m = window.location.hash.match(/s=(\w+)(?:&t=(.*))?/);
       if (m) {
         const path = m[2] ? `/songs/${m[1]}/${m[2]}` : `/songs/${m[1]}`;
 
         return <Redirect to={Paths.pianoPrefix(path)} />;
+      }
+    } else {
+      if (!this.state.stream) {
+        return <Redirect to={Paths.pianoPrefix('/record')} />;
       }
     }
 

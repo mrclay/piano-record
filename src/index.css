@@ -160,3 +160,7 @@ button .progress {
 #reset, #save, #preview, #chord-play {
     vertical-align: baseline;
 }
+
+.nav-tabs li:first-child {
+    margin-left: 15px;
+}

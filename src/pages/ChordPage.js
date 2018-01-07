@@ -128,7 +128,9 @@ export default class ChordPage extends React.Component {
   };
 
   handleFocus = e => {
-    e.target.select();
+    // const el = e.target;
+    // el.focus();
+    // setTimeout(() => {el.setSelectionRange(0, 99999); }, 0);
   };
 
   render() {
