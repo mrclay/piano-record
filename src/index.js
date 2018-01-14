@@ -5,15 +5,24 @@ import './index.css';
 import Paths from './Paths';
 import asyncComponent from './AsyncComponent';
 
-const loadRest = () => {
-  import('./pages/SongsPage');
-  import('./pages/ChordPage');
-  import('./pages/RecordPage');
-};
+function myAsyncComponent(load) {
+  return asyncComponent(() => {
+    const component = load();
 
-const AsyncSongs = asyncComponent(() => import('./pages/SongsPage'), loadRest);
-const AsyncChord = asyncComponent(() => import('./pages/ChordPage'), loadRest);
-const AsyncRecord = asyncComponent(() => import('./pages/RecordPage'), loadRest);
+    // lazy load the rest
+    setTimeout(() => {
+      import('./pages/SongsPage');
+      import('./pages/ChordPage');
+      import('./pages/RecordPage');
+    }, 1500);
+
+    return component;
+  });
+}
+
+const AsyncSongs = myAsyncComponent(() => import('./pages/SongsPage'));
+const AsyncChord = myAsyncComponent(() => import('./pages/ChordPage'));
+const AsyncRecord = myAsyncComponent(() => import('./pages/RecordPage'));
 
 const Page = () => (
   <Router>

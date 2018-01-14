@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 
-export default function asyncComponent(importComponent, loadRest) {
+export default function asyncComponent(importComponent) {
   class AsyncComponent extends Component {
     constructor(props) {
       super(props);
@@ -16,8 +16,6 @@ export default function asyncComponent(importComponent, loadRest) {
       this.setState({
         component: component
       });
-
-      setTimeout(loadRest, 2000);
     }
 
     render() {
