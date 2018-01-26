@@ -1,3 +1,4 @@
+import * as C from "../constants";
 import Paths from '../Paths';
 import React from 'react';
 import {Link, Route} from 'react-router-dom';
@@ -19,14 +20,14 @@ const Template = props => {
     header = (
       <div>
         <h1 className={'h2'}>Simple Chord</h1>
-        <p>Wanna capture a <Link to={exampleChord}>chord</Link> or share it with others? Tap some notes or play your MIDI keyboard (Chrome only), and click <i>Save</i>. You can share the resulting page URL or bookmark it. <a href="https://github.com/mrclay/piano-record">Source</a>.</p>
+        <p>Wanna capture a <Link to={exampleChord}>chord</Link> or share it with others? Tap some notes or play your MIDI keyboard (Chrome only), and click <i>Save</i>. You can share the resulting page URL or bookmark it. <a href={C.SOURCE_URL}>Source</a>.</p>
       </div>
     );
   } else {
     header = (
       <div>
         <h1 className={'h2'}>Simple Piano</h1>
-        <p>Wanna capture a <Link to={exampleSong}>short musical idea</Link> or share it with others? Tap some notes or play your MIDI keyboard (Chrome only), and click <i>Save</i>. You can share the resulting page URL or bookmark it. <a href="https://github.com/mrclay/piano-record">Source</a>.</p>
+        <p>Wanna capture a <Link to={exampleSong}>short musical idea</Link> or share it with others? Tap some notes or play your MIDI keyboard (Chrome only), and click <i>Save</i>. You can share the resulting page URL or bookmark it. <a href={C.SOURCE_URL}>Source</a>.</p>
       </div>
     );
   }
@@ -34,6 +35,7 @@ const Template = props => {
   return (
     <div>
       {header}
+
       <nav className="nav nav-tabs">
         <ListItemLink to={Paths.pianoPrefix('/')}>Songs</ListItemLink>
         <ListItemLink to={Paths.chordPrefix('/')}>Chords</ListItemLink>

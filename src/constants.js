@@ -1,4 +1,5 @@
 
+export const SOURCE_URL = 'https://github.com/mrclay/piano-record';
 export const RAWGIT_URL = 'https://cdn.rawgit.com/mrclay/Piano/5abc2fb2/Salamander/';
 export const RANGE = [36, 96];
 export const VELOCITIES = 1;
