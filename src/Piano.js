@@ -27,7 +27,9 @@ export default class Piano extends EventTarget {
   }
 
   static getActiveKeys() {
-    return Object.assign({}, activeKeys);
+    return {
+      ...activeKeys,
+    };
   }
 
   startNote(note) {
@@ -47,9 +49,7 @@ export default class Piano extends EventTarget {
   }
 
   stopAll() {
-    Object.keys(activeKeys).forEach(note => {
-      this.stopNote(note);
-    });
+    Object.keys(activeKeys).forEach(note => this.stopNote(note));
   }
 
   performOperation(op, sendOp = true) {
