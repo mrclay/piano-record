@@ -1,18 +1,19 @@
-import * as C from "../constants";
 import React from 'react';
 
-export default function Status(props) {
-  if (props.waiting) {
+import * as C from "../constants";
+
+export default function Status({waiting, state}) {
+  if (waiting) {
     return (
       <div id="status" className='ready'>Ready!!!</div>
     );
   }
-  if (props.state === C.PLAYING) {
+  if (state === C.PLAYING) {
     return (
       <div id="status" className='playing'>Playback...</div>
     );
   }
-  if (props.state === C.RECORDING) {
+  if (state === C.RECORDING) {
     return (
       <div id="status" className='recording'><i className="fa fa-circle" aria-hidden="true" /> Recording...</div>
     );

@@ -1,16 +1,18 @@
-import * as C from "../constants";
-import Progress from "./Progress";
 import React from 'react';
 
+import * as C from "../constants";
+import Progress from "./Progress";
+
 export default function Play(props) {
-  if (props.state === C.PLAYING) {
-    let icon;
-    if (props.progress !== undefined) {
-      icon = <Progress ratio={props.progress} />;
-    } else {
-      icon = <i className="fa fa-stop" aria-hidden="true" />;
+  function renderIcon(progress) {
+    if (progress !== undefined) {
+      return <Progress ratio={progress} />;
     }
 
+    return <i className="fa fa-stop" aria-hidden="true" />;
+  }
+
+  if (props.state === C.PLAYING) {
     return (
       <button
           onClick={props.handleStop}
@@ -18,7 +20,7 @@ export default function Play(props) {
           className="btn btn-default"
           disabled={props.waiting}
         >
-        {icon}
+        {renderIcon(props.progress)}
       </button>
     );
   }

@@ -1,5 +1,6 @@
-import * as C from './constants';
 import EventTarget from 'dom-event-target';
+
+import * as C from './constants';
 import Piano from './Piano';
 
 let piano;

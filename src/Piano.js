@@ -1,7 +1,8 @@
-import * as C from './constants';
 import EventTarget from 'dom-event-target';
-import Ops from './Ops';
 import {Piano as TonePiano} from 'tone-piano';
+
+import * as C from './constants';
+import Ops from './Ops';
 
 const tonePiano = new TonePiano(C.RANGE, C.VELOCITIES, C.USE_RELEASE).toMaster();
 tonePiano.load(C.RAWGIT_URL);

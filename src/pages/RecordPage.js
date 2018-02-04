@@ -1,3 +1,5 @@
+import React from 'react';
+
 import * as C from "../constants";
 import Keyboard from '../ui/Keyboard';
 import Ops from "../Ops";
@@ -5,7 +7,6 @@ import Paths from '../Paths';
 import Piano from "../Piano";
 import PianoRecorder from "../PianoRecorder";
 import Preview from "../ui/Preview";
-import React from 'react';
 import Status from "../ui/Status";
 import Template from "../pages/Template";
 
@@ -87,7 +88,7 @@ export default class RecordPage extends React.Component {
     this.props.history.push(Paths.pianoPrefix(`/songs/${stream}`));
   };
 
-  reset = e => {
+  reset = () => {
     this.recorder.stop();
     this.recorder.startRecording();
     this.setState({

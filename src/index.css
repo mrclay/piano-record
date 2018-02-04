@@ -37,7 +37,7 @@ h2.Title input {
     text-align: center;
     text-decoration: none;
 }
-.white a {
+.white span {
     float: left;
     margin-left: 2px;
     width: 32px;
@@ -49,8 +49,9 @@ h2.Title input {
     color: #000;
     font-weight: 700;
     padding-top: 120px;
+    cursor: pointer;
 }
-.black a {
+.black span {
     position: absolute;
     top: 0;
     width: 16px;
@@ -63,12 +64,13 @@ h2.Title input {
     color: #fff;
     padding-top: 58px;
     font-size: 10px;
+    cursor: pointer;
 }
-.white > a.active,
-.black > a.active {
+.white > span.active,
+.black > span.active {
     background: #74c674;
 }
-#piano.noinput a {
+#piano.noinput span {
     cursor: default;
 }
 

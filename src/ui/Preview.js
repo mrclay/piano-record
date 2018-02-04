@@ -1,6 +1,7 @@
+import React from 'react';
+
 import * as C from "../constants";
 import Progress from "./Progress";
-import React from 'react';
 
 export default function Preview(props) {
   if (props.state === C.PLAYING) {

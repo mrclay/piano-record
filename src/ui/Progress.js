@@ -8,7 +8,15 @@ export default function Progress(props) {
 
   return (
     <div className="progress">
-      <div id="progress" className="progress-bar" role="progressbar" aria-valuenow={percentage} aria-valuemin="0" aria-valuemax="100" style={style}>
+      <div
+        id="progress"
+        className="progress-bar"
+        role="progressbar"
+        aria-valuenow={percentage}
+        aria-valuemin="0"
+        aria-valuemax="100"
+        style={style}
+      >
         <span className="sr-only"><span className="progress-percentage">{percentage}</span>% Complete</span>
       </div>
     </div>

@@ -6,7 +6,7 @@ const Ops = {
     return [
       String.fromCharCode(op[0] + C.ORD_A_UPPER),
       op[1].toString(16),
-      Math.round(time).toString(36)
+      Math.round(time).toString(36),
     ].join('');
   },
 
@@ -19,20 +19,16 @@ const Ops = {
   },
 
   keyDownOperation(note) {
-    note = parseInt(note, 10);
-    return Ops.operationFromMidi([C.MIDI0_NOTE_ON, note, 254]);
+    const noteInt = parseInt(note, 10);
+    return Ops.operationFromMidi([C.MIDI0_NOTE_ON, noteInt, 254]);
   },
 
   keyUpOperation(note) {
-    note = parseInt(note, 10);
-    return Ops.operationFromMidi([C.MIDI0_NOTE_OFF, note, 0]);
+    const noteInt = parseInt(note, 10);
+    return Ops.operationFromMidi([C.MIDI0_NOTE_OFF, noteInt, 0]);
   },
 
-  operationFromMidi(data) {
-    const op = data[0];
-    const note = data[1];
-    const velocity = data[2];
-
+  operationFromMidi([op, note, velocity]) {
     if (op === C.MIDI0_PEDAL && note === C.MIDI1_PEDAL) {
       return (velocity > 0) ? [C.OP_PEDAL_DOWN, 0] : [C.OP_PEDAL_UP, 0];
 
@@ -49,9 +45,9 @@ const Ops = {
   },
 
   streamFromOperations(operations) {
-    return operations.map((el) => {
-      return Ops.encodeOp(el[0], el[1]);
-    }).join('');
+    return operations
+      .map(el => Ops.encodeOp(el[0], el[1]))
+      .join('');
   },
 
   operationsFromStream(stream) {
@@ -65,7 +61,7 @@ const Ops = {
 
     // eslint-disable-next-line
     while (token = pattern.exec(stream)) {
-      let opTime = Ops.decodeOp(token[0]);
+      const opTime = Ops.decodeOp(token[0]);
       operations.push([opTime[0], opTime[1]]);
     }
 
@@ -73,20 +69,26 @@ const Ops = {
   },
 
   encodeMoreURIComponents(str) {
-    return str.replace(/[!'()*]/g, function(c) {
-      return '%' + c.charCodeAt(0).toString(16);
-    });
+    return str.replace(
+      /[!'()*]/g,
+      c => ('%' + c.charCodeAt(0).toString(16))
+    );
   },
 
   fixedEncodeURIComponent(str) {
-    return encodeURIComponent(str).replace(/[!'()*]/g, function(c) {
-      return '%' + c.charCodeAt(0).toString(16);
-    });
+    return encodeURIComponent(str).replace(
+      /[!'()*]/g,
+      c => ('%' + c.charCodeAt(0).toString(16))
+    );
   },
 
   encodeHtml(str) {
-    return str.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/'/g, '&#39;')
-      .replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    return str
+      .replace(/&/g, '&amp;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;');
   }
 };
 

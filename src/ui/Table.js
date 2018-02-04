@@ -1,8 +1,9 @@
-import * as C from "../constants";
-import Ops from "../Ops";
 import React from 'react';
 
-const Table = props => {
+import * as C from "../constants";
+import Ops from "../Ops";
+
+export default function Table(props) {
   const htmlize = Ops.encodeHtml;
   const url = Ops.encodeMoreURIComponents(props.href);
 
@@ -32,6 +33,4 @@ const Table = props => {
       </tbody>
     </table>
   );
-};
-
-export default Table;
+}

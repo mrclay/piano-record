@@ -1,3 +1,6 @@
+import React from 'react';
+import {Redirect} from 'react-router-dom';
+
 import * as C from "../constants";
 import BigPlay from '../ui/BigPlay';
 import Keyboard from '../ui/Keyboard';
@@ -5,13 +8,12 @@ import Ops from "../Ops";
 import Paths from '../Paths';
 import Piano from "../Piano";
 import PianoRecorder from "../PianoRecorder";
-import React from 'react';
-import {Redirect} from 'react-router-dom';
 import Template from "../pages/Template";
 import Title from '../ui/Title';
 import Table from '../ui/Table';
 
 export default class SongsPage extends React.Component {
+
   constructor(props) {
     super(props);
 

@@ -1,14 +1,30 @@
+import React from 'react';
+import {Redirect} from 'react-router-dom';
+
 import * as C from "../constants";
 import BigPlay from "../ui/BigPlay";
 import Keyboard from '../ui/Keyboard';
 import Ops from "../Ops";
 import Paths from '../Paths';
 import Piano from "../Piano";
-import React from 'react';
-import {Redirect} from 'react-router-dom';
 import Template from "../pages/Template";
 import Title from "../ui/Title";
 import Table from "../ui/Table";
+
+function stateFromProps(params) {
+  const notes = params.notes ? params.notes.split(',') : [];
+  const title = params.title ? decodeURIComponent(params.title) : '';
+
+  let activeKeys = Piano.getActiveKeys();
+  notes.forEach(note => {
+    activeKeys[note] = true;
+  });
+
+  return {
+    title,
+    activeKeys,
+  };
+}
 
 export default class ChordPage extends React.Component {
 
@@ -19,24 +35,8 @@ export default class ChordPage extends React.Component {
     this.playTimeout = null;
 
     this.state = {
-      ...ChordPage.stateFromProps(props),
+      ...stateFromProps(props.match.params),
       playing: false,
-    };
-  }
-
-  static stateFromProps({match}) {
-    const {params} = match;
-    const notes = params.notes ? params.notes.split(',') : [];
-    const title = params.title ? decodeURIComponent(params.title) : '';
-
-    let activeKeys = Piano.getActiveKeys();
-    notes.forEach(note => {
-      activeKeys[note] = true;
-    });
-
-    return {
-      title,
-      activeKeys,
     };
   }
 
@@ -44,7 +44,7 @@ export default class ChordPage extends React.Component {
     if (this.props.location !== nextProps.location) {
       this.piano.stopAll();
       this.setState({
-        ...ChordPage.stateFromProps(nextProps),
+        ...stateFromProps(nextProps.match.params),
         playing: false,
       });
     }
@@ -117,7 +117,7 @@ export default class ChordPage extends React.Component {
     this.props.history[method](Paths.chordPrefix(path));
   };
 
-  reset = e => {
+  reset = () => {
     this.props.history.push(Paths.chordPrefix('/'));
   };
 
@@ -126,6 +126,7 @@ export default class ChordPage extends React.Component {
       ...this.state.activeKeys
     };
     activeKeys[note] = !activeKeys[note];
+
     this.setState(
       {activeKeys},
       this.play
