@@ -32,9 +32,16 @@ export default class SongsPage extends React.Component {
     const {params} = match;
     const stream = params.stream;
     const title = params.title ? decodeURIComponent(params.title) : '';
+    const ops = Ops.operationsFromStream(stream);
+
+    const notes = ops.filter(([midiNote, time]) => {
+      return midiNote[0] === C.OP_NOTE_DOWN;
+    }).map(([midiNote, time]) => {
+      return midiNote[1];
+    });
 
     if (recorder) {
-      recorder.setOperations(Ops.operationsFromStream(stream));
+      recorder.setOperations(ops);
     }
 
     return {
@@ -43,6 +50,7 @@ export default class SongsPage extends React.Component {
       activeKeys: Piano.getActiveKeys(),
       state: C.STOPPED,
       progress: 0,
+      notes,
     };
   }
 
@@ -107,6 +115,21 @@ export default class SongsPage extends React.Component {
     });
   };
 
+  oneKeyPlay = (e) => {
+    const { type, repeat, key } = e;
+
+    if (type === 'keydown' && !repeat) {
+      console.log(key);
+      this.setState(state => {
+        const note = state.notes.shift();
+        if (note) {
+          this.recorder.clickNote(note);
+        }
+        return { notes: state.notes };
+      });
+    }
+  };
+
   render() {
     // legacy URLs
     if (window.location.hash) {
@@ -144,6 +167,14 @@ export default class SongsPage extends React.Component {
             style={{marginLeft: '1em'}}
             >
             <i className="fa fa-circle" aria-hidden="true"/> <span>New Song</span>
+          </button>
+          <button
+            id="oneKeyPlay"
+            className="btn btn-warning"
+            onKeyDown={this.oneKeyPlay}
+            onKeyUp={this.oneKeyPlay}
+            >
+            one key play
           </button>
         </section>
         <Keyboard

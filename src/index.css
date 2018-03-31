@@ -148,7 +148,7 @@ button .progress {
     flex: 1;
 }
 
-#reset, #save, #preview, #chord-play {
+#reset, #save, #preview, #chord-play, #oneKeyPlay {
     font-size: 1.5em;
     margin-right: .3em;
 }
@@ -159,7 +159,7 @@ button .progress {
     margin-right: 20px;
 }
 
-#reset, #save, #preview, #chord-play {
+#reset, #save, #preview, #chord-play, #oneKeyPlay {
     vertical-align: baseline;
 }
 
