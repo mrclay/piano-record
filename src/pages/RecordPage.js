@@ -118,14 +118,14 @@ export default class RecordPage extends React.Component {
               onClick={this.save}
               id="save"
               disabled={this.state.waiting}
-              className="btn btn-primary">
+              className="btn btn-primary med-btn">
               <i className="fa fa-floppy-o" aria-hidden="true"/> <span>Save</span>
             </button>
             <button
               onClick={this.reset}
               id="reset"
               disabled={this.state.waiting}
-              className="btn btn-danger">
+              className="btn btn-danger med-btn">
               <i className="fa fa-circle" aria-hidden="true"/> <span>Reset</span>
             </button>
           </div>

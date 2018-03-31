@@ -148,19 +148,16 @@ button .progress {
     flex: 1;
 }
 
-#reset, #save, #preview, #chord-play {
+.med-btn {
     font-size: 1.5em;
     margin-right: .3em;
+    vertical-align: baseline;
 }
 
 #big-play {
     vertical-align: baseline;
     font-size: 3rem;
     margin-right: 20px;
-}
-
-#reset, #save, #preview, #chord-play {
-    vertical-align: baseline;
 }
 
 .nav-tabs li:first-child {

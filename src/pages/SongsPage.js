@@ -19,28 +19,45 @@ export default class SongsPage extends React.Component {
 
     this.recorder = new PianoRecorder();
     this.state = SongsPage.stateFromProps(props, this.recorder);
+
+    this.notes = SongsPage.notesFromOps(this.recorder.getOperations());
+    this.notesIndex = 0;
+    this.keydowns = {};
   }
 
   componentWillReceiveProps(nextProps) {
     if (this.props.location !== nextProps.location) {
       this.recorder.stop();
-      this.setState(SongsPage.stateFromProps(nextProps, this.recorder));
+      const newState = SongsPage.stateFromProps(nextProps, this.recorder);
+      this.notes = SongsPage.notesFromOps(this.recorder.getOperations());
+      this.notesIndex = 0;
+      this.setState(newState);
     }
+  }
+
+  static notesFromOps(ops) {
+    return ops.filter(([midiNote, time]) => {
+      return midiNote[0] === C.OP_NOTE_DOWN;
+    }).map(([midiNote, time]) => {
+      return midiNote[1];
+    });
   }
 
   static stateFromProps({match}, recorder) {
     const {params} = match;
     const stream = params.stream;
     const title = params.title ? decodeURIComponent(params.title) : '';
+    const ops = Ops.operationsFromStream(stream);
 
     if (recorder) {
-      recorder.setOperations(Ops.operationsFromStream(stream));
+      recorder.setOperations(ops);
     }
 
     return {
       stream,
       title,
       activeKeys: Piano.getActiveKeys(),
+      canResave: false,
       state: C.STOPPED,
       progress: 0,
     };
@@ -82,6 +99,12 @@ export default class SongsPage extends React.Component {
     this.setState({playing: true});
   };
 
+  resave = () => {
+    this.recorder.stop();
+    const stream = Ops.streamFromOperations(this.recorder.getOperations());
+    this.props.history.push(Paths.pianoPrefix(`/songs/${stream}`));
+  };
+
   stop = () => {
     this.recorder.stop();
     this.setState({playing: false});
@@ -107,6 +130,29 @@ export default class SongsPage extends React.Component {
     });
   };
 
+  oneKeyPlay = (e) => {
+    const { type, repeat, keyCode } = e;
+
+    if (repeat || keyCode < 65 || keyCode > 90) {
+      return;
+    }
+
+    const piano = this.recorder.getPiano();
+
+    if (type === 'keyup') {
+      const note = this.keydowns[keyCode];
+      if (typeof note === 'number') {
+        delete this.keydowns[keyCode];
+        piano.stopNote(note);
+      }
+    } else if (type === 'keydown' && this.notesIndex < this.notes.length) {
+      const note = this.notes[this.notesIndex];
+      this.keydowns[keyCode] = note;
+      piano.startNote(note);
+      this.notesIndex++;
+    }
+  };
+
   render() {
     // legacy URLs
     if (window.location.hash) {
@@ -122,39 +168,65 @@ export default class SongsPage extends React.Component {
       }
     }
 
+    const { title, progress, state, canResave, waiting, activeKeys } = this.state;
+
     return (
       <Template>
         <section>
           <BigPlay
-            state={this.state.state}
+            state={state}
             handlePlay={this.play}
             handleStop={this.stop}
-            progress={this.state.progress}
+            progress={progress}
           />
           <Title
-            title={this.state.title}
+            title={title}
             onChange={this.setTitle}
           />
-          {!this.state.title && '(click to rename)'}
+          {!title && '(click to rename)'}
           <button
             onClick={this.reset}
             id="reset"
-            disabled={this.state.waiting}
-            className="btn btn-danger"
+            disabled={waiting}
+            className="btn btn-danger med-btn"
             style={{marginLeft: '1em'}}
             >
             <i className="fa fa-circle" aria-hidden="true"/> <span>New Song</span>
           </button>
+          <button
+            id="oneKeyPlay"
+            className="btn btn-warning med-btn"
+            title="hint: use your keyboard"
+            onClick={() => {
+              this.recorder.startRecording();
+              this.notesIndex = 0;
+              this.keydowns = {};
+              this.setState({ canResave: true });
+            }}
+            onKeyDown={this.oneKeyPlay}
+            onKeyUp={this.oneKeyPlay}
+            >
+            "one key play"
+          </button>
+          {canResave && (
+            <button
+              onClick={this.resave}
+              className="btn btn-danger med-btn"
+            >
+              <i className="fa fa-circle" aria-hidden="true"/> <span>Re-save</span>
+            </button>
+          )}
         </section>
         <Keyboard
-          activeKeys={this.state.activeKeys}
+          activeKeys={activeKeys}
         />
         <section>
           <h3>This song's in danger!</h3>
-          <p>As awesome as it is, we don't store your song, so bookmark this page or copy one of these somewhere else.</p>
+          <p>As awesome as it is, we don't store your song, so bookmark this page
+            or copy one of these somewhere else.</p>
           <Table
             href={window.location.href}
-            title={this.state.title}
+            title={title}
           />
         </section>
       </Template>

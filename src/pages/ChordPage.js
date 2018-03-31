@@ -161,7 +161,7 @@ export default class ChordPage extends React.Component {
             <button
               onClick={this.save}
               id="save"
-              className="btn btn-primary"
+              className="btn btn-primary med-btn"
               style={{marginLeft: '1em'}}
               >
               <i className="fa fa-floppy-o" aria-hidden="true"/> <span>Save</span>
@@ -169,7 +169,7 @@ export default class ChordPage extends React.Component {
             <button
               onClick={this.reset}
               id="reset"
-              className="btn btn-danger">
+              className="btn btn-danger med-btn">
               <i className="fa fa-circle" aria-hidden="true"/> <span>Reset</span>
             </button>
           </div>
@@ -181,8 +181,8 @@ export default class ChordPage extends React.Component {
         {this.props.match.params.notes &&
         <section>
           <h3>This chord's in danger!</h3>
-          <p>As awesome as it is, we don't store your chord, so bookmark this page or copy one of these somewhere
-            else.</p>
+          <p>As awesome as it is, we don't store your chord, so bookmark this page or
+            copy one of these somewhere else.</p>
           <Table
             href={window.location.href}
             title={this.state.title}
