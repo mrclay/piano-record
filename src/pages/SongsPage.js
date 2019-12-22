@@ -70,6 +70,8 @@ export default class SongsPage extends React.Component {
     const piano = this.recorder.getPiano();
     piano.addEventListener('activeKeysChange', this.onActiveKeysChange);
     piano.addEventListener('reset', this.reset);
+    document.addEventListener('keydown', this.oneKeyPlay);
+    document.addEventListener('keyup', this.oneKeyPlay);
   }
 
   componentWillUnmount() {
@@ -78,6 +80,8 @@ export default class SongsPage extends React.Component {
     const piano = this.recorder.getPiano();
     piano.removeEventListener('activeKeysChange', this.onActiveKeysChange);
     piano.removeEventListener('reset', this.reset);
+    document.removeEventListener('keydown', this.oneKeyPlay);
+    document.removeEventListener('keyup', this.oneKeyPlay);
   }
 
   onRecorderProgress = progress => {
@@ -203,8 +207,6 @@ export default class SongsPage extends React.Component {
               this.keydowns = {};
               this.setState({ canResave: true });
             }}
-            onKeyDown={this.oneKeyPlay}
-            onKeyUp={this.oneKeyPlay}
             >
             "one key play"
           </button>
