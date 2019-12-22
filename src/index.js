@@ -12,6 +12,7 @@ function myAsyncComponent(load) {
 
     // lazy load the rest
     setTimeout(() => {
+      /*eslint no-unused-expressions: "off"*/
       import('./pages/SongsPage');
       import('./pages/ChordPage');
       import('./pages/RecordPage');

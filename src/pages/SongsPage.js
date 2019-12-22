@@ -221,9 +221,8 @@ export default class SongsPage extends React.Component {
           activeKeys={activeKeys}
         />
         <section>
-          <h3>This song's in danger!</h3>
-          <p>As awesome as it is, we don't store your song, so bookmark this page
-            or copy one of these somewhere else.</p>
+          <h3>This is not saved</h3>
+          <p>This "recording" exists only as a URL, so bookmark this page if you want to keep it.</p>
           <Table
             href={window.location.href}
             title={title}

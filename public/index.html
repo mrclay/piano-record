@@ -4,40 +4,14 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="theme-color" content="#000000">
-    <!--
-      manifest.json provides metadata used when your web App is added to the
-      homescreen on Android. See https://developers.google.com/web/fundamentals/engage-and-retain/web-app-manifest/
-    -->
-    <link rel="manifest" href="%PUBLIC_URL%/manifest.json">
-    <!--<link rel="shortcut icon" href="%PUBLIC_URL%/favicon.ico">-->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
     <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
-    <!--
-      Notice the use of %PUBLIC_URL% in the tags above.
-      It will be replaced with the URL of the `public` folder during the build.
-      Only files inside the `public` folder can be referenced from the HTML.
-
-      Unlike "/favicon.ico" or "favicon.ico", "%PUBLIC_URL%/favicon.ico" will
-      work correctly both with client-side routing and a non-root public URL.
-      Learn how to configure a non-root public URL by running `npm run build`.
-    -->
     <title>mrclay.org</title>
   </head>
   <body>
     <noscript>
       You need to enable JavaScript to run this app.
     </noscript>
-    <!-- pre-rendered from /piano/record page -->
-    <div id="root"><div><div><div><h1 class="h2">Simple Piano</h1><p>Wanna capture a <a href="/piano/songs/C320C3c30C3e3bC423hC454bD3c8gC448uC3b8xD4299D459cC40eaC3aedD44elD3berD3ejnC42l8D3al9C39laD40lhD39ohC40oiC38oiD42p5C3eqtD40quC37tgD38thC40tlD3eu1C42wnD40x3D3713nC3613zC3e144D4214cD3e1fuD361gaD321gf/Hello%20World">short musical idea</a> or share it with others? Tap some notes or play your MIDI keyboard (Chrome only), and click <i>Save</i>. You can share the resulting page URL or bookmark it. <a href="https://github.com/mrclay/piano-record">Source</a>.</p></div><nav class="nav nav-tabs"><li class="active"><a href="/piano/">Songs</a></li><li class=""><a href="/chord/">Chords</a></li></nav><section class="piano-2col"><div><button id="preview" disabled="" class="btn btn-default"><i class="fa fa-play" aria-hidden="true"></i> <span>Preview</span></button><button id="save" disabled="" class="btn btn-primary"><i class="fa fa-floppy-o" aria-hidden="true"></i> <span>Save</span></button><button id="reset" disabled="" class="btn btn-danger"><i class="fa fa-circle" aria-hidden="true"></i> <span>Reset</span></button></div><div><div id="status" class="ready">Ready!!!</div></div></section><div id="piano" class=""><div class="white"><a href="#" data-note="36" class=""></a><a href="#" data-note="38" class=""></a><a href="#" data-note="40" class=""></a><a href="#" data-note="41" class=""></a><a href="#" data-note="43" class=""></a><a href="#" data-note="45" class=""></a><a href="#" data-note="47" class=""></a><a href="#" data-note="48" class=""></a><a href="#" data-note="50" class=""></a><a href="#" data-note="52" class=""></a><a href="#" data-note="53" class=""></a><a href="#" data-note="55" class=""></a><a href="#" data-note="57" class=""></a><a href="#" data-note="59" class=""></a><a href="#" data-note="60" class=""></a><a href="#" data-note="62" class=""></a><a href="#" data-note="64" class=""></a><a href="#" data-note="65" class=""></a><a href="#" data-note="67" class=""></a><a href="#" data-note="69" class=""></a><a href="#" data-note="71" class=""></a><a href="#" data-note="72" class=""></a><a href="#" data-note="74" class=""></a><a href="#" data-note="76" class=""></a><a href="#" data-note="77" class=""></a><a href="#" data-note="79" class=""></a><a href="#" data-note="81" class=""></a><a href="#" data-note="83" class=""></a><a href="#" data-note="84" class=""></a><a href="#" data-note="86" class=""></a><a href="#" data-note="88" class=""></a><a href="#" data-note="89" class=""></a><a href="#" data-note="91" class=""></a><a href="#" data-note="93" class=""></a><a href="#" data-note="95" class=""></a><a href="#" data-note="96" class=""></a></div><div class="black"><a href="#" data-note="37" class="" style="left: 36px;"></a><a href="#" data-note="39" class="" style="left: 70px;"></a><a href="#" data-note="42" class="" style="left: 138px;"></a><a href="#" data-note="44" class="" style="left: 172px;"></a><a href="#" data-note="46" class="" style="left: 206px;"></a><a href="#" data-note="49" class="" style="left: 274px;"></a><a href="#" data-note="51" class="" style="left: 308px;"></a><a href="#" data-note="54" class="" style="left: 376px;"></a><a href="#" data-note="56" class="" style="left: 410px;"></a><a href="#" data-note="58" class="" style="left: 444px;"></a><a href="#" data-note="61" class="" style="left: 512px;"></a><a href="#" data-note="63" class="" style="left: 546px;"></a><a href="#" data-note="66" class="" style="left: 614px;"></a><a href="#" data-note="68" class="" style="left: 648px;"></a><a href="#" data-note="70" class="" style="left: 682px;"></a><a href="#" data-note="73" class="" style="left: 750px;"></a><a href="#" data-note="75" class="" style="left: 784px;"></a><a href="#" data-note="78" class="" style="left: 852px;"></a><a href="#" data-note="80" class="" style="left: 886px;"></a><a href="#" data-note="82" class="" style="left: 920px;"></a><a href="#" data-note="85" class="" style="left: 988px;"></a><a href="#" data-note="87" class="" style="left: 1022px;"></a><a href="#" data-note="90" class="" style="left: 1090px;"></a><a href="#" data-note="92" class="" style="left: 1124px;"></a><a href="#" data-note="94" class="" style="left: 1158px;"></a></div></div><section><hr><h3>Limitations</h3><p><strong>No velocity is captured (yet).</strong> There are a <i>lot</i> of piano samples and I'd have to pull a ton more of them in on the initial page load, or hack the velocity by playing the existing ones at different volumes, probably not sounding great. I've also considered just bailing on the piano sound and generating something pleasant with Tone.js. I'm open to suggestions.</p><p><strong>Captured timing is imperfect</strong>. Due to the reliance on setTimeout() to play back notes, timing was never going to be great, plus, more exact timing makes the URLs much bigger, so I've sacrificed some granularity. This isn't for professional work.</p><h4>Credits</h4><ul><li><a href="http://www.mrclay.org/">Steve Clay</a>: <a href="https://github.com/mrclay/piano-record">This app</a>.</li><li><a href="https://yotammann.info/">Yotam Mann</a>: <a href="https://github.com/tambien/Piano">API modeling a piano</a> using <a href="https://archive.org/details/SalamanderGrandPianoV3">Salamander samples</a>, based on <a href="https://tonejs.github.io/">Tone.js</a>.</li></ul></section></div></div></div>
-    <!--
-      This HTML file is a template.
-      If you open it directly in the browser, you will see an empty page.
-
-      You can add webfonts, meta tags, or analytics to this file.
-      The build step will place the bundled scripts into the <body> tag.
-
-      To begin the development, run `npm start` or `yarn start`.
-      To create a production bundle, use `npm run build` or `yarn build`.
-    -->
+    <div id="root"></div>
   </body>
 </html>

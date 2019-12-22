@@ -1,6 +1,10 @@
 
 export const SOURCE_URL = 'https://github.com/mrclay/piano-record';
-export const RAWGIT_URL = 'http://mrclay.org/piano/media/';
+
+export const RAWGIT_URL = process.env.NODE_ENV === 'production'
+  ? 'http://mrclay.org/piano/media/'
+  : '//localhost:3000/media/';
+
 export const RANGE = [36, 96];
 export const VELOCITIES = 1;
 export const USE_RELEASE = false;
