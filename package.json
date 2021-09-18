@@ -4,15 +4,20 @@
   "private": true,
   "homepage": "http://mrclay.org/piano/",
   "dependencies": {
-    "@testing-library/jest-dom": "^4.2.4",
-    "@testing-library/react": "^9.3.2",
-    "@testing-library/user-event": "^7.1.2",
+    "@testing-library/jest-dom": "^5.14.1",
+    "@testing-library/react": "^11.2.7",
+    "@testing-library/user-event": "^12.8.3",
+    "@tonejs/piano": "^0.2.1",
     "dom-event-target": "^1.0.0",
-    "react": "^16.12.0",
-    "react-dom": "^16.12.0",
+    "prettier": "^2.4.1",
+    "react": "^17.0.2",
+    "react-clipboard.js": "^2.0.16",
+    "react-dom": "^17.0.2",
+    "react-router": "^5.2.1",
     "react-router-dom": "^5.1.2",
-    "react-scripts": "3.3.0",
-    "tone-piano": "https://github.com/mrclay/Piano.git#f97f6c636b7595467e697fbda64f69337955fb61"
+    "react-scripts": "^4.0.3",
+    "tone": "^14.7.77",
+    "web-vitals": "^1.1.2"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -34,8 +39,5 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  },
-  "devDependencies": {
-    "riek": "^1.1.0"
   }
 }

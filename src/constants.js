@@ -1,19 +1,19 @@
+export const SOURCE_URL = "https://github.com/mrclay/piano-record";
 
-export const SOURCE_URL = 'https://github.com/mrclay/piano-record';
-
-export const RAWGIT_URL = process.env.NODE_ENV === 'production'
-  ? 'http://mrclay.org/piano/media/'
-  : '//localhost:3000/media/';
+export const SAMPLES_URL =
+  process.env.NODE_ENV === "production"
+    ? "http://mrclay.org/piano/media/"
+    : "//localhost:3000/piano/media/";
 
 export const RANGE = [36, 96];
 export const VELOCITIES = 1;
 export const USE_RELEASE = false;
 export const TIME_RESOLUTION_DIVISOR = 4;
-export const ORD_A_UPPER = 'A'.charCodeAt(0);
+export const ORD_A_UPPER = "A".charCodeAt(0);
 
-export const STOPPED = 'stopped';
-export const RECORDING = 'recording';
-export const PLAYING = 'playing';
+export const STOPPED = "stopped";
+export const RECORDING = "recording";
+export const PLAYING = "playing";
 
 export const OP_PEDAL_DOWN = 0;
 export const OP_PEDAL_UP = 1;
@@ -32,4 +32,4 @@ export const MIDI1_TUNE = 10;
 
 export const MIDI2_RELEASE_VELOCITY = 0;
 
-export const DEFAULT_TITLE = 'Untitled';
+export const DEFAULT_TITLE = "Untitled";

@@ -9,7 +9,7 @@ import Paths from '../Paths';
 import Piano from "../Piano";
 import Template from "../pages/Template";
 import Title from "../ui/Title";
-import Table from "../ui/Table";
+import Saver from "../ui/Saver";
 
 function stateFromProps(params) {
   const notes = params.notes ? params.notes.split(',') : [];
@@ -180,13 +180,13 @@ export default class ChordPage extends React.Component {
         />
         {this.props.match.params.notes &&
         <section>
-          <h3>This chord's in danger!</h3>
-          <p>As awesome as it is, we don't store your chord, so bookmark this page or
-            copy one of these somewhere else.</p>
-          <Table
-            href={window.location.href}
-            title={this.state.title}
-          />
+          <h3>This is not saved</h3>
+          <p>This chord exists only as a URL, so bookmark this page or copy it to clipboard:{' '}
+            <Saver
+              href={window.location.href}
+              title={this.state.title}
+            />
+          </p>
         </section>
         }
       </Template>

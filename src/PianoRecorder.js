@@ -10,7 +10,7 @@ let piano;
  * Fires "stop"
  */
 export default class PianoRecorder extends EventTarget {
-  constructor(spec = {}) {
+  constructor(spec = Object.create(null)) {
     super();
 
     if (!(spec.piano instanceof Piano)) {
@@ -25,7 +25,7 @@ export default class PianoRecorder extends EventTarget {
     this.progressInterval = null;
     this.firstTime = undefined;
     this.startedRecording = false;
-    this.keyTimeouts = {};
+    this.keyTimeouts = Object.create(null);
     this.state = C.STOPPED;
   }
 
@@ -140,7 +140,7 @@ export default class PianoRecorder extends EventTarget {
     Object.keys(this.keyTimeouts).forEach(note => {
       clearTimeout(this.keyTimeouts[note]);
     });
-    this.keyTimeouts = {};
+    this.keyTimeouts = Object.create(null);
 
     clearInterval(this.progressInterval);
     this.piano.stopAll();

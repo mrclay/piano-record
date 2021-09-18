@@ -1,60 +1,56 @@
-import React from 'react';
-import {RIEInput} from 'riek';
+import React, { useEffect, useRef, useState } from "react";
 
-import {DEFAULT_TITLE} from "../constants";
+import { DEFAULT_TITLE } from "../constants";
 
-export default class Title extends React.Component {
-  constructor(props) {
-    super(props);
+export default function Title({ onChange, title }) {
+  const inputRef = useRef(null);
+  const [value, setValue] = useState(title || "");
+  const [saved, setSaved] = useState(value);
+  const [isEditing, setIsEditing] = useState(false);
 
-    this.state = {
-      title: props.title,
-      widget: (
-        <RIEInput
-          value={props.title || DEFAULT_TITLE}
-          propName='title'
-          change={this.handleChange}
-          isDisabled={!props.onChange}
-        />
-      ),
-    };
-  }
-
-  componentWillReceiveProps(nextProps) {
-    if (nextProps.title === this.props.title
-      && nextProps.onChange === this.props.onChange
-    ) {
-      return;
+  useEffect(() => {
+    if (isEditing && inputRef.current) {
+      inputRef.current.focus();
+      inputRef.current.select();
     }
+  }, [isEditing]);
 
-    this.setState({
-      title: nextProps.title,
-      widget: (
-        <RIEInput
-          value={nextProps.title || DEFAULT_TITLE}
-          propName='title'
-          change={this.handleChange}
-          isDisabled={!nextProps.onChange}
+  const className = value ? "titled" : "untitled";
+  return (
+    <h2 className={`Title ${className}`}>
+      {isEditing ? (
+        <input
+          ref={inputRef}
+          type="text"
+          tabIndex={0}
+          value={value}
+          onInput={e => setValue(e.currentTarget.value)}
+          onKeyUp={e => {
+            if (e.key === "Enter") {
+              setIsEditing(false);
+              e.preventDefault();
+              onChange(value);
+            }
+            if (e.key === "Escape") {
+              setValue(saved);
+              setIsEditing(false);
+              e.preventDefault();
+            }
+            e.stopPropagation();
+          }}
+          onKeyDown={e => e.stopPropagation()}
         />
-      ),
-    });
-  }
-
-  handleChange = (title) => {
-    if (this.props.onChange) {
-      this.props.onChange(title);
-    }
-  };
-
-
-
-  render() {
-    const { widget, title } = this.state;
-    const className = title ? 'titled' : 'untitled';
-    return (
-      <h2 className={`Title ${className}`}>
-        “{widget}”
-      </h2>
-    );
-  }
+      ) : (
+        <button
+          type="button"
+          onClick={() => {
+            setSaved(value);
+            setIsEditing(true);
+          }}
+        >
+          {value || DEFAULT_TITLE}
+        </button>
+      )}
+    </h2>
+  );
 }

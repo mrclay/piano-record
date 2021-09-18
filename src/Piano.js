@@ -1,13 +1,21 @@
-import EventTarget from 'dom-event-target';
-import {Piano as TonePiano} from 'tone-piano';
+import EventTarget from "dom-event-target";
 
-import * as C from './constants';
-import Ops from './Ops';
+import { Piano as TonePiano } from "@tonejs/piano";
 
-const tonePiano = new TonePiano(C.RANGE, C.VELOCITIES, C.USE_RELEASE).toMaster();
-tonePiano.load(C.RAWGIT_URL);
+import * as C from "./constants";
+import Ops from "./Ops";
 
-let activeKeys = {};
+const tonePiano = new TonePiano({
+  minNote: C.RANGE[0],
+  maxNote: C.RANGE[1],
+  velocities: C.VELOCITIES,
+  release: C.USE_RELEASE,
+  url: C.SAMPLES_URL,
+}).toDestination();
+
+tonePiano.load();
+
+let activeKeys = Object.create(null);
 for (let note = C.RANGE[0]; note <= C.RANGE[1]; note++) {
   activeKeys[note] = false;
 }
@@ -54,7 +62,7 @@ export default class Piano extends EventTarget {
   }
 
   performOperation(op, sendOp = true) {
-    sendOp && this.send('operation', op);
+    sendOp && this.send("operation", op);
 
     switch (op[0]) {
       case C.OP_PEDAL_DOWN:
@@ -64,15 +72,15 @@ export default class Piano extends EventTarget {
         return tonePiano.pedalUp();
 
       case C.OP_NOTE_DOWN:
-        tonePiano.keyDown(op[1]);
+        tonePiano.keyDown({ midi: op[1] });
         activeKeys[op[1]] = true;
-        this.send('activeKeysChange', activeKeys);
+        this.send("activeKeysChange", activeKeys);
         return;
 
       case C.OP_NOTE_UP:
-        tonePiano.keyUp(op[1]);
+        tonePiano.keyUp({ midi: op[1] });
         activeKeys[op[1]] = false;
-        this.send('activeKeysChange', activeKeys);
+        this.send("activeKeysChange", activeKeys);
         return;
 
       default:
@@ -88,8 +96,7 @@ export default class Piano extends EventTarget {
 
     navigator.requestMIDIAccess().then(midiAccess => {
       midiAccess.inputs.forEach(input => {
-        input.addEventListener('midimessage', e => {
-
+        input.addEventListener("midimessage", e => {
           if (!this.monitorMidi) {
             return;
           }
@@ -97,7 +104,7 @@ export default class Piano extends EventTarget {
           window.logMidi && console.log(e.data);
 
           if (e.data[0] === C.MIDI0_L1) {
-            this.send('reset');
+            this.send("reset");
             return;
           }
 

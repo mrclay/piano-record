@@ -69,4 +69,4 @@ const Page = () => (
   </Router>
 );
 
-ReactDOM.render(<Page />, document.getElementById('root'));
+ReactDOM.render(<React.StrictMode><Page /></React.StrictMode>, document.getElementById('root'));

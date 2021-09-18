@@ -9,6 +9,12 @@ h2.Title {
     cursor: pointer;
     margin: 0;
 }
+h2.Title button {
+    background: inherit;
+    border: 0;
+    color: inherit;
+    padding: 0;
+}
 h2.Title.untitled, h1.Title.untitled span {
     color: #ccc;
 }
@@ -102,7 +108,7 @@ section {
 
 .progress-bar {
     transition: none;
-}​
+}
 
 #chord {
     width: 7em;

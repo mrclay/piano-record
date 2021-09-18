@@ -1,9 +1,9 @@
-import React from 'react';
+import React from "react";
 
 import * as C from "../constants";
-import Keyboard from '../ui/Keyboard';
+import Keyboard from "../ui/Keyboard";
 import Ops from "../Ops";
-import Paths from '../Paths';
+import Paths from "../Paths";
 import Piano from "../Piano";
 import PianoRecorder from "../PianoRecorder";
 import Preview from "../ui/Preview";
@@ -11,7 +11,6 @@ import Status from "../ui/Status";
 import Template from "../pages/Template";
 
 export default class RecordPage extends React.Component {
-
   constructor(props) {
     super(props);
 
@@ -27,17 +26,17 @@ export default class RecordPage extends React.Component {
   }
 
   onRecorderProgress = progress => {
-    this.setState({progress});
+    this.setState({ progress });
   };
 
   onActiveKeysChange = activeKeys => {
     this.setState({
-      activeKeys
+      activeKeys,
     });
   };
 
   onRecorderState = state => {
-    let newState = {state};
+    let newState = { state };
     if (state === C.STOPPED) {
       newState.waiting = false;
     }
@@ -47,27 +46,27 @@ export default class RecordPage extends React.Component {
   onPianoOperation = op => {
     // just to let us know the user is recording
     this.setState({
-      waiting: false
+      waiting: false,
     });
   };
 
   componentDidMount() {
-    document.title = 'Simple Piano';
-    this.recorder.addEventListener('state', this.onRecorderState);
-    this.recorder.addEventListener('progress', this.onRecorderProgress);
+    document.title = "Simple Piano";
+    this.recorder.addEventListener("state", this.onRecorderState);
+    this.recorder.addEventListener("progress", this.onRecorderProgress);
     const piano = this.recorder.getPiano();
-    piano.addEventListener('activeKeysChange', this.onActiveKeysChange);
-    piano.addEventListener('reset', this.reset);
-    piano.addEventListener('operation', this.onPianoOperation);
+    piano.addEventListener("activeKeysChange", this.onActiveKeysChange);
+    piano.addEventListener("reset", this.reset);
+    piano.addEventListener("operation", this.onPianoOperation);
   }
 
   componentWillUnmount() {
-    this.recorder.removeEventListener('state', this.onRecorderState);
-    this.recorder.removeEventListener('progress', this.onRecorderProgress);
+    this.recorder.removeEventListener("state", this.onRecorderState);
+    this.recorder.removeEventListener("progress", this.onRecorderProgress);
     const piano = this.recorder.getPiano();
-    piano.removeEventListener('activeKeysChange', this.onActiveKeysChange);
-    piano.removeEventListener('reset', this.reset);
-    piano.removeEventListener('operation', this.onPianoOperation);
+    piano.removeEventListener("activeKeysChange", this.onActiveKeysChange);
+    piano.removeEventListener("reset", this.reset);
+    piano.removeEventListener("operation", this.onPianoOperation);
   }
 
   play = () => {
@@ -91,11 +90,14 @@ export default class RecordPage extends React.Component {
   reset = () => {
     this.recorder.stop();
     this.recorder.startRecording();
-    this.setState({
-      waiting: true,
-    }, () => {
-      this.props.history.replace(Paths.pianoPrefix('/record'));
-    });
+    this.setState(
+      {
+        waiting: true,
+      },
+      () => {
+        this.props.history.replace(Paths.pianoPrefix("/record"));
+      }
+    );
   };
 
   onKeyClick = note => {
@@ -105,7 +107,7 @@ export default class RecordPage extends React.Component {
   render() {
     return (
       <Template>
-        <section className='piano-2col'>
+        <section className="piano-2col">
           <div>
             <Preview
               state={this.state.state}
@@ -118,15 +120,19 @@ export default class RecordPage extends React.Component {
               onClick={this.save}
               id="save"
               disabled={this.state.waiting}
-              className="btn btn-primary med-btn">
-              <i className="fa fa-floppy-o" aria-hidden="true"/> <span>Save</span>
+              className="btn btn-primary med-btn"
+            >
+              <i className="fa fa-floppy-o" aria-hidden="true" />{" "}
+              <span>Save</span>
             </button>
             <button
               onClick={this.reset}
               id="reset"
               disabled={this.state.waiting}
-              className="btn btn-danger med-btn">
-              <i className="fa fa-circle" aria-hidden="true"/> <span>Reset</span>
+              className="btn btn-danger med-btn"
+            >
+              <i className="fa fa-circle" aria-hidden="true" />{" "}
+              <span>Start over</span>
             </button>
           </div>
           <div>
@@ -135,7 +141,9 @@ export default class RecordPage extends React.Component {
         </section>
         <Keyboard
           activeKeys={this.state.activeKeys}
-          onKeyClick={this.state.state === C.RECORDING ? this.onKeyClick : undefined}
+          onKeyClick={
+            this.state.state === C.RECORDING ? this.onKeyClick : undefined
+          }
         />
       </Template>
     );
