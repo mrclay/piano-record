@@ -24,7 +24,7 @@ export default class SongsPage extends React.Component {
     this.keydowns = Object.create(null);
   }
 
-  componentDidUpdate(prevProps, prevState, snapshot) {
+  componentDidUpdate(prevProps) {
     if (prevProps.location !== this.props.location) {
       this.recorder.stop();
       const newState = SongsPage.stateFromProps(this.props, this.recorder);

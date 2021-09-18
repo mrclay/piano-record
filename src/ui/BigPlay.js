@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 
 import * as C from "../constants";
 import Progress from "./Progress";
@@ -15,11 +15,11 @@ export default function Play(props) {
   if (props.state === C.PLAYING) {
     return (
       <button
-          onClick={props.handleStop}
-          id="big-play"
-          className="btn btn-default"
-          disabled={props.waiting}
-        >
+        onClick={props.handleStop}
+        id="big-play"
+        className="btn btn-default"
+        disabled={props.waiting}
+      >
         {renderIcon(props.progress)}
       </button>
     );
@@ -30,8 +30,9 @@ export default function Play(props) {
       onClick={props.handlePlay}
       id="big-play"
       disabled={props.waiting}
-      className="btn btn-default">
+      className="btn btn-default"
+    >
       <i className="fa fa-play" aria-hidden="true" />
     </button>
   );
-};
+}

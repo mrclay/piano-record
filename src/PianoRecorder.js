@@ -1,7 +1,7 @@
-import EventTarget from 'dom-event-target';
+import EventTarget from "dom-event-target";
 
-import * as C from './constants';
-import Piano from './Piano';
+import * as C from "./constants";
+import Piano from "./Piano";
 
 let piano;
 
@@ -35,7 +35,7 @@ export default class PianoRecorder extends EventTarget {
   }
 
   setState(state) {
-    this.send('state', state);
+    this.send("state", state);
     this.state = state;
   }
 
@@ -63,7 +63,7 @@ export default class PianoRecorder extends EventTarget {
       return;
     }
 
-    this.recordOperation(op, (new Date()).getTime());
+    this.recordOperation(op, new Date().getTime());
   };
 
   startRecording() {
@@ -72,7 +72,7 @@ export default class PianoRecorder extends EventTarget {
     this.firstTime = undefined;
 
     if (!this.startedRecording) {
-      this.piano.addEventListener('operation', this.onPianoOperation);
+      this.piano.addEventListener("operation", this.onPianoOperation);
       this.startedRecording = true;
     }
 
@@ -94,7 +94,7 @@ export default class PianoRecorder extends EventTarget {
       this.firstTime = timeInMs;
     }
 
-    this.operations.push([op, (timeInMs - this.firstTime)]);
+    this.operations.push([op, timeInMs - this.firstTime]);
   }
 
   play() {
@@ -103,12 +103,15 @@ export default class PianoRecorder extends EventTarget {
       return false;
     }
 
-    const lastTime = this.operations[this.operations.length - 1][1] * C.TIME_RESOLUTION_DIVISOR;
-    const startTime = (new Date()).getTime();
+    const lastTime =
+      this.operations[this.operations.length - 1][1] *
+      C.TIME_RESOLUTION_DIVISOR;
+
+    const startTime = new Date().getTime();
     let numPerformed = 0;
 
     this.progressInterval = setInterval(() => {
-      const now = (new Date()).getTime();
+      const now = new Date().getTime();
       this.send("progress", (now - startTime) / lastTime);
     }, this.progressPeriod);
 
@@ -116,14 +119,12 @@ export default class PianoRecorder extends EventTarget {
       // relying on the timer is awful, but tone-piano's "time" arguments just don't work.
       this.playAllIntervals.push(
         setTimeout(() => {
-            this.piano.performOperation(el[0], false);
-            numPerformed++;
-            if (numPerformed === numOperations) {
-              this.stop();
-            }
-          },
-          el[1] * C.TIME_RESOLUTION_DIVISOR
-        )
+          this.piano.performOperation(el[0], false);
+          numPerformed++;
+          if (numPerformed === numOperations) {
+            this.stop();
+          }
+        }, el[1] * C.TIME_RESOLUTION_DIVISOR)
       );
     });
 
@@ -145,7 +146,7 @@ export default class PianoRecorder extends EventTarget {
     clearInterval(this.progressInterval);
     this.piano.stopAll();
     this.setState(C.STOPPED);
-    this.send('stop');
+    this.send("stop");
     this.send("progress", 0);
   }
 }

@@ -1,8 +1,8 @@
-import React from 'react';
+import React from "react";
 
 export default function Progress(props) {
   let style = {
-    width: (100 * props.ratio) + '%'
+    width: 100 * props.ratio + "%",
   };
   let percentage = Math.round(100 * props.ratio);
 
@@ -17,8 +17,10 @@ export default function Progress(props) {
         aria-valuemax="100"
         style={style}
       >
-        <span className="sr-only"><span className="progress-percentage">{percentage}</span>% Complete</span>
+        <span className="sr-only">
+          <span className="progress-percentage">{percentage}</span>% Complete
+        </span>
       </div>
     </div>
   );
-};
+}

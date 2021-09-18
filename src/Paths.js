@@ -1,18 +1,17 @@
-
 const Paths = {
-  home: 'http://mrclay.org',
+  home: "http://mrclay.org",
 
-  pianoPath: '/piano/',
+  pianoPath: "/piano/",
 
-  chordPath: '/chord/',
+  chordPath: "/chord/",
 
-  pianoPrefix(path = '') {
-    path = path.replace(/^\//, '');
+  pianoPrefix(path = "") {
+    path = path.replace(/^\//, "");
     return Paths.pianoPath + path;
   },
 
-  chordPrefix(path = '') {
-    path = path.replace(/^\//, '');
+  chordPrefix(path = "") {
+    path = path.replace(/^\//, "");
     return Paths.chordPath + path;
   },
 };

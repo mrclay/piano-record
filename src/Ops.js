@@ -1,13 +1,12 @@
-import * as C from './constants';
+import * as C from "./constants";
 
 const Ops = {
-
   encodeOp(op, time) {
     return [
       String.fromCharCode(op[0] + C.ORD_A_UPPER),
       op[1].toString(16),
       Math.round(time).toString(36),
-    ].join('');
+    ].join("");
   },
 
   decodeOp(token) {
@@ -30,13 +29,14 @@ const Ops = {
 
   operationFromMidi([op, note, velocity]) {
     if (op === C.MIDI0_PEDAL && note === C.MIDI1_PEDAL) {
-      return (velocity > 0) ? [C.OP_PEDAL_DOWN, 0] : [C.OP_PEDAL_UP, 0];
-
-    } else if (op === C.MIDI0_NOTE_OFF || velocity === C.MIDI2_RELEASE_VELOCITY) {
+      return velocity > 0 ? [C.OP_PEDAL_DOWN, 0] : [C.OP_PEDAL_UP, 0];
+    } else if (
+      op === C.MIDI0_NOTE_OFF ||
+      velocity === C.MIDI2_RELEASE_VELOCITY
+    ) {
       if (note >= C.RANGE[0] && note <= C.RANGE[1]) {
         return [C.OP_NOTE_UP, note];
       }
-
     } else if (op === C.MIDI0_NOTE_ON) {
       if (note >= C.RANGE[0] && note <= C.RANGE[1]) {
         return [C.OP_NOTE_DOWN, note];
@@ -45,9 +45,7 @@ const Ops = {
   },
 
   streamFromOperations(operations) {
-    return operations
-      .map(el => Ops.encodeOp(el[0], el[1]))
-      .join('');
+    return operations.map(el => Ops.encodeOp(el[0], el[1])).join("");
   },
 
   operationsFromStream(stream) {
@@ -60,7 +58,7 @@ const Ops = {
     let operations = [];
 
     // eslint-disable-next-line
-    while (token = pattern.exec(stream)) {
+    while ((token = pattern.exec(stream))) {
       const opTime = Ops.decodeOp(token[0]);
       operations.push([opTime[0], opTime[1]]);
     }
@@ -69,27 +67,24 @@ const Ops = {
   },
 
   encodeMoreURIComponents(str) {
-    return str.replace(
-      /[!'()*]/g,
-      c => ('%' + c.charCodeAt(0).toString(16))
-    );
+    return str.replace(/[!'()*]/g, c => "%" + c.charCodeAt(0).toString(16));
   },
 
   fixedEncodeURIComponent(str) {
     return encodeURIComponent(str).replace(
       /[!'()*]/g,
-      c => ('%' + c.charCodeAt(0).toString(16))
+      c => "%" + c.charCodeAt(0).toString(16)
     );
   },
 
   encodeHtml(str) {
     return str
-      .replace(/&/g, '&amp;')
-      .replace(/"/g, '&quot;')
-      .replace(/'/g, '&#39;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;');
-  }
+      .replace(/&/g, "&amp;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#39;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;");
+  },
 };
 
 export default Ops;

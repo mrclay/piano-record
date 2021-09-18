@@ -6,7 +6,7 @@ export default function asyncComponent(importComponent) {
       super(props);
 
       this.state = {
-        component: null
+        component: null,
       };
     }
 
@@ -14,7 +14,7 @@ export default function asyncComponent(importComponent) {
       const { default: component } = await importComponent();
 
       this.setState({
-        component: component
+        component: component,
       });
     }
 

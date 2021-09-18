@@ -1,10 +1,15 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import {BrowserRouter as Router, Route, Switch, Redirect} from 'react-router-dom';
+import React from "react";
+import ReactDOM from "react-dom";
+import {
+  BrowserRouter as Router,
+  Route,
+  Switch,
+  Redirect,
+} from "react-router-dom";
 
-import './index.css';
-import Paths from './Paths';
-import asyncComponent from './AsyncComponent';
+import "./index.css";
+import Paths from "./Paths";
+import asyncComponent from "./AsyncComponent";
 
 function myAsyncComponent(load) {
   return asyncComponent(() => {
@@ -13,55 +18,43 @@ function myAsyncComponent(load) {
     // lazy load the rest
     setTimeout(() => {
       /*eslint no-unused-expressions: "off"*/
-      import('./pages/SongsPage');
-      import('./pages/ChordPage');
-      import('./pages/RecordPage');
+      import("./pages/SongsPage");
+      import("./pages/ChordPage");
+      import("./pages/RecordPage");
     }, 1500);
 
     return component;
   });
 }
 
-const AsyncSongs = myAsyncComponent(() => import('./pages/SongsPage'));
-const AsyncChord = myAsyncComponent(() => import('./pages/ChordPage'));
-const AsyncRecord = myAsyncComponent(() => import('./pages/RecordPage'));
+const AsyncSongs = myAsyncComponent(() => import("./pages/SongsPage"));
+const AsyncChord = myAsyncComponent(() => import("./pages/ChordPage"));
+const AsyncRecord = myAsyncComponent(() => import("./pages/RecordPage"));
 
 const Page = () => (
   <Router>
     <div>
       <Switch>
         <Route
-          path={Paths.pianoPrefix('/songs/:stream/:title')}
+          path={Paths.pianoPrefix("/songs/:stream/:title")}
           component={AsyncSongs}
         />
         <Route
-          path={Paths.pianoPrefix('/songs/:stream')}
+          path={Paths.pianoPrefix("/songs/:stream")}
           component={AsyncSongs}
         />
+        <Route path={Paths.pianoPrefix("/record")} component={AsyncRecord} />
+        <Route path={Paths.pianoPrefix("/")} component={AsyncSongs} />
         <Route
-          path={Paths.pianoPrefix('/record')}
-          component={AsyncRecord}
-        />
-        <Route
-          path={Paths.pianoPrefix('/')}
-          component={AsyncSongs}
-        />
-        <Route
-          path={Paths.chordPrefix('/:notes/:title')}
+          path={Paths.chordPrefix("/:notes/:title")}
           component={AsyncChord}
         />
+        <Route path={Paths.chordPrefix("/:notes")} component={AsyncChord} />
+        <Route path={Paths.chordPrefix("/")} component={AsyncChord} />
         <Route
-          path={Paths.chordPrefix('/:notes')}
-          component={AsyncChord}
-        />
-        <Route
-          path={Paths.chordPrefix('/')}
-          component={AsyncChord}
-        />
-        <Route
-          path='/'
+          path="/"
           render={() => {
-            return <Redirect to={Paths.pianoPrefix('/')} />
+            return <Redirect to={Paths.pianoPrefix("/")} />;
           }}
         />
       </Switch>
@@ -69,4 +62,9 @@ const Page = () => (
   </Router>
 );
 
-ReactDOM.render(<React.StrictMode><Page /></React.StrictMode>, document.getElementById('root'));
+ReactDOM.render(
+  <React.StrictMode>
+    <Page />
+  </React.StrictMode>,
+  document.getElementById("root")
+);

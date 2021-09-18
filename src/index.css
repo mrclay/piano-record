@@ -1,171 +1,172 @@
 body {
-    width: 1246px;
-    margin: 20px auto;
+  width: 1246px;
+  margin: 20px auto;
 }
 
 h2.Title {
-    font-style: italic;
-    display: inline-block;
-    cursor: pointer;
-    margin: 0;
+  font-style: italic;
+  display: inline-block;
+  cursor: pointer;
+  margin: 0;
 }
 h2.Title button {
-    background: inherit;
-    border: 0;
-    color: inherit;
-    padding: 0;
+  background: inherit;
+  border: 0;
+  color: inherit;
+  padding: 0;
 }
-h2.Title.untitled, h1.Title.untitled span {
-    color: #ccc;
+h2.Title.untitled,
+h1.Title.untitled span {
+  color: #ccc;
 }
 h2.Title input {
-    color: #000;
+  color: #000;
 }
 
 #piano {
-    width: 1246px;
-    margin: 0 auto;
-    position: relative;
-    background: #444;
+  width: 1246px;
+  margin: 0 auto;
+  position: relative;
+  background: #444;
 }
 .white {
-    z-index: 1;
-    padding-left: 10px;
-    border: 1px solid #ccc;
-    overflow: auto;
+  z-index: 1;
+  padding-left: 10px;
+  border: 1px solid #ccc;
+  overflow: auto;
 }
 .black {
-    position: absolute;
-    top: 0;
-    left: 0;
+  position: absolute;
+  top: 0;
+  left: 0;
 }
 #piano [data-note] {
-    text-align: center;
-    text-decoration: none;
+  text-align: center;
+  text-decoration: none;
 }
 .white span {
-    float: left;
-    margin-left: 2px;
-    width: 32px;
-    height: 160px;
-    -moz-border-radius: 2px 2px 5px 5px;
-    -webkit-border-radius: 2px 2px 5px 5px;
-    border-radius: 2px 2px 5px 5px;
-    background: #fff;
-    color: #000;
-    font-weight: 700;
-    padding-top: 120px;
-    cursor: pointer;
+  float: left;
+  margin-left: 2px;
+  width: 32px;
+  height: 160px;
+  -moz-border-radius: 2px 2px 5px 5px;
+  -webkit-border-radius: 2px 2px 5px 5px;
+  border-radius: 2px 2px 5px 5px;
+  background: #fff;
+  color: #000;
+  font-weight: 700;
+  padding-top: 120px;
+  cursor: pointer;
 }
 .black span {
-    position: absolute;
-    top: 0;
-    width: 16px;
-    height: 100px;
-    border: 2px solid #000;
-    -moz-border-radius: 0 0 5px 5px;
-    -webkit-border-radius: 0 0 5px 5px;
-    border-radius: 0 0 5px 5px;
-    background: #000;
-    color: #fff;
-    padding-top: 58px;
-    font-size: 10px;
-    cursor: pointer;
+  position: absolute;
+  top: 0;
+  width: 16px;
+  height: 100px;
+  border: 2px solid #000;
+  -moz-border-radius: 0 0 5px 5px;
+  -webkit-border-radius: 0 0 5px 5px;
+  border-radius: 0 0 5px 5px;
+  background: #000;
+  color: #fff;
+  padding-top: 58px;
+  font-size: 10px;
+  cursor: pointer;
 }
 .white > span.active,
 .black > span.active {
-    background: #74c674;
+  background: #74c674;
 }
 #piano.noinput span {
-    cursor: default;
+  cursor: default;
 }
 
 section {
-    margin: 20px auto;
+  margin: 20px auto;
 }
 
 #status {
-    text-align: right;
-    font: 30px monospace;
-    font-style: italic;
+  text-align: right;
+  font: 30px monospace;
+  font-style: italic;
 }
 
 #status.recording i {
-    animation: record-pulse 1s infinite;
+  animation: record-pulse 1s infinite;
 }
 
 @keyframes record-pulse {
-    0% {
-        color: #fff;
-    }
-    50% {
-        color: #900;
-    }
-    100% {
-        color: #fff;
-    }
+  0% {
+    color: #fff;
+  }
+  50% {
+    color: #900;
+  }
+  100% {
+    color: #fff;
+  }
 }
 
 .progress-bar {
-    transition: none;
+  transition: none;
 }
 
 #chord {
-    width: 7em;
-    font-size: inherit;
+  width: 7em;
+  font-size: inherit;
 }
 
 .urls td input {
-    width: 100%;
-    border: 0;
-    background: transparent;
+  width: 100%;
+  border: 0;
+  background: transparent;
 }
 
 button .progress {
-    display: inline-block;
-    vertical-align: text-bottom;
-    margin: 0;
-    border-radius: 0;
-    box-shadow: none;
-    position: relative;
-    top: -1px;
+  display: inline-block;
+  vertical-align: text-bottom;
+  margin: 0;
+  border-radius: 0;
+  box-shadow: none;
+  position: relative;
+  top: -1px;
 }
 
 #preview .progress {
-    width: 3.45em;
-    height: 1em;
+  width: 3.45em;
+  height: 1em;
 }
 
 #big-play .progress {
-    width: .8em;
-    height: 1em;
+  width: 0.8em;
+  height: 1em;
 }
 
 .piano-2col {
-    display: flex;
-    align-items: flex-end;
-    min-height: 4.5em;
-    margin-top: 10px;
+  display: flex;
+  align-items: flex-end;
+  min-height: 4.5em;
+  margin-top: 10px;
 }
 .piano-2col > div {
-    flex: 3;
+  flex: 3;
 }
 .piano-2col > div + div {
-    flex: 1;
+  flex: 1;
 }
 
 .med-btn {
-    font-size: 1.5em;
-    margin-right: .3em;
-    vertical-align: baseline;
+  font-size: 1.5em;
+  margin-right: 0.3em;
+  vertical-align: baseline;
 }
 
 #big-play {
-    vertical-align: baseline;
-    font-size: 3rem;
-    margin-right: 20px;
+  vertical-align: baseline;
+  font-size: 3rem;
+  margin-right: 20px;
 }
 
 .nav-tabs li:first-child {
-    margin-left: 15px;
+  margin-left: 15px;
 }

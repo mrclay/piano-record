@@ -1,19 +1,19 @@
-import React from 'react';
-import {Redirect} from 'react-router-dom';
+import React from "react";
+import { Redirect } from "react-router-dom";
 
 import * as C from "../constants";
 import BigPlay from "../ui/BigPlay";
-import Keyboard from '../ui/Keyboard';
+import Keyboard from "../ui/Keyboard";
 import Ops from "../Ops";
-import Paths from '../Paths';
+import Paths from "../Paths";
 import Piano from "../Piano";
 import Template from "../pages/Template";
 import Title from "../ui/Title";
 import Saver from "../ui/Saver";
 
 function stateFromProps(params) {
-  const notes = params.notes ? params.notes.split(',') : [];
-  const title = params.title ? decodeURIComponent(params.title) : '';
+  const notes = params.notes ? params.notes.split(",") : [];
+  const title = params.title ? decodeURIComponent(params.title) : "";
 
   let activeKeys = Piano.getActiveKeys();
   notes.forEach(note => {
@@ -27,7 +27,6 @@ function stateFromProps(params) {
 }
 
 export default class ChordPage extends React.Component {
-
   constructor(props) {
     super(props);
 
@@ -51,22 +50,25 @@ export default class ChordPage extends React.Component {
   }
 
   componentDidMount() {
-    document.title = 'Simple Chord';
-    this.piano.addEventListener('reset', this.reset);
+    document.title = "Simple Chord";
+    this.piano.addEventListener("reset", this.reset);
   }
 
   componentWillUnmount() {
-    this.piano.removeEventListener('reset', this.reset);
+    this.piano.removeEventListener("reset", this.reset);
   }
 
   setTitle = props => {
     const title = props.title.trim();
 
-    this.setState({
-      title
-    }, () => {
-      this.save('setTitle');
-    });
+    this.setState(
+      {
+        title,
+      },
+      () => {
+        this.save("setTitle");
+      }
+    );
   };
 
   play = () => {
@@ -96,7 +98,7 @@ export default class ChordPage extends React.Component {
     });
   };
 
-  save = (e) => {
+  save = e => {
     let notes = [];
     Object.keys(this.state.activeKeys).forEach(key => {
       if (this.state.activeKeys[key]) {
@@ -108,29 +110,26 @@ export default class ChordPage extends React.Component {
       return;
     }
 
-    let path = notes.join(',');
+    let path = notes.join(",");
     if (this.state.title) {
-      path += '/' + Ops.fixedEncodeURIComponent(this.state.title);
+      path += "/" + Ops.fixedEncodeURIComponent(this.state.title);
     }
 
-    const method = (e === 'setTitle') ? 'replace' : 'push';
+    const method = e === "setTitle" ? "replace" : "push";
     this.props.history[method](Paths.chordPrefix(path));
   };
 
   reset = () => {
-    this.props.history.push(Paths.chordPrefix('/'));
+    this.props.history.push(Paths.chordPrefix("/"));
   };
 
   onKeyClick = note => {
     let activeKeys = {
-      ...this.state.activeKeys
+      ...this.state.activeKeys,
     };
     activeKeys[note] = !activeKeys[note];
 
-    this.setState(
-      {activeKeys},
-      this.play
-    );
+    this.setState({ activeKeys }, this.play);
   };
 
   render() {
@@ -145,7 +144,7 @@ export default class ChordPage extends React.Component {
     }
 
     return (
-      <Template app='chord'>
+      <Template app="chord">
         <section>
           <div>
             <BigPlay
@@ -153,24 +152,24 @@ export default class ChordPage extends React.Component {
               handlePlay={this.play}
               handleStop={this.stop}
             />
-            <Title
-              title={this.state.title}
-              onChange={this.setTitle}
-            />
-            {!this.state.title && '(click to rename)'}
+            <Title title={this.state.title} onChange={this.setTitle} />
+            {!this.state.title && "(click to rename)"}
             <button
               onClick={this.save}
               id="save"
               className="btn btn-primary med-btn"
-              style={{marginLeft: '1em'}}
-              >
-              <i className="fa fa-floppy-o" aria-hidden="true"/> <span>Save</span>
+              style={{ marginLeft: "1em" }}
+            >
+              <i className="fa fa-floppy-o" aria-hidden="true" />{" "}
+              <span>Save</span>
             </button>
             <button
               onClick={this.reset}
               id="reset"
-              className="btn btn-danger med-btn">
-              <i className="fa fa-circle" aria-hidden="true"/> <span>Reset</span>
+              className="btn btn-danger med-btn"
+            >
+              <i className="fa fa-circle" aria-hidden="true" />{" "}
+              <span>Reset</span>
             </button>
           </div>
         </section>
@@ -178,17 +177,16 @@ export default class ChordPage extends React.Component {
           activeKeys={this.state.activeKeys}
           onKeyClick={this.onKeyClick}
         />
-        {this.props.match.params.notes &&
-        <section>
-          <h3>This is not saved</h3>
-          <p>This chord exists only as a URL, so bookmark this page or copy it to clipboard:{' '}
-            <Saver
-              href={window.location.href}
-              title={this.state.title}
-            />
-          </p>
-        </section>
-        }
+        {this.props.match.params.notes && (
+          <section>
+            <h3>This is not saved</h3>
+            <p>
+              This chord exists only as a URL, so bookmark this page or copy it
+              to clipboard:{" "}
+              <Saver href={window.location.href} title={this.state.title} />
+            </p>
+          </section>
+        )}
       </Template>
     );
   }

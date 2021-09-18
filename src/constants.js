@@ -1,9 +1,10 @@
 export const SOURCE_URL = "https://github.com/mrclay/piano-record";
 
-export const SAMPLES_URL =
-  process.env.NODE_ENV === "production"
-    ? "http://mrclay.org/piano/media/"
-    : "//localhost:3000/piano/media/";
+let samplesUrl = "http://mrclay.org/piano/media/";
+if (process.env.NODE_ENV !== "production") {
+  samplesUrl = "//localhost:3000/piano/media/";
+}
+export const SAMPLES_URL = samplesUrl;
 
 export const RANGE = [36, 96];
 export const VELOCITIES = 1;
