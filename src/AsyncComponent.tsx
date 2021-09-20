@@ -1,16 +1,16 @@
 import React, { Component, ComponentType } from "react";
 
-export type Importer<T> = () => Promise<{
-  default: T;
+export type Importer<P> = () => Promise<{
+  default: ComponentType<P>;
 }>;
 
-interface AsyncComponentState<T> {
-  component: T | null;
+interface AsyncComponentState<P> {
+  component: ComponentType<P> | null;
 }
 
-export default function asyncComponent<T>(importComponent: Importer<T>) {
-  class AsyncComponent extends Component<{}, AsyncComponentState<T>> {
-    constructor(props: {}) {
+export default function asyncComponent<P extends object>(importComponent: Importer<P>) {
+  class AsyncComponent extends Component<P, AsyncComponentState<P>> {
+    constructor(props: P) {
       super(props);
 
       this.state = {
@@ -25,7 +25,7 @@ export default function asyncComponent<T>(importComponent: Importer<T>) {
     }
 
     render() {
-      const C = this.state.component as unknown as ComponentType;
+      const C = this.state.component as unknown as ComponentType<P>;
 
       return C ? <C {...this.props} /> : null;
     }

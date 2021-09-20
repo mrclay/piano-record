@@ -6,11 +6,15 @@ import BigPlay from "../ui/BigPlay";
 import Keyboard from "../ui/Keyboard";
 import Ops, { TimedOp } from "../Ops";
 import Paths from "../Paths";
-import Piano, { ActiveKeys, PianoActiveKeysListener } from "../Piano";
-import PianoRecorder, {
+import Piano, {
+  ActiveKeys,
+  PianoActiveKeysListener,
+  PianoResetListener,
+} from "../Piano";
+import Recorder, {
   RecorderProgressListener,
   RecorderStateListener,
-} from "../PianoRecorder";
+} from "../Recorder";
 import Template from "./Template";
 import Title from "../ui/Title";
 import Saver from "../ui/Saver";
@@ -37,29 +41,19 @@ export default class SongsPage extends React.Component<
   SongsPageProps,
   SongsPageState
 > {
-  keydowns: Record<string, number>;
+  notesByKey: Record<string, number>;
   notes: number[];
   notesIndex: number;
-  recorder: PianoRecorder;
+  recorder: Recorder;
 
   constructor(props: SongsPageProps) {
     super(props);
 
-    this.recorder = new PianoRecorder();
+    this.recorder = new Recorder();
     this.state = SongsPage.stateFromProps(props, this.recorder);
     this.notes = SongsPage.notesFromOps(this.recorder.getOperations());
     this.notesIndex = 0;
-    this.keydowns = Object.create(null);
-  }
-
-  componentDidUpdate(prevProps: SongsPageProps) {
-    if (prevProps.location !== this.props.location) {
-      this.recorder.stop();
-      const newState = SongsPage.stateFromProps(this.props, this.recorder);
-      this.notes = SongsPage.notesFromOps(this.recorder.getOperations());
-      this.notesIndex = 0;
-      this.setState(newState);
-    }
+    this.notesByKey = Object.create(null);
   }
 
   static notesFromOps(ops: TimedOp[]) {
@@ -74,7 +68,7 @@ export default class SongsPage extends React.Component<
 
   static stateFromProps(
     { match }: SongsPageProps,
-    recorder: PianoRecorder
+    recorder: Recorder
   ): SongsPageState {
     const { params } = match;
     const stream = params.stream || "";
@@ -123,9 +117,7 @@ export default class SongsPage extends React.Component<
   };
 
   onActiveKeysChange: PianoActiveKeysListener = activeKeys => {
-    this.setState({
-      activeKeys,
-    });
+    this.setState({ activeKeys });
   };
 
   onRecorderState: RecorderStateListener = state => {
@@ -148,7 +140,7 @@ export default class SongsPage extends React.Component<
     this.setState({ playing: false });
   };
 
-  reset = () => {
+  reset: PianoResetListener = () => {
     this.recorder.stop();
     this.setState({ playing: false }, () => {
       this.props.history.push(Paths.pianoPrefix("/record"));
@@ -176,16 +168,16 @@ export default class SongsPage extends React.Component<
     const piano = this.recorder.getPiano();
 
     if (type === "keyup") {
-      const note = this.keydowns[keyCode];
+      const note = this.notesByKey[keyCode];
       if (typeof note === "number") {
-        delete this.keydowns[keyCode];
+        delete this.notesByKey[keyCode];
         piano.stopNote(note);
       }
     } else if (type === "keydown") {
       // When holding multiple keys, linux occasionally fires a 2nd keydown
       // event (with repeat === false) just before triggering keyup, so just
       // ignore keydown when we "know" the key is already down.
-      if (typeof this.keydowns[keyCode] !== "undefined") {
+      if (typeof this.notesByKey[keyCode] !== "undefined") {
         return;
       }
 
@@ -195,7 +187,7 @@ export default class SongsPage extends React.Component<
       }
 
       const note = this.notes[this.notesIndex];
-      this.keydowns[keyCode] = note;
+      this.notesByKey[keyCode] = note;
       piano.startNote(note);
       this.notesIndex++;
     }
@@ -248,7 +240,7 @@ export default class SongsPage extends React.Component<
             onClick={() => {
               this.recorder.startRecording();
               this.notesIndex = 0;
-              this.keydowns = Object.create(null);
+              this.notesByKey = Object.create(null);
               this.setState({ canResave: true });
             }}
           >

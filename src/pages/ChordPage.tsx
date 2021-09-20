@@ -52,20 +52,7 @@ export default class ChordPage extends React.Component<
     this.piano = new Piano();
     this.playTimeout = null;
 
-    this.state = {
-      ...stateFromProps(props.match.params),
-      playing: false,
-    };
-  }
-
-  componentWillReceiveProps(nextProps: ChordPageProps) {
-    if (this.props.location !== nextProps.location) {
-      this.piano.stopAll();
-      this.setState({
-        ...stateFromProps(nextProps.match.params),
-        playing: false,
-      });
-    }
+    this.state = stateFromProps(props.match.params);
   }
 
   componentDidMount() {
@@ -105,9 +92,7 @@ export default class ChordPage extends React.Component<
       this.playTimeout = null;
     }
     this.piano.stopAll();
-    this.setState({
-      playing: false,
-    });
+    this.setState({ playing: false });
   };
 
   save = (e: MouseEvent<HTMLButtonElement> | string) => {
@@ -134,6 +119,8 @@ export default class ChordPage extends React.Component<
   };
 
   reset = () => {
+    this.stop();
+    this.setState(stateFromProps(this.props.match.params));
     this.props.history.push(Paths.chordPrefix("/"));
   };
 
@@ -191,7 +178,11 @@ export default class ChordPage extends React.Component<
             </button>
           </div>
         </section>
-        <Keyboard activeKeys={activeKeys} onKeyClick={this.onKeyClick} />
+        <Keyboard
+          key={this.props.location.pathname}
+          activeKeys={activeKeys}
+          onKeyClick={this.onKeyClick}
+        />
         {this.props.match.params.notes && (
           <section>
             <h3>This is not saved</h3>

@@ -5,8 +5,17 @@ import * as C from "../constants";
 import Keyboard from "../ui/Keyboard";
 import Ops from "../Ops";
 import Paths from "../Paths";
-import Piano, { ActiveKeys } from "../Piano";
-import PianoRecorder, { RecorderProgressListener } from "../PianoRecorder";
+import Piano, {
+  ActiveKeys,
+  PianoActiveKeysListener,
+  PianoEvents,
+  PianoOperationListener,
+  PianoResetListener,
+} from "../Piano";
+import Recorder, {
+  RecorderProgressListener,
+  RecorderStateListener,
+} from "../Recorder";
 import Preview from "../ui/Preview";
 import Status from "../ui/Status";
 import Template from "./Template";
@@ -22,12 +31,12 @@ export default class RecordPage extends React.Component<
   RouterProps,
   RecordPageState
 > {
-  recorder: PianoRecorder;
+  recorder: Recorder;
 
   constructor(props: RouterProps) {
     super(props);
 
-    this.recorder = new PianoRecorder();
+    this.recorder = new Recorder();
     this.recorder.startRecording();
 
     this.state = {
@@ -42,20 +51,20 @@ export default class RecordPage extends React.Component<
     this.setState({ progress });
   };
 
-  onActiveKeysChange = (activeKeys: ActiveKeys) => {
+  onActiveKeysChange: PianoActiveKeysListener = activeKeys => {
     this.setState({
       activeKeys,
     });
   };
 
-  onRecorderState = (state: string) => {
+  onRecorderState: RecorderStateListener = state => {
     this.setState(oldState => ({
       ...oldState,
       ...(state === C.STOPPED ? { waiting: false } : undefined),
     }));
   };
 
-  onPianoOperation = () => {
+  onPianoOperation: PianoOperationListener = () => {
     // just to let us know the user is recording
     this.setState({
       waiting: false,
@@ -67,18 +76,24 @@ export default class RecordPage extends React.Component<
     this.recorder.addEventListener("state", this.onRecorderState);
     this.recorder.addEventListener("progress", this.onRecorderProgress);
     const piano = this.recorder.getPiano();
-    piano.addEventListener("activeKeysChange", this.onActiveKeysChange);
-    piano.addEventListener("reset", this.reset);
-    piano.addEventListener("operation", this.onPianoOperation);
+    piano.addEventListener(
+      PianoEvents.activeKeysChange,
+      this.onActiveKeysChange
+    );
+    piano.addEventListener(PianoEvents.reset, this.reset);
+    piano.addEventListener(PianoEvents.operation, this.onPianoOperation);
   }
 
   componentWillUnmount() {
     this.recorder.removeEventListener("state", this.onRecorderState);
     this.recorder.removeEventListener("progress", this.onRecorderProgress);
     const piano = this.recorder.getPiano();
-    piano.removeEventListener("activeKeysChange", this.onActiveKeysChange);
-    piano.removeEventListener("reset", this.reset);
-    piano.removeEventListener("operation", this.onPianoOperation);
+    piano.removeEventListener(
+      PianoEvents.activeKeysChange,
+      this.onActiveKeysChange
+    );
+    piano.removeEventListener(PianoEvents.reset, this.reset);
+    piano.removeEventListener(PianoEvents.operation, this.onPianoOperation);
   }
 
   play = () => {
@@ -99,7 +114,7 @@ export default class RecordPage extends React.Component<
     this.props.history.push(Paths.pianoPrefix(`/songs/${stream}`));
   };
 
-  reset = () => {
+  reset: PianoResetListener = () => {
     this.recorder.stop();
     this.recorder.startRecording();
     this.setState(

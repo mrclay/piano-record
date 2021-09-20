@@ -44,7 +44,7 @@ export const DEFAULT_TITLE = "Untitled";
  *  | applause  | record scratch
  *
  * 2. (Playback)
- *  [Replay jam]  [Share]  [Fix the timing]
+ *  [Replay jam]  [Fix the timing]  [Share]
  *
  * 3. Press letter keys to replay notes in order
  *  [Nailed it]  [Try again]  [Start over]

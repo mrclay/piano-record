@@ -1,33 +1,32 @@
-import React from "react";
+import React, { ComponentType } from "react";
 import {
   BrowserRouter as Router,
   Route,
   Switch,
   Redirect,
+  RouteComponentProps,
 } from "react-router-dom";
 
 import Paths from "./Paths";
-import asyncComponent, { Importer } from "./AsyncComponent";
+import asyncComponent from "./AsyncComponent";
 
-function myAsyncComponent<T>(load: Importer<T>) {
-  return asyncComponent(() => {
-    const component = load();
+setTimeout(() => {
+  /*eslint no-unused-expressions: "off"*/
+  import("./pages/SongsPage");
+  import("./pages/ChordPage");
+  import("./pages/RecordPage");
+}, 1500);
 
-    // lazy load the rest
-    setTimeout(() => {
-      /*eslint no-unused-expressions: "off"*/
-      import("./pages/SongsPage");
-      import("./pages/ChordPage");
-      import("./pages/RecordPage");
-    }, 1500);
+const AsyncSongs = asyncComponent(() => import("./pages/SongsPage"));
+const AsyncChord = asyncComponent(() => import("./pages/ChordPage"));
+const AsyncRecord = asyncComponent(() => import("./pages/RecordPage"));
 
-    return component;
-  });
+// Key the component on pathname so we destroy it if path changes
+function pathKeyedComponent<T extends object>(C: ComponentType<T>) {
+  return (props: T & RouteComponentProps) => (
+    <C key={props.location.pathname} {...props} />
+  );
 }
-
-const AsyncSongs = myAsyncComponent(() => import("./pages/SongsPage"));
-const AsyncChord = myAsyncComponent(() => import("./pages/ChordPage"));
-const AsyncRecord = myAsyncComponent(() => import("./pages/RecordPage"));
 
 const App = () => (
   <Router>
@@ -35,20 +34,32 @@ const App = () => (
       <Switch>
         <Route
           path={Paths.pianoPrefix("/songs/:stream/:title")}
-          component={AsyncSongs}
+          component={pathKeyedComponent(AsyncSongs)}
         />
         <Route
           path={Paths.pianoPrefix("/songs/:stream")}
-          component={AsyncSongs}
+          component={pathKeyedComponent(AsyncSongs)}
         />
-        <Route path={Paths.pianoPrefix("/record")} component={AsyncRecord} />
-        <Route path={Paths.pianoPrefix("/")} component={AsyncSongs} />
+        <Route
+          path={Paths.pianoPrefix("/record")}
+          component={pathKeyedComponent(AsyncRecord)}
+        />
+        <Route
+          path={Paths.pianoPrefix("/")}
+          component={pathKeyedComponent(AsyncSongs)}
+        />
         <Route
           path={Paths.chordPrefix("/:notes/:title")}
-          component={AsyncChord}
+          component={pathKeyedComponent(AsyncChord)}
         />
-        <Route path={Paths.chordPrefix("/:notes")} component={AsyncChord} />
-        <Route path={Paths.chordPrefix("/")} component={AsyncChord} />
+        <Route
+          path={Paths.chordPrefix("/:notes")}
+          component={pathKeyedComponent(AsyncChord)}
+        />
+        <Route
+          path={Paths.chordPrefix("/")}
+          component={pathKeyedComponent(AsyncChord)}
+        />
         <Route
           path="/"
           render={() => {

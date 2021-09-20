@@ -7,6 +7,14 @@ import Ops, { MidiOp, Op } from "./Ops";
 export type ActiveKeys = Record<string, boolean | undefined>;
 
 export type PianoActiveKeysListener = (activeKeys: ActiveKeys) => void;
+export type PianoOperationListener = (op: Op) => void;
+export type PianoResetListener = () => void;
+
+export enum PianoEvents {
+  activeKeysChange = "activeKeysChange",
+  operation = "operation",
+  reset = "reset",
+}
 
 const tonePiano = new TonePiano({
   minNote: C.RANGE[0],
@@ -34,6 +42,7 @@ export default class Piano extends EventTarget {
   constructor() {
     super();
     this.setupMidi();
+    tonePiano.stopAll();
   }
 
   static getActiveKeys() {
@@ -67,7 +76,7 @@ export default class Piano extends EventTarget {
   }
 
   performOperation(op: Op, sendOp = true) {
-    sendOp && this.send("operation", op);
+    sendOp && this.send(PianoEvents.operation, op);
 
     switch (op[0]) {
       case C.OP_PEDAL_DOWN:
@@ -79,13 +88,13 @@ export default class Piano extends EventTarget {
       case C.OP_NOTE_DOWN:
         tonePiano.keyDown({ midi: op[1] });
         activeKeys[op[1]] = true;
-        this.send("activeKeysChange", activeKeys);
+        this.send(PianoEvents.activeKeysChange, activeKeys);
         return;
 
       case C.OP_NOTE_UP:
         tonePiano.keyUp({ midi: op[1] });
         activeKeys[op[1]] = false;
-        this.send("activeKeysChange", activeKeys);
+        this.send(PianoEvents.activeKeysChange, activeKeys);
         return;
 
       default:
@@ -109,7 +118,7 @@ export default class Piano extends EventTarget {
           // window.logMidi && console.log(e.data);
 
           if (e.data[0] === C.MIDI0_L1) {
-            this.send("reset");
+            this.send(PianoEvents.reset);
             return;
           }
 
