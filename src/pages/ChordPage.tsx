@@ -1,33 +1,52 @@
-import React from "react";
-import { Redirect } from "react-router-dom";
+import React, { MouseEvent } from "react";
+import { Redirect, RouteComponentProps } from "react-router-dom";
 
 import * as C from "../constants";
 import BigPlay from "../ui/BigPlay";
 import Keyboard from "../ui/Keyboard";
 import Ops from "../Ops";
 import Paths from "../Paths";
-import Piano from "../Piano";
-import Template from "../pages/Template";
+import Piano, { ActiveKeys } from "../Piano";
+import Template from "./Template";
 import Title from "../ui/Title";
 import Saver from "../ui/Saver";
 
-function stateFromProps(params) {
-  const notes = params.notes ? params.notes.split(",") : [];
-  const title = params.title ? decodeURIComponent(params.title) : "";
+interface MatchItems {
+  notes?: string;
+  title?: string;
+}
 
-  let activeKeys = Piano.getActiveKeys();
-  notes.forEach(note => {
+interface ChordPageProps extends RouteComponentProps<MatchItems> {}
+
+interface ChordPageState {
+  activeKeys: ActiveKeys;
+  playing: boolean;
+  title: string;
+}
+
+function stateFromProps({ notes, title = "" }: MatchItems): ChordPageState {
+  const activeKeys = Piano.getActiveKeys();
+
+  const notesArr = notes ? notes.split(",") : [];
+  notesArr.forEach(note => {
     activeKeys[note] = true;
   });
 
   return {
-    title,
     activeKeys,
+    playing: false,
+    title: decodeURIComponent(title),
   };
 }
 
-export default class ChordPage extends React.Component {
-  constructor(props) {
+export default class ChordPage extends React.Component<
+  ChordPageProps,
+  ChordPageState
+> {
+  piano: Piano;
+  playTimeout: number | null;
+
+  constructor(props: ChordPageProps) {
     super(props);
 
     this.piano = new Piano();
@@ -39,7 +58,7 @@ export default class ChordPage extends React.Component {
     };
   }
 
-  componentWillReceiveProps(nextProps) {
+  componentWillReceiveProps(nextProps: ChordPageProps) {
     if (this.props.location !== nextProps.location) {
       this.piano.stopAll();
       this.setState({
@@ -58,33 +77,26 @@ export default class ChordPage extends React.Component {
     this.piano.removeEventListener("reset", this.reset);
   }
 
-  setTitle = props => {
-    const title = props.title.trim();
-
-    this.setState(
-      {
-        title,
-      },
-      () => {
-        this.save("setTitle");
-      }
-    );
+  setTitle = (title: string) => {
+    this.setState({ title: title.trim() }, () => this.save("setTitle"));
   };
 
   play = () => {
+    const { activeKeys } = this.state;
+
     this.piano.stopAll();
-    Object.keys(this.state.activeKeys).forEach(note => {
-      if (this.state.activeKeys[note]) {
-        this.piano.startNote(note);
+    Object.keys(activeKeys).forEach(note => {
+      if (activeKeys[note]) {
+        this.piano.startNote(Number(note));
       }
     });
-    this.setState({
-      playing: true,
-    });
+    this.setState({ playing: true });
 
     // play for 5 secs
-    clearTimeout(this.playTimeout);
-    this.playTimeout = setTimeout(this.stop, 5000);
+    if (this.playTimeout) {
+      clearTimeout(this.playTimeout);
+    }
+    this.playTimeout = window.setTimeout(this.stop, 5000);
   };
 
   stop = () => {
@@ -98,11 +110,13 @@ export default class ChordPage extends React.Component {
     });
   };
 
-  save = e => {
-    let notes = [];
-    Object.keys(this.state.activeKeys).forEach(key => {
-      if (this.state.activeKeys[key]) {
-        notes.push(key);
+  save = (e: MouseEvent<HTMLButtonElement> | string) => {
+    const { activeKeys, title } = this.state;
+
+    let notes: number[] = [];
+    Object.keys(activeKeys).forEach(key => {
+      if (activeKeys[key]) {
+        notes.push(Number(key));
       }
     });
 
@@ -111,8 +125,8 @@ export default class ChordPage extends React.Component {
     }
 
     let path = notes.join(",");
-    if (this.state.title) {
-      path += "/" + Ops.fixedEncodeURIComponent(this.state.title);
+    if (title) {
+      path += "/" + Ops.fixedEncodeURIComponent(title);
     }
 
     const method = e === "setTitle" ? "replace" : "push";
@@ -123,7 +137,7 @@ export default class ChordPage extends React.Component {
     this.props.history.push(Paths.chordPrefix("/"));
   };
 
-  onKeyClick = note => {
+  onKeyClick = (note: number) => {
     let activeKeys = {
       ...this.state.activeKeys,
     };
@@ -133,6 +147,8 @@ export default class ChordPage extends React.Component {
   };
 
   render() {
+    const { activeKeys, playing, title } = this.state;
+
     if (window.location.hash) {
       // legacy URLs
       const m = window.location.hash.match(/n=([\d,]+)(?:&c=(.*))?/);
@@ -148,12 +164,14 @@ export default class ChordPage extends React.Component {
         <section>
           <div>
             <BigPlay
-              state={this.state.playing ? C.PLAYING : C.STOPPED}
+              state={playing ? C.PLAYING : C.STOPPED}
               handlePlay={this.play}
               handleStop={this.stop}
+              progress={0}
+              waiting={false}
             />
-            <Title title={this.state.title} onChange={this.setTitle} />
-            {!this.state.title && "(click to rename)"}
+            <Title title={title} onChange={this.setTitle} />
+            {!title && "(click to rename)"}
             <button
               onClick={this.save}
               id="save"
@@ -173,17 +191,13 @@ export default class ChordPage extends React.Component {
             </button>
           </div>
         </section>
-        <Keyboard
-          activeKeys={this.state.activeKeys}
-          onKeyClick={this.onKeyClick}
-        />
+        <Keyboard activeKeys={activeKeys} onKeyClick={this.onKeyClick} />
         {this.props.match.params.notes && (
           <section>
             <h3>This is not saved</h3>
             <p>
               This chord exists only as a URL, so bookmark this page or copy it
-              to clipboard:{" "}
-              <Saver href={window.location.href} title={this.state.title} />
+              to clipboard: <Saver href={window.location.href} title={title} />
             </p>
           </section>
         )}

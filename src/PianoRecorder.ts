@@ -1,15 +1,29 @@
 import EventTarget from "dom-event-target";
 
 import * as C from "./constants";
+import { TimedOp, Op } from "./Ops";
 import Piano from "./Piano";
 
-let piano;
+export type RecorderStateListener = (state: string) => void;
+export type RecorderProgressListener = (progress: number) => void;
+
+let piano: Piano;
 
 /**
  * Fires "progress"
  * Fires "stop"
  */
 export default class PianoRecorder extends EventTarget {
+  firstTime: number | undefined;
+  keyTimeouts: Record<string, number>;
+  operations: TimedOp[];
+  piano: Piano;
+  playAllIntervals: number[];
+  progressInterval: number | null;
+  progressPeriod: number;
+  startedRecording: boolean;
+  state: string;
+
   constructor(spec = Object.create(null)) {
     super();
 
@@ -29,12 +43,12 @@ export default class PianoRecorder extends EventTarget {
     this.state = C.STOPPED;
   }
 
-  setOperations(operations) {
+  setOperations(operations: TimedOp[]) {
     this.stop();
     this.operations = operations;
   }
 
-  setState(state) {
+  setState(state: string) {
     this.send("state", state);
     this.state = state;
   }
@@ -43,7 +57,7 @@ export default class PianoRecorder extends EventTarget {
     return this.state;
   }
 
-  clickNote(note, duration = 1000) {
+  clickNote(note: number, duration = 1000) {
     if (this.keyTimeouts[note]) {
       clearTimeout(this.keyTimeouts[note]);
       delete this.keyTimeouts[note];
@@ -51,14 +65,14 @@ export default class PianoRecorder extends EventTarget {
 
     this.piano.startNote(note);
 
-    this.keyTimeouts[note] = setTimeout(() => {
+    this.keyTimeouts[note] = window.setTimeout(() => {
       if (this.keyTimeouts[note]) {
         this.piano.stopNote(note);
       }
     }, duration);
   }
 
-  onPianoOperation = op => {
+  onPianoOperation = (op: Op) => {
     if (this.state !== C.RECORDING) {
       return;
     }
@@ -88,7 +102,7 @@ export default class PianoRecorder extends EventTarget {
     return this.operations;
   }
 
-  recordOperation(op, timeInMs) {
+  recordOperation(op: Op, timeInMs: number) {
     timeInMs = Math.round(timeInMs / C.TIME_RESOLUTION_DIVISOR);
     if (this.firstTime === undefined) {
       this.firstTime = timeInMs;
@@ -110,7 +124,7 @@ export default class PianoRecorder extends EventTarget {
     const startTime = new Date().getTime();
     let numPerformed = 0;
 
-    this.progressInterval = setInterval(() => {
+    this.progressInterval = window.setInterval(() => {
       const now = new Date().getTime();
       this.send("progress", (now - startTime) / lastTime);
     }, this.progressPeriod);
@@ -118,7 +132,7 @@ export default class PianoRecorder extends EventTarget {
     this.operations.forEach(el => {
       // relying on the timer is awful, but tone-piano's "time" arguments just don't work.
       this.playAllIntervals.push(
-        setTimeout(() => {
+        window.setTimeout(() => {
           this.piano.performOperation(el[0], false);
           numPerformed++;
           if (numPerformed === numOperations) {
@@ -143,7 +157,9 @@ export default class PianoRecorder extends EventTarget {
     });
     this.keyTimeouts = Object.create(null);
 
-    clearInterval(this.progressInterval);
+    if (this.progressInterval) {
+      clearInterval(this.progressInterval);
+    }
     this.piano.stopAll();
     this.setState(C.STOPPED);
     this.send("stop");

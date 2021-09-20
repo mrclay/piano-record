@@ -1,10 +1,14 @@
-import React from "react";
+import React, { FC } from "react";
 import { Link, Route } from "react-router-dom";
 
 import * as C from "../constants";
 import Paths from "../Paths";
 
-const ListItemLink = ({ to, ...rest }) => (
+interface ListItemLinkProps {
+  to: string;
+}
+
+const ListItemLink: FC<ListItemLinkProps> = ({ to, ...rest }) => (
   <Route
     path={to}
     children={({ match }) => (
@@ -17,10 +21,12 @@ const ListItemLink = ({ to, ...rest }) => (
 
 const exampleChord = Paths.chordPrefix("/43,56,60,62,65/G7b9sus");
 const exampleSong = Paths.pianoPrefix(
-  "/songs/C320C3c30C3e3bC423hC454bD3c8gC448uC3b8xD4299D459cC40eaC3aedD44elD3berD3ejnC42l8D3al9C39laD40lhD39ohC40oiC38oiD42p5C3eqtD40quC37tgD38thC40tlD3eu1C42wnD40x3D3713nC3613zC3e144D4214cD3e1fuD361gaD321gf/Hello%20World"
+  "/songs/C320C3c30C3e3bC423hC454bD3c8gC448uC3b8xD4299D459cC40eaC3aedD44elD" +
+    "3berD3ejnC42l8D3al9C39laD40lhD39ohC40oiC38oiD42p5C3eqtD40quC37tgD38thC" +
+    "40tlD3eu1C42wnD40x3D3713nC3613zC3e144D4214cD3e1fuD361gaD321gf/Hello%20World"
 );
 
-function renderHeader(app) {
+function renderHeader(app: string) {
   if (app === "chord") {
     return (
       <div>
@@ -48,17 +54,21 @@ function renderHeader(app) {
   );
 }
 
-export default function Template(props) {
+interface TemplateProps {
+  app: string;
+}
+
+const Template: FC<TemplateProps> = ({ app, children }) => {
   return (
     <div>
-      {renderHeader(props.app)}
+      {renderHeader(app)}
 
       <nav className="nav nav-tabs">
         <ListItemLink to={Paths.pianoPrefix("/")}>Songs</ListItemLink>
         <ListItemLink to={Paths.chordPrefix("/")}>Chords</ListItemLink>
       </nav>
 
-      {props.children}
+      {children}
 
       <section>
         <hr />
@@ -96,4 +106,6 @@ export default function Template(props) {
       </section>
     </div>
   );
-}
+};
+
+export default Template;

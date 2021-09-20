@@ -2,7 +2,12 @@ import React from "react";
 
 import * as C from "../constants";
 
-export default function Status({ waiting, state }) {
+interface StatusProps {
+  waiting: boolean;
+  state: string;
+}
+
+export default function Status({ waiting, state }: StatusProps) {
   if (waiting) {
     return (
       <div id="status" className="ready">

@@ -1,6 +1,6 @@
 import React from "react";
 
-export default function Progress(props) {
+export default function Progress(props: { ratio: number }) {
   let style = {
     width: 100 * props.ratio + "%",
   };
@@ -13,8 +13,8 @@ export default function Progress(props) {
         className="progress-bar"
         role="progressbar"
         aria-valuenow={percentage}
-        aria-valuemin="0"
-        aria-valuemax="100"
+        aria-valuemin={0}
+        aria-valuemax={100}
         style={style}
       >
         <span className="sr-only">

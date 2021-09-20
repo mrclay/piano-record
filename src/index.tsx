@@ -9,9 +9,9 @@ import {
 
 import "./index.css";
 import Paths from "./Paths";
-import asyncComponent from "./AsyncComponent";
+import asyncComponent, { Importer } from "./AsyncComponent";
 
-function myAsyncComponent(load) {
+function myAsyncComponent<T>(load: Importer<T>) {
   return asyncComponent(() => {
     const component = load();
 

@@ -1,7 +1,12 @@
 import * as C from "./constants";
 
+export type Command = number;
+export type Op = [comm: Command, note: number];
+export type TimedOp = [op: Op, time: number];
+export type MidiOp = [midiOp: number, note: number, velocity: number];
+
 const Ops = {
-  encodeOp(op, time) {
+  encodeOp(op: Op, time: number): string {
     return [
       String.fromCharCode(op[0] + C.ORD_A_UPPER),
       op[1].toString(16),
@@ -9,25 +14,23 @@ const Ops = {
     ].join("");
   },
 
-  decodeOp(token) {
+  decodeOp(token: string): TimedOp {
     const command = token[0].charCodeAt(0) - C.ORD_A_UPPER;
     const note = parseInt(token.substr(1, 2), 16);
     const time = parseInt(token.substr(3), 36);
-    const op = [command, note];
+    const op: Op = [command, note];
     return [op, time];
   },
 
-  keyDownOperation(note) {
-    const noteInt = parseInt(note, 10);
-    return Ops.operationFromMidi([C.MIDI0_NOTE_ON, noteInt, 254]);
+  keyDownOperation(note: number) {
+    return Ops.operationFromMidi([C.MIDI0_NOTE_ON, note, 254]);
   },
 
-  keyUpOperation(note) {
-    const noteInt = parseInt(note, 10);
-    return Ops.operationFromMidi([C.MIDI0_NOTE_OFF, noteInt, 0]);
+  keyUpOperation(note: number) {
+    return Ops.operationFromMidi([C.MIDI0_NOTE_OFF, note, 0]);
   },
 
-  operationFromMidi([op, note, velocity]) {
+  operationFromMidi([op, note, velocity]: MidiOp): Op | undefined {
     if (op === C.MIDI0_PEDAL && note === C.MIDI1_PEDAL) {
       return velocity > 0 ? [C.OP_PEDAL_DOWN, 0] : [C.OP_PEDAL_UP, 0];
     } else if (
@@ -44,11 +47,11 @@ const Ops = {
     }
   },
 
-  streamFromOperations(operations) {
+  streamFromOperations(operations: TimedOp[]) {
     return operations.map(el => Ops.encodeOp(el[0], el[1])).join("");
   },
 
-  operationsFromStream(stream) {
+  operationsFromStream(stream: string): TimedOp[] {
     if (!stream) {
       return [];
     }
@@ -57,27 +60,25 @@ const Ops = {
     let token;
     let operations = [];
 
-    // eslint-disable-next-line
     while ((token = pattern.exec(stream))) {
-      const opTime = Ops.decodeOp(token[0]);
-      operations.push([opTime[0], opTime[1]]);
+      operations.push(Ops.decodeOp(token[0]));
     }
 
     return operations;
   },
 
-  encodeMoreURIComponents(str) {
+  encodeMoreURIComponents(str: string) {
     return str.replace(/[!'()*]/g, c => "%" + c.charCodeAt(0).toString(16));
   },
 
-  fixedEncodeURIComponent(str) {
+  fixedEncodeURIComponent(str: string) {
     return encodeURIComponent(str).replace(
       /[!'()*]/g,
       c => "%" + c.charCodeAt(0).toString(16)
     );
   },
 
-  encodeHtml(str) {
+  encodeHtml(str: string) {
     return str
       .replace(/&/g, "&amp;")
       .replace(/"/g, "&quot;")

@@ -1,9 +1,12 @@
 import EventTarget from "dom-event-target";
-
 import { Piano as TonePiano } from "@tonejs/piano";
 
 import * as C from "./constants";
-import Ops from "./Ops";
+import Ops, { MidiOp, Op } from "./Ops";
+
+export type ActiveKeys = Record<string, boolean | undefined>;
+
+export type PianoActiveKeysListener = (activeKeys: ActiveKeys) => void;
 
 const tonePiano = new TonePiano({
   minNote: C.RANGE[0],
@@ -15,7 +18,7 @@ const tonePiano = new TonePiano({
 
 tonePiano.load();
 
-let activeKeys = Object.create(null);
+let activeKeys: ActiveKeys = Object.create(null);
 for (let note = C.RANGE[0]; note <= C.RANGE[1]; note++) {
   activeKeys[note] = false;
 }
@@ -26,12 +29,10 @@ for (let note = C.RANGE[0]; note <= C.RANGE[1]; note++) {
  * Fires "reset" for MIDI reset
  */
 export default class Piano extends EventTarget {
+  monitorMidi = true;
+
   constructor() {
     super();
-
-    // receive from MIDI?
-    this.monitorMidi = true;
-
     this.setupMidi();
   }
 
@@ -41,27 +42,31 @@ export default class Piano extends EventTarget {
     };
   }
 
-  startNote(note) {
+  startNote(note: number) {
     this.stopNote(note);
 
     const op = Ops.keyDownOperation(note);
-    this.performOperation(op);
+    if (op) {
+      this.performOperation(op);
+    }
   }
 
-  stopNote(note) {
+  stopNote(note: number) {
     if (!activeKeys[note]) {
       return;
     }
 
     const op = Ops.keyUpOperation(note);
-    this.performOperation(op);
+    if (op) {
+      this.performOperation(op);
+    }
   }
 
   stopAll() {
-    Object.keys(activeKeys).forEach(note => this.stopNote(note));
+    Object.keys(activeKeys).forEach(note => this.stopNote(Number(note)));
   }
 
-  performOperation(op, sendOp = true) {
+  performOperation(op: Op, sendOp = true) {
     sendOp && this.send("operation", op);
 
     switch (op[0]) {
@@ -101,14 +106,14 @@ export default class Piano extends EventTarget {
             return;
           }
 
-          window.logMidi && console.log(e.data);
+          // window.logMidi && console.log(e.data);
 
           if (e.data[0] === C.MIDI0_L1) {
             this.send("reset");
             return;
           }
 
-          const op = Ops.operationFromMidi(e.data);
+          const op = Ops.operationFromMidi(e.data as unknown as MidiOp);
           if (!op) {
             return;
           }

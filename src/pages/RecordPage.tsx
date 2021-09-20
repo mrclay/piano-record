@@ -1,17 +1,30 @@
 import React from "react";
+import { RouterProps } from "react-router";
 
 import * as C from "../constants";
 import Keyboard from "../ui/Keyboard";
 import Ops from "../Ops";
 import Paths from "../Paths";
-import Piano from "../Piano";
-import PianoRecorder from "../PianoRecorder";
+import Piano, { ActiveKeys } from "../Piano";
+import PianoRecorder, { RecorderProgressListener } from "../PianoRecorder";
 import Preview from "../ui/Preview";
 import Status from "../ui/Status";
-import Template from "../pages/Template";
+import Template from "./Template";
 
-export default class RecordPage extends React.Component {
-  constructor(props) {
+interface RecordPageState {
+  activeKeys: ActiveKeys;
+  progress: number;
+  state: string;
+  waiting: boolean;
+}
+
+export default class RecordPage extends React.Component<
+  RouterProps,
+  RecordPageState
+> {
+  recorder: PianoRecorder;
+
+  constructor(props: RouterProps) {
     super(props);
 
     this.recorder = new PianoRecorder();
@@ -25,25 +38,24 @@ export default class RecordPage extends React.Component {
     };
   }
 
-  onRecorderProgress = progress => {
+  onRecorderProgress: RecorderProgressListener = progress => {
     this.setState({ progress });
   };
 
-  onActiveKeysChange = activeKeys => {
+  onActiveKeysChange = (activeKeys: ActiveKeys) => {
     this.setState({
       activeKeys,
     });
   };
 
-  onRecorderState = state => {
-    let newState = { state };
-    if (state === C.STOPPED) {
-      newState.waiting = false;
-    }
-    this.setState(newState);
+  onRecorderState = (state: string) => {
+    this.setState(oldState => ({
+      ...oldState,
+      ...(state === C.STOPPED ? { waiting: false } : undefined),
+    }));
   };
 
-  onPianoOperation = op => {
+  onPianoOperation = () => {
     // just to let us know the user is recording
     this.setState({
       waiting: false,
@@ -100,26 +112,28 @@ export default class RecordPage extends React.Component {
     );
   };
 
-  onKeyClick = note => {
+  onKeyClick = (note: number) => {
     this.recorder.clickNote(note);
   };
 
   render() {
+    const { activeKeys, progress, state, waiting } = this.state;
+
     return (
-      <Template>
+      <Template app="record">
         <section className="piano-2col">
           <div>
             <Preview
-              state={this.state.state}
-              waiting={this.state.waiting}
+              state={state}
+              waiting={waiting}
               handlePlay={this.play}
               handleStop={this.stop}
-              progress={this.state.progress}
+              progress={progress}
             />
             <button
               onClick={this.save}
               id="save"
-              disabled={this.state.waiting}
+              disabled={waiting}
               className="btn btn-primary med-btn"
             >
               <i className="fa fa-floppy-o" aria-hidden="true" />{" "}
@@ -128,7 +142,7 @@ export default class RecordPage extends React.Component {
             <button
               onClick={this.reset}
               id="reset"
-              disabled={this.state.waiting}
+              disabled={waiting}
               className="btn btn-danger med-btn"
             >
               <i className="fa fa-circle" aria-hidden="true" />{" "}
@@ -136,14 +150,12 @@ export default class RecordPage extends React.Component {
             </button>
           </div>
           <div>
-            <Status state={this.state.state} waiting={this.state.waiting} />
+            <Status state={state} waiting={waiting} />
           </div>
         </section>
         <Keyboard
-          activeKeys={this.state.activeKeys}
-          onKeyClick={
-            this.state.state === C.RECORDING ? this.onKeyClick : undefined
-          }
+          activeKeys={activeKeys}
+          onKeyClick={state === C.RECORDING ? this.onKeyClick : undefined}
         />
       </Template>
     );

@@ -1,30 +1,58 @@
 import React from "react";
-import { Redirect } from "react-router-dom";
+import { Redirect, RouteComponentProps } from "react-router-dom";
 
 import * as C from "../constants";
 import BigPlay from "../ui/BigPlay";
 import Keyboard from "../ui/Keyboard";
-import Ops from "../Ops";
+import Ops, { TimedOp } from "../Ops";
 import Paths from "../Paths";
-import Piano from "../Piano";
-import PianoRecorder from "../PianoRecorder";
-import Template from "../pages/Template";
+import Piano, { ActiveKeys, PianoActiveKeysListener } from "../Piano";
+import PianoRecorder, {
+  RecorderProgressListener,
+  RecorderStateListener,
+} from "../PianoRecorder";
+import Template from "./Template";
 import Title from "../ui/Title";
 import Saver from "../ui/Saver";
 
-export default class SongsPage extends React.Component {
-  constructor(props) {
+interface MatchItems {
+  stream?: string;
+  title?: string;
+}
+
+interface SongsPageProps extends RouteComponentProps<MatchItems> {}
+
+interface SongsPageState {
+  activeKeys: ActiveKeys;
+  canResave: boolean;
+  playing: boolean;
+  progress: number;
+  state: string;
+  stream: string;
+  title: string;
+  waiting: boolean;
+}
+
+export default class SongsPage extends React.Component<
+  SongsPageProps,
+  SongsPageState
+> {
+  keydowns: Record<string, number>;
+  notes: number[];
+  notesIndex: number;
+  recorder: PianoRecorder;
+
+  constructor(props: SongsPageProps) {
     super(props);
 
     this.recorder = new PianoRecorder();
     this.state = SongsPage.stateFromProps(props, this.recorder);
-
     this.notes = SongsPage.notesFromOps(this.recorder.getOperations());
     this.notesIndex = 0;
     this.keydowns = Object.create(null);
   }
 
-  componentDidUpdate(prevProps) {
+  componentDidUpdate(prevProps: SongsPageProps) {
     if (prevProps.location !== this.props.location) {
       this.recorder.stop();
       const newState = SongsPage.stateFromProps(this.props, this.recorder);
@@ -34,19 +62,22 @@ export default class SongsPage extends React.Component {
     }
   }
 
-  static notesFromOps(ops) {
+  static notesFromOps(ops: TimedOp[]) {
     return ops
-      .filter(([midiNote, time]) => {
+      .filter(([midiNote]) => {
         return midiNote[0] === C.OP_NOTE_DOWN;
       })
-      .map(([midiNote, time]) => {
+      .map(([midiNote]) => {
         return midiNote[1];
       });
   }
 
-  static stateFromProps({ match }, recorder) {
+  static stateFromProps(
+    { match }: SongsPageProps,
+    recorder: PianoRecorder
+  ): SongsPageState {
     const { params } = match;
-    const stream = params.stream;
+    const stream = params.stream || "";
     const title = params.title ? decodeURIComponent(params.title) : "";
     const ops = Ops.operationsFromStream(stream);
 
@@ -55,12 +86,14 @@ export default class SongsPage extends React.Component {
     }
 
     return {
+      playing: false,
       stream,
       title,
       activeKeys: Piano.getActiveKeys(),
       canResave: false,
       state: C.STOPPED,
       progress: 0,
+      waiting: false,
     };
   }
 
@@ -85,17 +118,17 @@ export default class SongsPage extends React.Component {
     document.removeEventListener("keyup", this.oneKeyPlay);
   }
 
-  onRecorderProgress = progress => {
+  onRecorderProgress: RecorderProgressListener = progress => {
     this.setState({ progress });
   };
 
-  onActiveKeysChange = activeKeys => {
+  onActiveKeysChange: PianoActiveKeysListener = activeKeys => {
     this.setState({
       activeKeys,
     });
   };
 
-  onRecorderState = state => {
+  onRecorderState: RecorderStateListener = state => {
     this.setState({ state });
   };
 
@@ -122,7 +155,7 @@ export default class SongsPage extends React.Component {
     });
   };
 
-  setTitle = rawTitle => {
+  setTitle = (rawTitle: string) => {
     const title = rawTitle.trim();
 
     this.setState({ title }, () => {
@@ -133,7 +166,7 @@ export default class SongsPage extends React.Component {
     });
   };
 
-  oneKeyPlay = e => {
+  oneKeyPlay = (e: KeyboardEvent) => {
     const { type, repeat, keyCode } = e;
 
     if (repeat || keyCode < 65 || keyCode > 90) {
@@ -187,13 +220,14 @@ export default class SongsPage extends React.Component {
       this.state;
 
     return (
-      <Template>
+      <Template app="songs">
         <section>
           <BigPlay
             state={state}
             handlePlay={this.play}
             handleStop={this.stop}
             progress={progress}
+            waiting={waiting}
           />
           <Title title={title} onChange={this.setTitle} />
           {!title && "(click to rename)"}

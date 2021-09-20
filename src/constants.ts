@@ -1,3 +1,5 @@
+import { Command } from "./Ops";
+
 export const SOURCE_URL = "https://github.com/mrclay/piano-record";
 
 let samplesUrl = "http://mrclay.org/piano/media/";
@@ -16,10 +18,10 @@ export const STOPPED = "stopped";
 export const RECORDING = "recording";
 export const PLAYING = "playing";
 
-export const OP_PEDAL_DOWN = 0;
-export const OP_PEDAL_UP = 1;
-export const OP_NOTE_DOWN = 2;
-export const OP_NOTE_UP = 3;
+export const OP_PEDAL_DOWN: Command = 0;
+export const OP_PEDAL_UP: Command = 1;
+export const OP_NOTE_DOWN: Command = 2;
+export const OP_NOTE_UP: Command = 3;
 
 // http://www.midimountain.com/midi/midi_status.htm
 export const MIDI0_NOTE_ON = 144;
@@ -34,3 +36,18 @@ export const MIDI1_TUNE = 10;
 export const MIDI2_RELEASE_VELOCITY = 0;
 
 export const DEFAULT_TITLE = "Untitled";
+
+/**
+ * 1. Play us a song!!!
+ *  [X]
+ *  [I'm done]  [Start over]
+ *  | applause  | record scratch
+ *
+ * 2. (Playback)
+ *  [Replay jam]  [Share]  [Fix the timing]
+ *
+ * 3. Press letter keys to replay notes in order
+ *  [Nailed it]  [Try again]  [Start over]
+ *
+ *
+ */

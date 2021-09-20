@@ -3,8 +3,22 @@ import React from "react";
 import * as C from "../constants";
 import Progress from "./Progress";
 
-export default function Play(props) {
-  function renderIcon(progress) {
+interface PlayProps {
+  handlePlay(): void;
+  handleStop(): void;
+  progress: number;
+  state: string;
+  waiting: boolean;
+}
+
+export default function Play({
+  handlePlay,
+  handleStop,
+  progress,
+  state,
+  waiting,
+}: PlayProps) {
+  function renderIcon() {
     if (progress !== undefined) {
       return <Progress ratio={progress} />;
     }
@@ -12,24 +26,24 @@ export default function Play(props) {
     return <i className="fa fa-stop" aria-hidden="true" />;
   }
 
-  if (props.state === C.PLAYING) {
+  if (state === C.PLAYING) {
     return (
       <button
-        onClick={props.handleStop}
+        onClick={handleStop}
         id="big-play"
         className="btn btn-default"
-        disabled={props.waiting}
+        disabled={waiting}
       >
-        {renderIcon(props.progress)}
+        {renderIcon()}
       </button>
     );
   }
 
   return (
     <button
-      onClick={props.handlePlay}
+      onClick={handlePlay}
       id="big-play"
-      disabled={props.waiting}
+      disabled={waiting}
       className="btn btn-default"
     >
       <i className="fa fa-play" aria-hidden="true" />

@@ -2,8 +2,13 @@ import React, { useEffect, useRef, useState } from "react";
 
 import { DEFAULT_TITLE } from "../constants";
 
-export default function Title({ onChange, title }) {
-  const inputRef = useRef(null);
+interface TitleProps {
+  onChange(title: string): void;
+  title: string;
+}
+
+export default function Title({ onChange, title }: TitleProps) {
+  const inputRef = useRef<HTMLInputElement>(null);
   const [value, setValue] = useState(title || "");
   const [saved, setSaved] = useState(value);
   const [isEditing, setIsEditing] = useState(false);

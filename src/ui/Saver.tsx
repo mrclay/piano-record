@@ -4,7 +4,12 @@ import Clipboard from "react-clipboard.js";
 import * as C from "../constants";
 import Ops from "../Ops";
 
-export default function Table({ href, title }) {
+interface TableProps {
+  href: string;
+  title: string;
+}
+
+export default function Table({ href, title }: TableProps) {
   const [saved, setSaved] = useState("");
 
   const htmlize = Ops.encodeHtml;
