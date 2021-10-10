@@ -160,6 +160,7 @@ export default class ChordPage extends React.Component<
             <Title title={title} onChange={this.setTitle} />
             {!title && "(click to rename)"}
             <button
+              type="button"
               onClick={this.save}
               id="save"
               className="btn btn-primary med-btn"
@@ -169,6 +170,7 @@ export default class ChordPage extends React.Component<
               <span>Save</span>
             </button>
             <button
+              type="button"
               onClick={this.reset}
               id="reset"
               className="btn btn-danger med-btn"

@@ -21,6 +21,7 @@ export default function Preview({
   if (state === C.PLAYING) {
     return (
       <button
+        type="button"
         onClick={handleStop}
         id="preview"
         className="btn btn-default med-btn"
@@ -33,6 +34,7 @@ export default function Preview({
 
   return (
     <button
+      type="button"
       onClick={handlePlay}
       id="preview"
       disabled={waiting}

@@ -12,6 +12,7 @@ import Piano, {
   PianoResetListener,
 } from "../Piano";
 import Recorder, {
+  RecorderEvent,
   RecorderProgressListener,
   RecorderStateListener,
 } from "../Recorder";
@@ -58,12 +59,8 @@ export default class SongsPage extends React.Component<
 
   static notesFromOps(ops: TimedOp[]) {
     return ops
-      .filter(([midiNote]) => {
-        return midiNote[0] === C.OP_NOTE_DOWN;
-      })
-      .map(([midiNote]) => {
-        return midiNote[1];
-      });
+      .filter(([midiNote]) => midiNote[0] === C.OP_NOTE_DOWN)
+      .map(([midiNote]) => midiNote[1]);
   }
 
   static stateFromProps(
@@ -93,8 +90,11 @@ export default class SongsPage extends React.Component<
 
   componentDidMount() {
     document.title = "Simple Piano";
-    this.recorder.addEventListener("state", this.onRecorderState);
-    this.recorder.addEventListener("progress", this.onRecorderProgress);
+    this.recorder.addEventListener(RecorderEvent.state, this.onRecorderState);
+    this.recorder.addEventListener(
+      RecorderEvent.progress,
+      this.onRecorderProgress
+    );
     const piano = this.recorder.getPiano();
     piano.addEventListener("activeKeysChange", this.onActiveKeysChange);
     piano.addEventListener("reset", this.reset);
@@ -103,11 +103,6 @@ export default class SongsPage extends React.Component<
   }
 
   componentWillUnmount() {
-    this.recorder.removeEventListener("state", this.onRecorderState);
-    this.recorder.removeEventListener("progress", this.onRecorderProgress);
-    const piano = this.recorder.getPiano();
-    piano.removeEventListener("activeKeysChange", this.onActiveKeysChange);
-    piano.removeEventListener("reset", this.reset);
     document.removeEventListener("keydown", this.oneKeyPlay);
     document.removeEventListener("keyup", this.oneKeyPlay);
   }
@@ -224,6 +219,7 @@ export default class SongsPage extends React.Component<
           <Title title={title} onChange={this.setTitle} />
           {!title && "(click to rename)"}
           <button
+            type="button"
             onClick={this.reset}
             id="reset"
             disabled={waiting}
@@ -234,6 +230,7 @@ export default class SongsPage extends React.Component<
             <span>Start over</span>
           </button>
           <button
+            type="button"
             id="oneKeyPlay"
             className="btn btn-warning med-btn"
             title="hint: use your keyboard"
@@ -247,7 +244,11 @@ export default class SongsPage extends React.Component<
             "one key play"
           </button>
           {canResave && (
-            <button onClick={this.resave} className="btn btn-danger med-btn">
+            <button
+              type="button"
+              onClick={this.resave}
+              className="btn btn-danger med-btn"
+            >
               <i className="fa fa-circle" aria-hidden="true" />{" "}
               <span>Re-save</span>
             </button>

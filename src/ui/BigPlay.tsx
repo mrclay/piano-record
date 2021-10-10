@@ -29,6 +29,7 @@ export default function Play({
   if (state === C.PLAYING) {
     return (
       <button
+        type="button"
         onClick={handleStop}
         id="big-play"
         className="btn btn-default"
@@ -41,6 +42,7 @@ export default function Play({
 
   return (
     <button
+      type="button"
       onClick={handlePlay}
       id="big-play"
       disabled={waiting}

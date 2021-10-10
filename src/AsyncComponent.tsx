@@ -5,29 +5,29 @@ export type Importer<P> = () => Promise<{
 }>;
 
 interface AsyncComponentState<P> {
-  component: ComponentType<P> | null;
+  Comp: ComponentType<P> | null;
 }
 
-export default function asyncComponent<P extends object>(importComponent: Importer<P>) {
+export default function asyncComponent<P extends object>(
+  importComponent: Importer<P>
+) {
   class AsyncComponent extends Component<P, AsyncComponentState<P>> {
     constructor(props: P) {
       super(props);
 
-      this.state = {
-        component: null,
-      };
+      this.state = { Comp: null };
     }
 
     async componentDidMount() {
-      const { default: component } = await importComponent();
+      const { default: Comp } = await importComponent();
 
-      this.setState({ component });
+      this.setState({ Comp });
     }
 
     render() {
-      const C = this.state.component as unknown as ComponentType<P>;
+      const Comp = this.state.Comp;
 
-      return C ? <C {...this.props} /> : null;
+      return Comp ? <Comp {...this.props} /> : null;
     }
   }
 

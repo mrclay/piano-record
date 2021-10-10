@@ -5,19 +5,21 @@ import { TimedOp, Op } from "./Ops";
 import Piano, { PianoEvents } from "./Piano";
 
 export type RecorderProgressListener = (progress: number) => void;
-export type RecorderStateListener = (state: string) => void;
+export type RecorderStateListener = (state: RecorderState) => void;
 export type RecorderStopListener = () => void;
 
-export enum RecorderEvents {
+export enum RecorderEvent {
   progress = "progress",
   state = "state",
   stop = "stop",
 }
 
-/**
- * Fires "progress"
- * Fires "stop"
- */
+export enum RecorderState {
+  playing = "playing",
+  stopped = "stopped",
+  recording = "recording",
+}
+
 export default class Recorder extends EventTarget {
   firstTime: number | undefined;
   keyTimeouts: Record<string, number>;
@@ -27,7 +29,7 @@ export default class Recorder extends EventTarget {
   progressInterval: number | null;
   progressPeriod: number;
   startedRecording: boolean;
-  state: string;
+  state: RecorderState;
 
   constructor(spec = Object.create(null)) {
     super();
@@ -44,7 +46,7 @@ export default class Recorder extends EventTarget {
     this.firstTime = undefined;
     this.startedRecording = false;
     this.keyTimeouts = Object.create(null);
-    this.state = C.STOPPED;
+    this.state = RecorderState.stopped;
   }
 
   setOperations(operations: TimedOp[]) {
@@ -52,8 +54,8 @@ export default class Recorder extends EventTarget {
     this.operations = operations;
   }
 
-  setState(state: string) {
-    this.send(RecorderEvents.state, state);
+  setState(state: RecorderState) {
+    this.send(RecorderEvent.state, state);
     this.state = state;
   }
 
@@ -77,7 +79,7 @@ export default class Recorder extends EventTarget {
   }
 
   onPianoOperation = (op: Op) => {
-    if (this.state !== C.RECORDING) {
+    if (this.state !== RecorderState.recording) {
       return;
     }
 
@@ -94,8 +96,8 @@ export default class Recorder extends EventTarget {
       this.startedRecording = true;
     }
 
-    this.setState(C.RECORDING);
-    this.send(RecorderEvents.progress, 0);
+    this.setState(RecorderState.recording);
+    this.send(RecorderEvent.progress, 0);
   }
 
   getPiano() {
@@ -130,7 +132,7 @@ export default class Recorder extends EventTarget {
 
     this.progressInterval = window.setInterval(() => {
       const now = new Date().getTime();
-      this.send(RecorderEvents.progress, (now - startTime) / lastTime);
+      this.send(RecorderEvent.progress, (now - startTime) / lastTime);
     }, this.progressPeriod);
 
     this.operations.forEach(el => {
@@ -146,7 +148,7 @@ export default class Recorder extends EventTarget {
       );
     });
 
-    this.setState(C.PLAYING);
+    this.setState(RecorderState.playing);
     return true;
   }
 
@@ -165,8 +167,8 @@ export default class Recorder extends EventTarget {
       clearInterval(this.progressInterval);
     }
     this.piano.stopAll();
-    this.setState(C.STOPPED);
-    this.send(RecorderEvents.stop);
-    this.send(RecorderEvents.progress, 0);
+    this.setState(RecorderState.stopped);
+    this.send(RecorderEvent.stop);
+    this.send(RecorderEvent.progress, 0);
   }
 }

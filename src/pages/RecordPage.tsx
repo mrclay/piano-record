@@ -13,7 +13,9 @@ import Piano, {
   PianoResetListener,
 } from "../Piano";
 import Recorder, {
+  RecorderEvent,
   RecorderProgressListener,
+  RecorderState,
   RecorderStateListener,
 } from "../Recorder";
 import Preview from "../ui/Preview";
@@ -52,29 +54,28 @@ export default class RecordPage extends React.Component<
   };
 
   onActiveKeysChange: PianoActiveKeysListener = activeKeys => {
-    this.setState({
-      activeKeys,
-    });
+    this.setState({ activeKeys });
   };
 
   onRecorderState: RecorderStateListener = state => {
     this.setState(oldState => ({
       ...oldState,
-      ...(state === C.STOPPED ? { waiting: false } : undefined),
+      ...(state === RecorderState.stopped ? { waiting: false } : undefined),
     }));
   };
 
   onPianoOperation: PianoOperationListener = () => {
     // just to let us know the user is recording
-    this.setState({
-      waiting: false,
-    });
+    this.setState({ waiting: false });
   };
 
   componentDidMount() {
     document.title = "Simple Piano";
-    this.recorder.addEventListener("state", this.onRecorderState);
-    this.recorder.addEventListener("progress", this.onRecorderProgress);
+    this.recorder.addEventListener(RecorderEvent.state, this.onRecorderState);
+    this.recorder.addEventListener(
+      RecorderEvent.progress,
+      this.onRecorderProgress
+    );
     const piano = this.recorder.getPiano();
     piano.addEventListener(
       PianoEvents.activeKeysChange,
@@ -85,8 +86,14 @@ export default class RecordPage extends React.Component<
   }
 
   componentWillUnmount() {
-    this.recorder.removeEventListener("state", this.onRecorderState);
-    this.recorder.removeEventListener("progress", this.onRecorderProgress);
+    this.recorder.removeEventListener(
+      RecorderEvent.state,
+      this.onRecorderState
+    );
+    this.recorder.removeEventListener(
+      RecorderEvent.progress,
+      this.onRecorderProgress
+    );
     const piano = this.recorder.getPiano();
     piano.removeEventListener(
       PianoEvents.activeKeysChange,
@@ -146,6 +153,7 @@ export default class RecordPage extends React.Component<
               progress={progress}
             />
             <button
+              type="button"
               onClick={this.save}
               id="save"
               disabled={waiting}
@@ -155,6 +163,7 @@ export default class RecordPage extends React.Component<
               <span>Save</span>
             </button>
             <button
+              type="button"
               onClick={this.reset}
               id="reset"
               disabled={waiting}
