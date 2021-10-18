@@ -24,6 +24,7 @@ export default class Recorder extends EventTarget {
   firstTime: number | undefined;
   keyTimeouts: Record<string, number>;
   operations: TimedOp[];
+  lastOperations: TimedOp[];
   piano: Piano;
   playAllIntervals: number[];
   progressInterval: number | null;
@@ -41,6 +42,7 @@ export default class Recorder extends EventTarget {
     this.progressPeriod = spec.progressPeriod || 40;
     this.piano = spec.piano;
     this.operations = spec.operations || [];
+    this.lastOperations = [];
     this.playAllIntervals = [];
     this.progressInterval = null;
     this.firstTime = undefined;
@@ -88,8 +90,27 @@ export default class Recorder extends EventTarget {
 
   startRecording() {
     this.piano.stopAll();
+    this.lastOperations = this.operations;
     this.operations = [];
     this.firstTime = undefined;
+
+    if (!this.startedRecording) {
+      this.piano.addEventListener(PianoEvents.operation, this.onPianoOperation);
+      this.startedRecording = true;
+    }
+
+    this.setState(RecorderState.recording);
+    this.send(RecorderEvent.progress, 0);
+  }
+
+  restartRecording() {
+    this.piano.stopAll();
+
+    const [, time] = this.operations[this.operations.length - 1];
+    const dividedTime = Math.round(
+      new Date().getTime() / C.TIME_RESOLUTION_DIVISOR
+    );
+    this.firstTime = dividedTime - time;
 
     if (!this.startedRecording) {
       this.piano.addEventListener(PianoEvents.operation, this.onPianoOperation);
@@ -109,12 +130,12 @@ export default class Recorder extends EventTarget {
   }
 
   recordOperation(op: Op, timeInMs: number) {
-    timeInMs = Math.round(timeInMs / C.TIME_RESOLUTION_DIVISOR);
+    const dividedTime = Math.round(timeInMs / C.TIME_RESOLUTION_DIVISOR);
     if (this.firstTime === undefined) {
-      this.firstTime = timeInMs;
+      this.firstTime = dividedTime;
     }
 
-    this.operations.push([op, timeInMs - this.firstTime]);
+    this.operations.push([op, dividedTime - this.firstTime]);
   }
 
   play() {
@@ -153,6 +174,10 @@ export default class Recorder extends EventTarget {
   }
 
   stop() {
+    if (this.operations.length === 0 && this.lastOperations.length) {
+      this.operations = this.lastOperations;
+    }
+
     while (this.playAllIntervals.length) {
       let interval = this.playAllIntervals.pop();
       clearInterval(interval);

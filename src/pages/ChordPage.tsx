@@ -1,7 +1,6 @@
 import React, { MouseEvent } from "react";
 import { Redirect, RouteComponentProps } from "react-router-dom";
 
-import * as C from "../constants";
 import BigPlay from "../ui/BigPlay";
 import Keyboard from "../ui/Keyboard";
 import Ops from "../Ops";
@@ -151,11 +150,11 @@ export default class ChordPage extends React.Component<
         <section>
           <div>
             <BigPlay
-              state={playing ? C.PLAYING : C.STOPPED}
+              isPlaying={playing}
               handlePlay={this.play}
               handleStop={this.stop}
               progress={0}
-              waiting={false}
+              isWaiting={false}
             />
             <Title title={title} onChange={this.setTitle} />
             {!title && "(click to rename)"}

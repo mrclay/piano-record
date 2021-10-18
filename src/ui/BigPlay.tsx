@@ -1,39 +1,38 @@
 import React from "react";
 
-import * as C from "../constants";
 import Progress from "./Progress";
 
 interface PlayProps {
   handlePlay(): void;
   handleStop(): void;
+  isPlaying: boolean;
+  isWaiting: boolean;
   progress: number;
-  state: string;
-  waiting: boolean;
 }
 
 export default function Play({
   handlePlay,
   handleStop,
   progress,
-  state,
-  waiting,
+  isPlaying,
+  isWaiting,
 }: PlayProps) {
   function renderIcon() {
-    if (progress !== undefined) {
+    if (isPlaying) {
       return <Progress ratio={progress} />;
     }
 
     return <i className="fa fa-stop" aria-hidden="true" />;
   }
 
-  if (state === C.PLAYING) {
+  if (isPlaying) {
     return (
       <button
         type="button"
         onClick={handleStop}
         id="big-play"
         className="btn btn-default"
-        disabled={waiting}
+        disabled={isWaiting}
       >
         {renderIcon()}
       </button>
@@ -45,7 +44,7 @@ export default function Play({
       type="button"
       onClick={handlePlay}
       id="big-play"
-      disabled={waiting}
+      disabled={isWaiting}
       className="btn btn-default"
     >
       <i className="fa fa-play" aria-hidden="true" />

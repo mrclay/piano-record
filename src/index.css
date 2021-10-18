@@ -22,63 +22,8 @@ h1.Title.untitled span {
 h2.Title input {
   color: #000;
 }
-
-#piano {
-  width: 1246px;
-  margin: 0 auto;
-  position: relative;
-  background: #444;
-}
-.white {
-  z-index: 1;
-  padding-left: 10px;
-  border: 1px solid #ccc;
-  overflow: auto;
-}
-.black {
-  position: absolute;
-  top: 0;
-  left: 0;
-}
-#piano [data-note] {
-  text-align: center;
-  text-decoration: none;
-}
-.white span {
-  float: left;
-  margin-left: 2px;
-  width: 32px;
-  height: 160px;
-  -moz-border-radius: 2px 2px 5px 5px;
-  -webkit-border-radius: 2px 2px 5px 5px;
-  border-radius: 2px 2px 5px 5px;
-  background: #fff;
-  color: #000;
-  font-weight: 700;
-  padding-top: 120px;
-  cursor: pointer;
-}
-.black span {
-  position: absolute;
-  top: 0;
-  width: 16px;
-  height: 100px;
-  border: 2px solid #000;
-  -moz-border-radius: 0 0 5px 5px;
-  -webkit-border-radius: 0 0 5px 5px;
-  border-radius: 0 0 5px 5px;
-  background: #000;
-  color: #fff;
-  padding-top: 58px;
-  font-size: 10px;
-  cursor: pointer;
-}
-.white > span.active,
-.black > span.active {
-  background: #74c674;
-}
-#piano.noinput span {
-  cursor: default;
+.title-ui {
+  margin-right: 3rem;
 }
 
 section {
@@ -86,6 +31,7 @@ section {
 }
 
 #status {
+  display: inline-block;
   text-align: right;
   font: 30px monospace;
   font-style: italic;
@@ -148,10 +94,7 @@ button .progress {
   min-height: 4.5em;
   margin-top: 10px;
 }
-.piano-2col > div {
-  flex: 3;
-}
-.piano-2col > div + div {
+.piano-2col > div:first-child {
   flex: 1;
 }
 

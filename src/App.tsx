@@ -11,15 +11,12 @@ import Paths from "./Paths";
 import asyncComponent from "./AsyncComponent";
 
 setTimeout(() => {
-  /*eslint no-unused-expressions: "off"*/
-  import("./pages/SongsPage");
   import("./pages/ChordPage");
-  import("./pages/RecordPage");
+  import("./pages/PianoPage");
 }, 1500);
 
-const AsyncSongs = asyncComponent(() => import("./pages/SongsPage"));
 const AsyncChord = asyncComponent(() => import("./pages/ChordPage"));
-const AsyncRecord = asyncComponent(() => import("./pages/RecordPage"));
+const AsyncPiano = asyncComponent(() => import("./pages/PianoPage"));
 
 // Key the component on pathname so we destroy it if path changes
 function pathKeyedComponent<T extends object>(C: ComponentType<T>) {
@@ -34,19 +31,23 @@ const App = () => (
       <Switch>
         <Route
           path={Paths.pianoPrefix("/songs/:stream/:title")}
-          component={pathKeyedComponent(AsyncSongs)}
+          component={pathKeyedComponent(AsyncPiano)}
         />
         <Route
           path={Paths.pianoPrefix("/songs/:stream")}
-          component={pathKeyedComponent(AsyncSongs)}
+          component={pathKeyedComponent(AsyncPiano)}
+        />
+        <Route
+          path={Paths.pianoPrefix("/record/:stream")}
+          component={pathKeyedComponent(AsyncPiano)}
         />
         <Route
           path={Paths.pianoPrefix("/record")}
-          component={pathKeyedComponent(AsyncRecord)}
+          component={pathKeyedComponent(AsyncPiano)}
         />
         <Route
           path={Paths.pianoPrefix("/")}
-          component={pathKeyedComponent(AsyncSongs)}
+          component={pathKeyedComponent(AsyncPiano)}
         />
         <Route
           path={Paths.chordPrefix("/:notes/:title")}

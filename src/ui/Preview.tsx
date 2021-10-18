@@ -1,24 +1,23 @@
 import React from "react";
 
-import * as C from "../constants";
 import Progress from "./Progress";
 
 interface PreviewProps {
   handlePlay(): void;
   handleStop(): void;
   progress: number;
-  state: string;
-  waiting: boolean;
+  isPlaying: boolean;
+  isWaiting: boolean;
 }
 
 export default function Preview({
   handlePlay,
   handleStop,
   progress,
-  state,
-  waiting,
+  isPlaying,
+  isWaiting,
 }: PreviewProps) {
-  if (state === C.PLAYING) {
+  if (isPlaying) {
     return (
       <button
         type="button"
@@ -37,7 +36,7 @@ export default function Preview({
       type="button"
       onClick={handlePlay}
       id="preview"
-      disabled={waiting}
+      disabled={isWaiting}
       className="btn btn-default med-btn"
     >
       <i className="fa fa-play" aria-hidden="true" /> <span>Preview</span>

@@ -1,28 +1,19 @@
 import React from "react";
 
-import * as C from "../constants";
-
 interface StatusProps {
-  waiting: boolean;
-  state: string;
+  isRecording: boolean;
+  isPlaying: boolean;
 }
 
-export default function Status({ waiting, state }: StatusProps) {
-  if (waiting) {
-    return (
-      <div id="status" className="ready">
-        Ready!!!
-      </div>
-    );
-  }
-  if (state === C.PLAYING) {
+export default function Status({ isPlaying, isRecording }: StatusProps) {
+  if (isPlaying) {
     return (
       <div id="status" className="playing">
         Playback...
       </div>
     );
   }
-  if (state === C.RECORDING) {
+  if (isRecording) {
     return (
       <div id="status" className="recording">
         <i className="fa fa-circle" aria-hidden="true" /> Recording...
