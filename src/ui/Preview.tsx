@@ -39,7 +39,7 @@ export default function Preview({
       disabled={isWaiting}
       className="btn btn-default med-btn"
     >
-      <i className="fa fa-play" aria-hidden="true" /> <span>Preview</span>
+      <i className="fa fa-play" aria-hidden="true" /> <span>Play</span>
     </button>
   );
 }

@@ -270,6 +270,13 @@ export default class PianoPage extends React.Component<
       <Template app="songs">
         <section className="piano-2col">
           <div>
+            {mode === Mode.shared && (
+              <span className="title-ui">
+                <Title title={title} onChange={this.setTitle} />
+                {!title && " (click to rename)"}
+              </span>
+            )}
+
             {hasOperations && (
               <Preview
                 handlePlay={this.play}
@@ -280,20 +287,13 @@ export default class PianoPage extends React.Component<
               />
             )}
 
-            {mode === Mode.shared && (
-              <span className="title-ui">
-                <Title title={title} onChange={this.setTitle} />
-                {!title && " (click to rename)"}
-              </span>
-            )}
-
             {canMakeChanges && (
               <button
                 type="button"
                 className="btn btn-warning med-btn"
                 onClick={this.makeChanges}
               >
-                {/* <i className="fa fa-circle" aria-hidden="true" />{" "} */}
+                <i className="fa fa-wrench" aria-hidden="true" />{" "}
                 <span>Make changes</span>
               </button>
             )}
