@@ -129,6 +129,10 @@ export default class Recorder extends EventTarget {
     return this.operations;
   }
 
+  getLastOperations() {
+    return this.lastOperations;
+  }
+
   recordOperation(op: Op, timeInMs: number) {
     const dividedTime = Math.round(timeInMs / C.TIME_RESOLUTION_DIVISOR);
     if (this.firstTime === undefined) {

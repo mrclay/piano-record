@@ -1,8 +1,7 @@
 import EventTarget from "dom-event-target";
-import { Piano as TonePiano } from "@tonejs/piano";
-
 import * as C from "./constants";
 import Ops, { MidiOp, Op } from "./Ops";
+import SimplePiano from "./SimplePiano";
 
 export type ActiveKeys = Record<string, boolean | undefined>;
 
@@ -16,15 +15,7 @@ export enum PianoEvents {
   reset = "reset",
 }
 
-const tonePiano = new TonePiano({
-  minNote: C.RANGE[0],
-  maxNote: C.RANGE[1],
-  velocities: C.VELOCITIES,
-  release: C.USE_RELEASE,
-  url: C.SAMPLES_URL,
-}).toDestination();
-
-tonePiano.load();
+const tonePiano = new SimplePiano();
 
 let activeKeys: ActiveKeys = Object.create(null);
 for (let note = C.RANGE[0]; note <= C.RANGE[1]; note++) {

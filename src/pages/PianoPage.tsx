@@ -189,9 +189,14 @@ export default class PianoPage extends React.Component<
   };
 
   startOneKey = () => {
-    this.notes = PianoPage.notesFromOps(this.recorder.getOperations());
     this.notesIndex = 0;
     this.notesByKey = Object.create(null);
+    const ops =
+      this.state.mode === Mode.oneKey
+        ? this.recorder.getLastOperations()
+        : this.recorder.getOperations();
+
+    this.notes = PianoPage.notesFromOps(ops);
     this.recorder.startRecording();
     this.setState({ mode: Mode.oneKey });
   };
@@ -258,7 +263,8 @@ export default class PianoPage extends React.Component<
       (recorderState === RecorderState.recording && hasOperations) ||
       mode === Mode.oneKey;
     const canMakeChanges = mode === Mode.shared;
-    const canOneKey = mode === Mode.recording && hasStream;
+    const canOneKey =
+      (mode === Mode.recording && hasStream) || mode === Mode.oneKey;
     const canShare =
       mode !== Mode.shared &&
       recorderState === RecorderState.stopped &&

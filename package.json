@@ -7,7 +7,6 @@
     "@testing-library/jest-dom": "^5.14.1",
     "@testing-library/react": "^11.2.7",
     "@testing-library/user-event": "^12.8.3",
-    "@tonejs/piano": "^0.2.1",
     "dom-event-target": "^1.0.0",
     "node-sass": "^6.0.1",
     "prettier": "^2.4.1",

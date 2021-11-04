@@ -1,4 +1,4 @@
-import React, { ComponentType } from "react";
+import React, { ComponentType, lazy, Suspense } from "react";
 import {
   BrowserRouter as Router,
   Route,
@@ -8,20 +8,21 @@ import {
 } from "react-router-dom";
 
 import Paths from "./Paths";
-import asyncComponent from "./AsyncComponent";
 
 setTimeout(() => {
   import("./pages/ChordPage");
   import("./pages/PianoPage");
 }, 1500);
 
-const AsyncChord = asyncComponent(() => import("./pages/ChordPage"));
-const AsyncPiano = asyncComponent(() => import("./pages/PianoPage"));
+const AsyncChord = lazy(() => import("./pages/ChordPage"));
+const AsyncPiano = lazy(() => import("./pages/PianoPage"));
 
 // Key the component on pathname so we destroy it if path changes
 function pathKeyedComponent<T extends object>(C: ComponentType<T>) {
   return (props: T & RouteComponentProps) => (
-    <C key={props.location.pathname} {...props} />
+    <Suspense fallback={<>...</>}>
+      <C key={props.location.pathname} {...props} />
+    </Suspense>
   );
 }
 
