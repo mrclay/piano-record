@@ -13,8 +13,8 @@
     "react": "^17.0.2",
     "react-clipboard.js": "^2.0.16",
     "react-dom": "^17.0.2",
-    "react-router": "^5.2.1",
-    "react-router-dom": "^5.1.2",
+    "react-router": "^6.0.0",
+    "react-router-dom": "^6.0.0",
     "react-scripts": "^4.0.3",
     "tone": "^14.7.77",
     "web-vitals": "^1.1.2"
@@ -48,7 +48,6 @@
     "@types/node": "^16.9.4",
     "@types/react": "^17.0.21",
     "@types/react-dom": "^17.0.9",
-    "@types/react-router-dom": "^5.1.9",
     "@types/webmidi": "^2.0.6",
     "typescript": "^4.4.3"
   }

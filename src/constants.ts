@@ -1,3 +1,5 @@
+import { NavigateFunction } from "react-router-dom";
+
 import { Command } from "./Ops";
 
 export const SOURCE_URL = "https://github.com/mrclay/piano-record";
@@ -37,6 +39,12 @@ export const MIDI2_RELEASE_VELOCITY = 0;
 
 export const DEFAULT_TITLE = "Untitled";
 
+export interface RouteComponentProps<T extends object = {}> {
+  navigate: NavigateFunction;
+  params: T;
+  pathname: string;
+}
+
 /**
  * 1. Play us a song!!!
  *  [X]
@@ -48,6 +56,4 @@ export const DEFAULT_TITLE = "Untitled";
  *
  * 3. Press letter keys to replay notes in order
  *  [Nailed it]  [Try again]  [Start over]
- *
- *
  */

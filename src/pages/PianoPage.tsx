@@ -1,5 +1,5 @@
 import React from "react";
-import { Redirect, RouteComponentProps } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 
 import * as C from "../constants";
 import Keyboard from "../ui/Keyboard";
@@ -32,7 +32,7 @@ interface MatchItems {
   title?: string;
 }
 
-interface PianoPageProps extends RouteComponentProps<MatchItems> {}
+interface PianoPageProps extends C.RouteComponentProps<MatchItems> {}
 
 interface PianoPageState {
   activeKeys: ActiveKeys;
@@ -43,10 +43,21 @@ interface PianoPageState {
   undoStream: string;
 }
 
-export default class PianoPage extends React.Component<
-  PianoPageProps,
-  PianoPageState
-> {
+export default function Wrapper() {
+  const navigate = useNavigate();
+  const params: MatchItems = useParams();
+  const { pathname } = useLocation();
+  return (
+    <PianoPage
+      key={pathname}
+      pathname={pathname}
+      navigate={navigate}
+      params={params}
+    />
+  );
+}
+
+class PianoPage extends React.Component<PianoPageProps, PianoPageState> {
   // Holds which key(s) are being used to play a particular note
   notesByKey: Record<string, number>;
   // All notes in striking order (release order not considered)
@@ -72,12 +83,9 @@ export default class PianoPage extends React.Component<
   }
 
   static stateFromProps(
-    { match, location }: PianoPageProps,
+    { params, pathname }: PianoPageProps,
     recorder: Recorder
   ): PianoPageState {
-    const { params } = match;
-    const { pathname } = location;
-
     const stream = params.stream || "";
     const title = params.title ? decodeURIComponent(params.title) : "";
     const ops = Ops.operationsFromStream(stream);
@@ -148,7 +156,7 @@ export default class PianoPage extends React.Component<
     this.setState({ mode: Mode.recording }, () => {
       const stream = Ops.streamFromOperations(this.recorder.getOperations());
       if (stream) {
-        this.props.history.push(Paths.pianoPrefix(`/record/${stream}`));
+        this.props.navigate(Paths.pianoPrefix(`/record/${stream}`));
       }
     });
   };
@@ -156,13 +164,13 @@ export default class PianoPage extends React.Component<
   share = () => {
     this.recorder.stop();
     const stream = Ops.streamFromOperations(this.recorder.getOperations());
-    this.props.history.push(Paths.pianoPrefix(`/songs/${stream}`));
+    this.props.navigate(Paths.pianoPrefix(`/songs/${stream}`));
   };
 
   reset = () => {
     this.recorder.startRecording();
     this.setState({ mode: Mode.recording }, () => {
-      this.props.history.push(Paths.pianoPrefix("/record"));
+      this.props.navigate(Paths.pianoPrefix("/record"));
     });
   };
 
@@ -173,14 +181,16 @@ export default class PianoPage extends React.Component<
       const s = this.state.stream;
       const t = Ops.fixedEncodeURIComponent(title);
 
-      this.props.history.replace(Paths.pianoPrefix(`/songs/${s}/${t}`));
+      this.props.navigate(Paths.pianoPrefix(`/songs/${s}/${t}`), {
+        replace: true,
+      });
     });
   };
 
   makeChanges = () => {
     this.setState({ mode: Mode.recording });
     const stream = Ops.streamFromOperations(this.recorder.getOperations());
-    this.props.history.push(Paths.pianoPrefix(`/record/${stream}`));
+    this.props.navigate(Paths.pianoPrefix(`/record/${stream}`));
   };
 
   recordMore = () => {
@@ -247,7 +257,8 @@ export default class PianoPage extends React.Component<
       if (m) {
         const path = m[2] ? `/songs/${m[1]}/${m[2]}` : `/songs/${m[1]}`;
 
-        return <Redirect to={Paths.pianoPrefix(path)} />;
+        this.props.navigate(Paths.pianoPrefix(path));
+        return null;
       }
     }
 

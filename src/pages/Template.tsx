@@ -1,5 +1,5 @@
 import React, { FC } from "react";
-import { Link, Route } from "react-router-dom";
+import { Link, NavLink, useLocation } from "react-router-dom";
 
 import * as C from "../constants";
 import Paths from "../Paths";
@@ -8,16 +8,14 @@ interface ListItemLinkProps {
   to: string;
 }
 
-const ListItemLink: FC<ListItemLinkProps> = ({ to, ...rest }) => (
-  <Route
-    path={to}
-    children={({ match }) => (
-      <li className={match ? "active" : ""}>
-        <Link to={to} {...rest} />
-      </li>
-    )}
-  />
-);
+const ListItemLink: FC<ListItemLinkProps> = ({ to, ...rest }) => {
+  const { pathname } = useLocation();
+  return (
+    <li className={pathname.indexOf(to) === 0 ? "active" : ""}>
+      <NavLink to={to} {...rest} />
+    </li>
+  );
+};
 
 const exampleChord = Paths.chordPrefix("/43,56,60,62,65/G7b9sus");
 const exampleSong = Paths.pianoPrefix(

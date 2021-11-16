@@ -1,5 +1,10 @@
 import React, { MouseEvent } from "react";
-import { Redirect, RouteComponentProps } from "react-router-dom";
+import {
+  Navigate,
+  useParams,
+  useNavigate,
+  useLocation,
+} from "react-router-dom";
 
 import BigPlay from "../ui/BigPlay";
 import Keyboard from "../ui/Keyboard";
@@ -9,6 +14,7 @@ import Piano, { ActiveKeys } from "../Piano";
 import Template from "./Template";
 import Title from "../ui/Title";
 import Saver from "../ui/Saver";
+import { RouteComponentProps } from "../constants";
 
 interface MatchItems {
   notes?: string;
@@ -38,10 +44,21 @@ function stateFromProps({ notes, title = "" }: MatchItems): ChordPageState {
   };
 }
 
-export default class ChordPage extends React.Component<
-  ChordPageProps,
-  ChordPageState
-> {
+export default function Wrapper() {
+  const navigate = useNavigate();
+  const params: MatchItems = useParams();
+  const { pathname } = useLocation();
+  return (
+    <ChordPage
+      key={pathname}
+      pathname={pathname}
+      navigate={navigate}
+      params={params}
+    />
+  );
+}
+
+class ChordPage extends React.Component<ChordPageProps, ChordPageState> {
   piano: Piano;
   playTimeout: number | null;
 
@@ -51,7 +68,7 @@ export default class ChordPage extends React.Component<
     this.piano = new Piano();
     this.playTimeout = null;
 
-    this.state = stateFromProps(props.match.params);
+    this.state = stateFromProps(props.params);
   }
 
   componentDidMount() {
@@ -113,14 +130,15 @@ export default class ChordPage extends React.Component<
       path += "/" + Ops.fixedEncodeURIComponent(title);
     }
 
-    const method = e === "setTitle" ? "replace" : "push";
-    this.props.history[method](Paths.chordPrefix(path));
+    this.props.navigate(Paths.chordPrefix(path), {
+      replace: e === "setTitle",
+    });
   };
 
   reset = () => {
     this.stop();
-    this.setState(stateFromProps(this.props.match.params));
-    this.props.history.push(Paths.chordPrefix("/"));
+    this.setState(stateFromProps(this.props.params));
+    this.props.navigate(Paths.chordPrefix("/"));
   };
 
   onKeyClick = (note: number) => {
@@ -141,7 +159,7 @@ export default class ChordPage extends React.Component<
       if (m) {
         const path = m[2] ? `/${m[1]}/${m[2]}` : `/${m[1]}`;
 
-        return <Redirect to={Paths.chordPrefix(path)} />;
+        return <Navigate to={Paths.chordPrefix(path)} />;
       }
     }
 
@@ -180,11 +198,11 @@ export default class ChordPage extends React.Component<
           </div>
         </section>
         <Keyboard
-          key={this.props.location.pathname}
+          key={this.props.pathname}
           activeKeys={activeKeys}
           onKeyClick={this.onKeyClick}
         />
-        {this.props.match.params.notes && (
+        {this.props.params.notes && (
           <section>
             <h3>This is not saved</h3>
             <p>
