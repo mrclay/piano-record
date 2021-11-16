@@ -2,6 +2,7 @@ import React from "react";
 
 export default function Progress(props: { ratio: number }) {
   let style = {
+    transition: "width 250ms",
     width: 100 * props.ratio + "%",
   };
   let percentage = Math.round(100 * props.ratio);

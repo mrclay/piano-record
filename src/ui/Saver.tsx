@@ -6,10 +6,10 @@ import Ops from "../Ops";
 
 interface TableProps {
   href: string;
-  title: string;
+  title?: string;
 }
 
-export default function Table({ href, title }: TableProps) {
+export default function Table({ href, title = "" }: TableProps) {
   const [saved, setSaved] = useState("");
 
   const htmlize = Ops.encodeHtml;

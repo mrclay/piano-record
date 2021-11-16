@@ -6,10 +6,12 @@ import Paths from "./Paths";
 setTimeout(() => {
   import("./pages/ChordPage");
   import("./pages/PianoPage");
+  import("./pages/SequencePage");
 }, 1500);
 
 const AsyncChord = lazy(() => import("./pages/ChordPage"));
 const AsyncPiano = lazy(() => import("./pages/PianoPage"));
+const AsyncSequence = lazy(() => import("./pages/SequencePage"));
 
 // Key the component on pathname so we destroy it if path changes
 function PathKeyedComponent(C: ComponentType) {
@@ -55,6 +57,14 @@ const App = () => (
       <Route
         path={Paths.chordPrefix("/")}
         element={PathKeyedComponent(AsyncChord)}
+      />
+      <Route
+        path={Paths.sequencePrefix("/songs/:stream")}
+        element={PathKeyedComponent(AsyncSequence)}
+      />
+      <Route
+        path={Paths.sequencePrefix("/")}
+        element={PathKeyedComponent(AsyncSequence)}
       />
       <Route path="/" element={<Navigate to={Paths.pianoPrefix("/")} />} />
     </Routes>

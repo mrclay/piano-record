@@ -39,6 +39,14 @@ function renderHeader(app: string) {
     );
   }
 
+  if (app === "sequence") {
+    return (
+      <div>
+        <h1 className={"h2"}>Simple Sequence</h1>
+      </div>
+    );
+  }
+
   return (
     <div>
       <h1 className={"h2"}>Simple Piano</h1>
@@ -64,6 +72,9 @@ const Template: FC<TemplateProps> = ({ app, children }) => {
       <nav className="nav nav-tabs">
         <ListItemLink to={Paths.pianoPrefix("/")}>Songs</ListItemLink>
         <ListItemLink to={Paths.chordPrefix("/")}>Chords</ListItemLink>
+        <ListItemLink to={Paths.sequencePrefix("/")}>
+          Sequence (beta)
+        </ListItemLink>
       </nav>
 
       {children}

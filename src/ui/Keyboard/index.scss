@@ -46,7 +46,7 @@
     cursor: pointer;
 
     .stepRow & {
-      background: #555;
+      background: #777;
       border: 0;
       border-radius: 0;
       height: 30px;
@@ -84,6 +84,30 @@
       padding-top: 0;
     }
   }
+}
+
+[data-remove-step],
+[data-copy-step] {
+  background: #ccc;
+  border: 0;
+  border-radius: 50%;
+  color: #fff;
+  line-height: 1ex;
+  padding: 6px 6px 7px;
+  position: absolute;
+  top: 5px;
+
+  &:hover {
+    background: #333;
+  }
+}
+
+[data-remove-step] {
+  left: calc(100% - 7px);
+}
+
+[data-copy-step] {
+  right: calc(100% - 7px);
 }
 
 .piano {

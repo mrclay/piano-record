@@ -79,6 +79,33 @@ export default function Keyboard({
     }
   };
 
+  const handleRemoveStep: MouseEventHandler<HTMLButtonElement> = e => {
+    const t = e.target;
+    if (!(t instanceof HTMLButtonElement) || !steps || !onStepsChange) {
+      return;
+    }
+
+    const stepIdx = Number(t.dataset.removeStep);
+    const newSteps = [...steps];
+    newSteps.splice(stepIdx, 1);
+    onStepsChange(newSteps, []);
+  };
+
+  const handleCopyStep: MouseEventHandler<HTMLButtonElement> = e => {
+    const t = e.target;
+    if (!(t instanceof HTMLButtonElement) || !steps || !onStepsChange) {
+      return;
+    }
+
+    const stepIdx = Number(t.dataset.copyStep);
+    const newSteps = [
+      ...steps.slice(0, stepIdx),
+      steps[stepIdx],
+      ...steps.slice(stepIdx),
+    ];
+    onStepsChange(newSteps, []);
+  };
+
   const renderKey = (active: boolean, note: number, left = 0) => (
     <span
       key={note}
@@ -107,6 +134,22 @@ export default function Keyboard({
                 renderKey(activeNotes.indexOf(note) !== -1, note, left)
               )}
             </div>
+            <button
+              type="button"
+              data-remove-step={i}
+              onClick={handleRemoveStep}
+              title="Remove"
+            >
+              &times;
+            </button>
+            <button
+              type="button"
+              data-copy-step={i}
+              onClick={handleCopyStep}
+              title="Copy"
+            >
+              c
+            </button>
           </div>
         ))}
       <div className={onKeyClick ? "piano" : "piano noinput"}>
