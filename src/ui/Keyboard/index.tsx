@@ -100,7 +100,7 @@ export default function Keyboard({
     const stepIdx = Number(t.dataset.copyStep);
     const newSteps = [
       ...steps.slice(0, stepIdx),
-      steps[stepIdx],
+      steps[stepIdx].slice(),
       ...steps.slice(stepIdx),
     ];
     onStepsChange(newSteps, []);

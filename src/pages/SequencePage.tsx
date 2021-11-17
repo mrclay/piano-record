@@ -1,14 +1,19 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import Paths from "../Paths";
-import Piano from "../Piano";
+import Piano, { ActiveKeys } from "../Piano";
 import Keyboard from "../ui/Keyboard";
 import Template from "./Template";
 import Preview from "../ui/Preview";
 import Saver from "../ui/Saver";
 
-function streamFromSong(bpm: number, sustain: boolean, steps: Array<number[]>) {
-  let out = `v1,${bpm},${sustain ? "1" : "0"},`;
+function streamFromSong(
+  bpm: number,
+  joinNotes: boolean,
+  sustain: boolean,
+  steps: Array<number[]>
+) {
+  let out = `v2,${bpm},${joinNotes ? "1" : "0"},${sustain ? "1" : "0"},`;
   out += steps
     .map(chord =>
       chord
@@ -22,15 +27,48 @@ function streamFromSong(bpm: number, sustain: boolean, steps: Array<number[]>) {
   return out;
 }
 
-function songFromStream(stream: string) {
-  const m = stream.match(/^v1,(\d+),([10]),(.+)$/);
-  if (!m) {
-    return { bpm: 0, sustain: false };
+function parseStream(stream: string) {
+  let m = stream.match(/^v1,(\d+),([10]),(.+)$/);
+  if (m) {
+    return {
+      bpm: Number(m[1]),
+      data: m[3],
+      joinNotes: false,
+      sustain: m[2] === "1",
+    };
   }
 
-  const bpm = Number(m[1]);
-  const sustain = m[2] === "1";
-  const data = m[3].split("-").map(str => {
+  m = stream.match(/^v2,(\d+),([10]),([10]),(.+)$/);
+  if (m) {
+    return {
+      bpm: Number(m[1]),
+      data: m[4],
+      joinNotes: m[2] === "1",
+      sustain: m[3] === "1",
+    };
+  }
+
+  return {
+    bpm: 0,
+    data: null,
+    joinNotes: false,
+    sustain: false,
+  };
+}
+
+function songFromStream(stream: string): {
+  bpm: number;
+  chords: Array<number[]> | false;
+  joinNotes: boolean;
+  sustain: boolean;
+} {
+  let { bpm, data, joinNotes, sustain } = parseStream(stream);
+
+  if (!data) {
+    return { bpm, chords: false, joinNotes, sustain };
+  }
+
+  const chords = data.split("-").map(str => {
     const notes: number[] = [];
     let chunk = "";
     while ((chunk = str.substr(notes.length * 2, 2))) {
@@ -39,7 +77,8 @@ function songFromStream(stream: string) {
     }
     return notes;
   });
-  return { bpm, sustain, data };
+
+  return { bpm, chords, joinNotes, sustain };
 }
 
 export default function SequencePage(): JSX.Element {
@@ -54,6 +93,7 @@ export default function SequencePage(): JSX.Element {
 
   const [bpm, setBpm] = useState(60);
   const [sustain, setSustain] = useState(true);
+  const [joinNotes, setJoinNotes] = useState(true);
   const [numSteps, setNumSteps] = useState(8);
   const [stepData, setStepData] = useState<Array<number[]>>(() => {
     const out = [];
@@ -63,7 +103,7 @@ export default function SequencePage(): JSX.Element {
     return out;
   });
 
-  const chord = playing ? stepData[step] : [];
+  const chord = playing ? stepData[step] || [] : [];
   const activeKeys = chord.reduce(
     (prev, curr) => ({
       ...prev,
@@ -86,20 +126,51 @@ export default function SequencePage(): JSX.Element {
     if (!playing) {
       return;
     }
-    if (!sustain) {
-      piano.stopAll();
-    }
+
+    // Keep track of which are started
+    const bannedNotes: ActiveKeys = {};
+    // Handle notes already playing
+    Object.entries(Piano.getActiveKeys())
+      .filter(([k, v]) => v === true)
+      .forEach(([noteStr]) => {
+        const note = Number(noteStr);
+        const willPlay = chord.includes(note);
+        if (sustain) {
+          // Stop and replay
+          if (willPlay) {
+            piano.stopNote(note);
+            piano.startNote(note);
+            bannedNotes[note] = true;
+          }
+        } else if (joinNotes) {
+          if (!willPlay) {
+            piano.stopNote(note);
+          } else {
+            // Marking so we don't restart it
+            bannedNotes[note] = true;
+          }
+        } else {
+          piano.stopNote(note);
+          if (willPlay) {
+            piano.startNote(note);
+            bannedNotes[note] = true;
+          }
+        }
+      });
+
+    // Start notes that still need starting
     stepData[step].forEach(note => {
-      if (sustain) {
-        piano.stopNote(note);
+      if (!bannedNotes[note]) {
+        piano.startNote(note);
       }
-      piano.startNote(note);
     });
   }
 
   function share() {
     navigate(
-      Paths.sequencePrefix(`/songs/${streamFromSong(bpm, sustain, stepData)}`)
+      Paths.sequencePrefix(
+        `/songs/${streamFromSong(bpm, joinNotes, sustain, stepData)}`
+      )
     );
   }
 
@@ -107,12 +178,13 @@ export default function SequencePage(): JSX.Element {
   useEffect(() => {
     const stream = params.stream;
     if (typeof stream === "string") {
-      const { bpm, data, sustain } = songFromStream(stream);
-      if (data) {
+      const { bpm, chords, joinNotes, sustain } = songFromStream(stream);
+      if (chords) {
         setBpm(bpm);
+        setJoinNotes(joinNotes);
         setSustain(sustain);
-        setStepData(data);
-        setNumSteps(data.length);
+        setStepData(chords);
+        setNumSteps(chords.length);
         setPlaying(false);
       }
     }
@@ -151,7 +223,7 @@ export default function SequencePage(): JSX.Element {
           handleStop={handleStop}
           isPlaying={playing}
           isWaiting={false}
-          progress={(step + 1) / (numSteps + 1)}
+          progress={step / (numSteps - 1)}
         />
         <label>
           BPM{" "}
@@ -182,14 +254,25 @@ export default function SequencePage(): JSX.Element {
             }}
           />
         </label>
-        <label>
-          <input
-            type="checkbox"
-            checked={sustain}
-            onChange={e => setSustain(e.target.checked)}
-          />{" "}
-          Sustain notes
-        </label>
+        <div>
+          <label>
+            <input
+              type="checkbox"
+              checked={sustain}
+              onChange={e => setSustain(e.target.checked)}
+            />{" "}
+            Sustain pedal
+          </label>
+          <br />
+          <label>
+            <input
+              type="checkbox"
+              checked={joinNotes}
+              onChange={e => setJoinNotes(e.target.checked)}
+            />{" "}
+            Join notes
+          </label>
+        </div>
         <button
           type="button"
           className="btn btn-primary med-btn"
@@ -206,6 +289,7 @@ export default function SequencePage(): JSX.Element {
         onStepsChange={(steps: Array<number[]>, changedChord: number[]) => {
           setStepData(steps);
           setNumSteps(steps.length);
+          setStep(0);
           piano.stopAll();
           changedChord.forEach(note => piano.startNote(note));
         }}
