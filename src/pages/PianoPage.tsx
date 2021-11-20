@@ -377,7 +377,7 @@ class PianoPage extends React.Component<PianoPageProps, PianoPageState> {
                 className="btn btn-danger med-btn"
                 style={{ marginLeft: "1em" }}
               >
-                <i className="fa fa-trash" aria-hidden="true" />
+                <i className="fa fa-trash" aria-label="Start over" />
               </button>
             )}
           </div>

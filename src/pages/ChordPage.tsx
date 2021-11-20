@@ -192,8 +192,7 @@ class ChordPage extends React.Component<ChordPageProps, ChordPageState> {
               id="reset"
               className="btn btn-danger med-btn"
             >
-              <i className="fa fa-circle" aria-hidden="true" />{" "}
-              <span>Reset</span>
+              <i className="fa fa-trash" aria-label="Reset" />
             </button>
           </div>
         </section>

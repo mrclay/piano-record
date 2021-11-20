@@ -9,8 +9,13 @@ interface KeyboardProps {
   activeKeys: ActiveKeys;
   currentStepIndex?: number;
   onKeyClick?(note: number): void;
-  onStepsChange?(steps: Array<number[]>, changedChord: number[]): void;
-  steps?: Array<number[]>;
+  onStepsChange?(
+    stepData: Array<number[]>,
+    joinData: Array<number[]>,
+    changedStep: number
+  ): void;
+  stepData?: Array<number[]>;
+  joinData?: Array<number[]>;
 }
 
 export default function Keyboard({
@@ -18,7 +23,8 @@ export default function Keyboard({
   currentStepIndex,
   onKeyClick,
   onStepsChange,
-  steps,
+  stepData,
+  joinData,
 }: KeyboardProps) {
   const { whites, blacks } = useMemo(() => {
     const whites = [];
@@ -57,18 +63,44 @@ export default function Keyboard({
     const s = t.closest("[data-step]");
 
     if (s instanceof HTMLDivElement) {
-      if (steps && onStepsChange) {
+      if (stepData && joinData && onStepsChange) {
+        // Clone data
+        const newStepData = [...stepData.map(vals => vals.slice())];
+        const newJoinData = [...joinData.map(vals => vals.slice())];
+
+        // Step change or join
         const stepIdx = Number(s.dataset.step);
-        let chord = steps[stepIdx];
+        let chord = newStepData[stepIdx];
+        let joins = newJoinData[stepIdx];
+
         if (chord.indexOf(note) === -1) {
+          // Note not set
           chord.push(note);
+          if (stepIdx > 0 && stepData[stepIdx - 1].includes(note)) {
+            // Already playing, join note
+            joins.push(note);
+          }
         } else {
-          chord = chord.filter(el => el !== note);
+          if (joins.includes(note)) {
+            // Just remove the join
+            joins = joins.filter(el => el !== note);
+          } else {
+            // Remove the note
+            chord = chord.filter(el => el !== note);
+
+            // If a joined note follows, remove the join
+            let nextStepJoins = newJoinData[stepIdx + 1] || [];
+            if (nextStepJoins.includes(note)) {
+              nextStepJoins = nextStepJoins.filter(el => el === note);
+              newJoinData[stepIdx + 1] = nextStepJoins;
+            }
+          }
         }
 
-        const newSteps = [...steps];
-        newSteps[stepIdx] = chord;
-        onStepsChange(newSteps, chord);
+        newStepData[stepIdx] = chord;
+        newJoinData[stepIdx] = joins;
+
+        onStepsChange(newStepData, newJoinData, stepIdx);
       }
 
       return;
@@ -81,58 +113,93 @@ export default function Keyboard({
 
   const handleRemoveStep: MouseEventHandler<HTMLButtonElement> = e => {
     const t = e.target;
-    if (!(t instanceof HTMLButtonElement) || !steps || !onStepsChange) {
+    if (
+      !(t instanceof HTMLButtonElement) ||
+      !stepData ||
+      !joinData ||
+      !onStepsChange
+    ) {
       return;
     }
 
     const stepIdx = Number(t.dataset.removeStep);
-    const newSteps = [...steps];
-    newSteps.splice(stepIdx, 1);
-    onStepsChange(newSteps, []);
+    const newStepData = [...stepData];
+    const newJoinData = [...joinData];
+    newStepData.splice(stepIdx, 1);
+    newJoinData.splice(stepIdx, 1);
+    onStepsChange(newStepData, newJoinData, Math.max(0, stepIdx - 1));
   };
 
   const handleCopyStep: MouseEventHandler<HTMLButtonElement> = e => {
     const t = e.target;
-    if (!(t instanceof HTMLButtonElement) || !steps || !onStepsChange) {
+    if (
+      !(t instanceof HTMLButtonElement) ||
+      !stepData ||
+      !joinData ||
+      !onStepsChange
+    ) {
       return;
     }
 
     const stepIdx = Number(t.dataset.copyStep);
-    const newSteps = [
-      ...steps.slice(0, stepIdx),
-      steps[stepIdx].slice(),
-      ...steps.slice(stepIdx),
+    const newStepData = [
+      ...stepData.slice(0, stepIdx),
+      stepData[stepIdx].slice(),
+      ...stepData.slice(stepIdx),
     ];
-    onStepsChange(newSteps, []);
+    const newJoinData = [
+      ...joinData.slice(0, stepIdx),
+      joinData[stepIdx].slice(),
+      ...joinData.slice(stepIdx),
+    ];
+    onStepsChange(newStepData, newJoinData, stepIdx + 1);
   };
 
-  const renderKey = (active: boolean, note: number, left = 0) => (
+  const renderKey = (
+    active: boolean,
+    note: number,
+    left = 0,
+    isJoin = false
+  ) => (
     <span
       key={note}
       data-note={note}
-      className={active ? "active" : ""}
+      className={(active ? "active " : " ") + (isJoin ? "joined " : " ")}
       style={{ left: left + "px" }}
     />
   );
 
   return (
     <div className="Keyboard" onMouseDown={handleKey}>
-      {typeof steps !== "undefined" &&
-        steps.map((activeNotes, i) => (
+      {stepData &&
+        joinData &&
+        stepData.map((activeNotes, i) => (
           <div
             key={i}
             className={`stepRow ${i === currentStepIndex ? "active" : ""}`}
             data-step={i}
           >
             <div className="white">
-              {whites.map(({ note }) =>
-                renderKey(activeNotes.indexOf(note) !== -1, note)
-              )}
+              {whites.map(({ note }) => {
+                const isJoin = joinData[i].includes(note);
+                return renderKey(
+                  activeNotes.indexOf(note) !== -1,
+                  note,
+                  0,
+                  isJoin
+                );
+              })}
             </div>
             <div className="black">
-              {blacks.map(({ note, left }) =>
-                renderKey(activeNotes.indexOf(note) !== -1, note, left)
-              )}
+              {blacks.map(({ note, left }) => {
+                const isJoin = joinData[i].includes(note);
+                return renderKey(
+                  activeNotes.indexOf(note) !== -1,
+                  note,
+                  left,
+                  isJoin
+                );
+              })}
             </div>
             <button
               type="button"

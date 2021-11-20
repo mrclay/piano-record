@@ -31,10 +31,9 @@
 .white {
   z-index: 1;
   padding-left: 10px;
-  overflow: auto;
+  display: flex;
 
   span {
-    float: left;
     margin-left: 2px;
     width: 32px;
     height: 160px;
@@ -53,6 +52,11 @@
       margin-left: 1px;
       padding-top: 0;
       width: 33px;
+
+      &.joined {
+        height: 31px;
+        margin-top: -1px;
+      }
     }
   }
 }
@@ -76,12 +80,17 @@
 
     .stepRow & {
       background: #555;
-      border: 0;
-      border-left: 1px solid #fff;
-      border-right: 1px solid #fff;
+      border: 1px solid #fff;
+      border-top: 0;
       border-radius: 0;
-      height: 30px;
+      height: 31px;
       padding-top: 0;
+      z-index: 1;
+
+      &.joined {
+        height: 32px;
+        margin-top: -1px;
+      }
     }
   }
 }

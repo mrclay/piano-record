@@ -9,17 +9,18 @@ import Saver from "../ui/Saver";
 
 function streamFromSong(
   bpm: number,
-  joinNotes: boolean,
-  sustain: boolean,
-  steps: Array<number[]>
+  stepData: Array<number[]>,
+  joinData: Array<number[]>
 ) {
-  let out = `v2,${bpm},${joinNotes ? "1" : "0"},${sustain ? "1" : "0"},`;
-  out += steps
-    .map(chord =>
-      chord
+  let out = `v3,${bpm},`;
+
+  out += stepData
+    .map((stepNotes, stepIdx) =>
+      stepNotes
         .map(note => {
-          let str = note.toString(16);
-          return str.length < 2 ? "0" + str : str;
+          const str = note.toString(16);
+          const j = joinData[stepIdx].includes(note) ? "j" : "p";
+          return j + (str.length < 2 ? "0" + str : str);
         })
         .join("")
     )
@@ -32,9 +33,8 @@ function parseStream(stream: string) {
   if (m) {
     return {
       bpm: Number(m[1]),
-      data: m[3],
-      joinNotes: false,
-      sustain: m[2] === "1",
+      version: 1,
+      raw: m[3],
     };
   }
 
@@ -42,44 +42,77 @@ function parseStream(stream: string) {
   if (m) {
     return {
       bpm: Number(m[1]),
-      data: m[4],
-      joinNotes: m[2] === "1",
-      sustain: m[3] === "1",
+      version: 2,
+      raw: m[4],
+    };
+  }
+
+  m = stream.match(/^v3,(\d+),(.+)$/);
+  if (m) {
+    return {
+      bpm: Number(m[1]),
+      version: 3,
+      raw: m[2],
     };
   }
 
   return {
     bpm: 0,
-    data: null,
-    joinNotes: false,
-    sustain: false,
+    version: 3,
+    raw: null,
   };
 }
 
 function songFromStream(stream: string): {
   bpm: number;
-  chords: Array<number[]> | false;
-  joinNotes: boolean;
-  sustain: boolean;
+  newStepData: Array<number[]> | false;
+  newJoinData: Array<number[]> | false;
 } {
-  let { bpm, data, joinNotes, sustain } = parseStream(stream);
+  let { bpm, version, raw } = parseStream(stream);
 
-  if (!data) {
-    return { bpm, chords: false, joinNotes, sustain };
+  if (!raw) {
+    return { bpm, newStepData: false, newJoinData: false };
   }
 
-  const chords = data.split("-").map(str => {
+  const newJoinData: Array<number[]> = [];
+  const newStepData = raw.split("-").map(str => {
     const notes: number[] = [];
+    const joins: number[] = [];
+
     let chunk = "";
-    while ((chunk = str.substr(notes.length * 2, 2))) {
+    const chunkLen = version > 2 ? 3 : 2;
+
+    while ((chunk = str.substr(notes.length * chunkLen, chunkLen))) {
+      let isJoin = false;
+      if (version > 2) {
+        isJoin = chunk[0] === "j";
+        chunk = chunk.substr(1);
+      }
+
       chunk = chunk.replace(/^0/, "");
-      notes.push(parseInt(chunk, 16));
+      const note = parseInt(chunk, 16);
+
+      notes.push(note);
+      if (isJoin) {
+        joins.push(note);
+      }
     }
+
+    newJoinData.push(joins);
     return notes;
   });
 
-  return { bpm, chords, joinNotes, sustain };
+  return { bpm, newStepData, newJoinData };
 }
+
+const initial = {
+  bpm: 60,
+  numSteps: 8,
+  stepData: [1, 2, 3, 4, 5, 6, 7, 8].map(() => []),
+  joinData: [1, 2, 3, 4, 5, 6, 7, 8].map(() => []),
+};
+
+let playInterval: number;
 
 export default function SequencePage(): JSX.Element {
   const navigate = useNavigate();
@@ -87,24 +120,18 @@ export default function SequencePage(): JSX.Element {
 
   const piano = useMemo(() => new Piano(), []);
 
-  const [playing, setPlaying] = useState(true);
+  const [playing, setPlaying] = useState(false);
   const [internalStep, setStep] = useState(0);
   const step = playing ? internalStep : -1;
 
-  const [bpm, setBpm] = useState(60);
-  const [sustain, setSustain] = useState(true);
-  const [joinNotes, setJoinNotes] = useState(true);
-  const [numSteps, setNumSteps] = useState(8);
-  const [stepData, setStepData] = useState<Array<number[]>>(() => {
-    const out = [];
-    while (out.length < numSteps) {
-      out.push([]);
-    }
-    return out;
-  });
+  const [bpm, setBpm] = useState(initial.bpm);
+  const [numSteps, setNumSteps] = useState(initial.numSteps);
+  const [stepData, setStepData] = useState<Array<number[]>>(initial.stepData);
+  const [joinData, setJoinData] = useState<Array<number[]>>(initial.joinData);
 
-  const chord = playing ? stepData[step] || [] : [];
-  const activeKeys = chord.reduce(
+  const currentNotes = playing ? stepData[step] || [] : [];
+  const currentJoins = joinData[step];
+  const activeKeys = currentNotes.reduce(
     (prev, curr) => ({
       ...prev,
       [curr]: true,
@@ -122,11 +149,16 @@ export default function SequencePage(): JSX.Element {
     setPlaying(false);
   }
 
-  function play() {
-    if (!playing) {
-      return;
-    }
+  function reset() {
+    setBpm(initial.bpm);
+    setNumSteps(initial.numSteps);
+    setStepData(initial.stepData);
+    setJoinData(initial.joinData);
+    setStep(internalStep % initial.numSteps);
+    setPlaying(false);
+  }
 
+  function play(currentNotes: number[], currentJoins: number[]) {
     // Keep track of which are started
     const bannedNotes: ActiveKeys = {};
     // Handle notes already playing
@@ -134,32 +166,24 @@ export default function SequencePage(): JSX.Element {
       .filter(([k, v]) => v === true)
       .forEach(([noteStr]) => {
         const note = Number(noteStr);
-        const willPlay = chord.includes(note);
-        if (sustain) {
-          // Stop and replay
-          if (willPlay) {
+        const willJoin = currentJoins.includes(note);
+        const willPlay = currentNotes.includes(note);
+
+        if (willPlay) {
+          bannedNotes[note] = true;
+          if (willJoin) {
+            // Let it ring
+          } else {
             piano.stopNote(note);
             piano.startNote(note);
-            bannedNotes[note] = true;
-          }
-        } else if (joinNotes) {
-          if (!willPlay) {
-            piano.stopNote(note);
-          } else {
-            // Marking so we don't restart it
-            bannedNotes[note] = true;
           }
         } else {
           piano.stopNote(note);
-          if (willPlay) {
-            piano.startNote(note);
-            bannedNotes[note] = true;
-          }
         }
       });
 
     // Start notes that still need starting
-    stepData[step].forEach(note => {
+    currentNotes.forEach(note => {
       if (!bannedNotes[note]) {
         piano.startNote(note);
       }
@@ -168,9 +192,7 @@ export default function SequencePage(): JSX.Element {
 
   function share() {
     navigate(
-      Paths.sequencePrefix(
-        `/songs/${streamFromSong(bpm, joinNotes, sustain, stepData)}`
-      )
+      Paths.sequencePrefix(`/songs/${streamFromSong(bpm, stepData, joinData)}`)
     );
   }
 
@@ -178,13 +200,12 @@ export default function SequencePage(): JSX.Element {
   useEffect(() => {
     const stream = params.stream;
     if (typeof stream === "string") {
-      const { bpm, chords, joinNotes, sustain } = songFromStream(stream);
-      if (chords) {
+      const { bpm, newStepData, newJoinData } = songFromStream(stream);
+      if (newStepData && newJoinData) {
         setBpm(bpm);
-        setJoinNotes(joinNotes);
-        setSustain(sustain);
-        setStepData(chords);
-        setNumSteps(chords.length);
+        setStepData(newStepData);
+        setJoinData(newJoinData);
+        setNumSteps(newStepData.length);
         setPlaying(false);
       }
     }
@@ -192,19 +213,33 @@ export default function SequencePage(): JSX.Element {
 
   // Play each step
   useEffect(() => {
-    play();
+    if (playing) {
+      play(currentNotes, currentJoins);
+    }
   }, [step]);
+
+  function stopInterval() {
+    if (playInterval) {
+      clearInterval(playInterval);
+    }
+  }
+
+  function restartInterval() {
+    stopInterval();
+
+    const delay = (60 / bpm) * 1000;
+    playInterval = window.setInterval(() => {
+      setStep(currentStep => (currentStep + 1) % numSteps);
+    }, delay);
+  }
 
   // Restart interval if song changes
   useEffect(() => {
     setStep(0);
-    const delay = (60 / bpm) * 1000;
-    const interval = window.setInterval(() => {
-      setStep(currentStep => (currentStep + 1) % numSteps);
-    }, delay);
+    restartInterval();
 
     return () => {
-      clearInterval(interval);
+      stopInterval();
     };
   }, [bpm, numSteps, playing]);
 
@@ -243,36 +278,21 @@ export default function SequencePage(): JSX.Element {
             onChange={e => {
               const newVal = Number(e.target.value) || 4;
               const newSteps = stepData.slice();
+              const newJoinData = joinData.slice();
               while (newSteps.length < newVal) {
                 newSteps.push([]);
+                newJoinData.push([]);
               }
               while (newSteps.length > newVal) {
                 newSteps.pop();
+                newJoinData.pop();
               }
               setStepData(newSteps);
+              setJoinData(newJoinData);
               setNumSteps(newVal);
             }}
           />
         </label>
-        <div>
-          <label>
-            <input
-              type="checkbox"
-              checked={sustain}
-              onChange={e => setSustain(e.target.checked)}
-            />{" "}
-            Sustain pedal
-          </label>
-          <br />
-          <label>
-            <input
-              type="checkbox"
-              checked={joinNotes}
-              onChange={e => setJoinNotes(e.target.checked)}
-            />{" "}
-            Join notes
-          </label>
-        </div>
         <button
           type="button"
           className="btn btn-primary med-btn"
@@ -280,18 +300,31 @@ export default function SequencePage(): JSX.Element {
         >
           <i className="fa fa-floppy-o" aria-hidden="true" /> <span>Share</span>
         </button>
+        <button
+          type="button"
+          title="Start over"
+          className="btn btn-danger med-btn"
+          onClick={() => {
+            reset();
+            navigate(Paths.sequencePrefix("/"));
+          }}
+        >
+          <i className="fa fa-trash" aria-label="Start over" />
+        </button>
       </div>
 
       <Keyboard
         currentStepIndex={step}
         activeKeys={activeKeys}
-        steps={stepData}
-        onStepsChange={(steps: Array<number[]>, changedChord: number[]) => {
-          setStepData(steps);
-          setNumSteps(steps.length);
-          setStep(0);
+        stepData={stepData}
+        joinData={joinData}
+        onStepsChange={(newStepData, newJoinData, changedStep) => {
+          setStepData(newStepData);
+          setJoinData(newJoinData);
+          setNumSteps(newStepData.length);
+          setPlaying(false);
           piano.stopAll();
-          changedChord.forEach(note => piano.startNote(note));
+          play(newStepData[changedStep], newJoinData[changedStep]);
         }}
       />
 
