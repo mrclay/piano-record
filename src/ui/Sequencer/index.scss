@@ -1,0 +1,100 @@
+.Sequencer {
+  width: 1246px;
+  margin: 0 auto;
+
+  * {
+    box-sizing: border-box;
+  }
+
+  .stepRow {
+    position: relative;
+    background: #fff;
+    border-bottom: 1px solid #fff;
+
+    &.active {
+      .white > span,
+      .black > span {
+        background: #999;
+      }
+    }
+
+    .white > span.active,
+    .black > span.active {
+      background: #33baf8;
+    }
+  }
+
+  .white {
+    z-index: 1;
+    padding-left: 10px;
+    display: flex;
+
+    span {
+      background: #777;
+      border: 0;
+      border-radius: 0;
+      color: #000;
+      cursor: pointer;
+      height: 30px;
+      font-weight: 700;
+      margin-left: 1px;
+      padding-top: 0;
+      width: 33px;
+
+      &.joined {
+        height: 31px;
+        margin-top: -1px;
+      }
+    }
+  }
+  .black {
+    position: absolute;
+    top: 0;
+    left: 0;
+
+    span {
+      background: #555;
+      border: 1px solid #fff;
+      border-top: 0;
+      border-radius: 0;
+      color: #fff;
+      cursor: pointer;
+      font-size: 10px;
+      height: 31px;
+      padding-top: 0;
+      position: absolute;
+      top: 0;
+      width: 16px;
+      z-index: 1;
+
+      &.joined {
+        height: 32px;
+        margin-top: -1px;
+      }
+    }
+  }
+}
+
+[data-remove-step],
+[data-copy-step] {
+  background: #ccc;
+  border: 0;
+  border-radius: 50%;
+  color: #fff;
+  line-height: 1ex;
+  padding: 6px 6px 7px;
+  position: absolute;
+  top: 5px;
+
+  &:hover {
+    background: #333;
+  }
+}
+
+[data-remove-step] {
+  left: calc(100% - 7px);
+}
+
+[data-copy-step] {
+  right: calc(100% - 7px);
+}

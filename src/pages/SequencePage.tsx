@@ -3,6 +3,7 @@ import { useNavigate, useParams } from "react-router";
 import Paths from "../Paths";
 import Piano, { ActiveKeys } from "../Piano";
 import Keyboard from "../ui/Keyboard";
+import Sequencer from "../ui/Sequencer";
 import Template from "./Template";
 import Preview from "../ui/Preview";
 import Saver from "../ui/Saver";
@@ -313,9 +314,8 @@ export default function SequencePage(): JSX.Element {
         </button>
       </div>
 
-      <Keyboard
+      <Sequencer
         currentStepIndex={step}
-        activeKeys={activeKeys}
         stepData={stepData}
         joinData={joinData}
         onStepsChange={(newStepData, newJoinData, changedStep) => {
@@ -327,6 +327,7 @@ export default function SequencePage(): JSX.Element {
           play(newStepData[changedStep], newJoinData[changedStep]);
         }}
       />
+      <Keyboard activeKeys={activeKeys} />
 
       {params.stream && (
         <section>
