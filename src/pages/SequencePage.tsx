@@ -10,10 +10,11 @@ import Saver from "../ui/Saver";
 
 function streamFromSong(
   bpm: number,
+  bps: number,
   stepData: Array<number[]>,
   joinData: Array<number[]>
 ) {
-  let out = `v3,${bpm},`;
+  let out = `v4,${bpm},${bps},`;
 
   out += stepData
     .map((stepNotes, stepIdx) =>
@@ -30,35 +31,51 @@ function streamFromSong(
 }
 
 function parseStream(stream: string) {
-  let m = stream.match(/^v1,(\d+),([10]),(.+)$/);
-  if (m) {
-    return {
-      bpm: Number(m[1]),
-      version: 1,
-      raw: m[3],
-    };
-  }
+  let m;
 
-  m = stream.match(/^v2,(\d+),([10]),([10]),(.+)$/);
+  m = stream.match(/^v4,(\d+),([1-4]),(.+)$/);
   if (m) {
     return {
-      bpm: Number(m[1]),
-      version: 2,
-      raw: m[4],
+      bpm: parseInt(m[1]),
+      bps: parseInt(m[2]),
+      version: 4,
+      raw: m[3],
     };
   }
 
   m = stream.match(/^v3,(\d+),(.+)$/);
   if (m) {
     return {
-      bpm: Number(m[1]),
+      bpm: parseInt(m[1]),
+      bps: 1,
       version: 3,
       raw: m[2],
     };
   }
 
+  m = stream.match(/^v2,(\d+),([10]),([10]),(.+)$/);
+  if (m) {
+    return {
+      bpm: parseInt(m[1]),
+      bps: 1,
+      version: 2,
+      raw: m[4],
+    };
+  }
+
+  m = stream.match(/^v1,(\d+),([10]),(.+)$/);
+  if (m) {
+    return {
+      bpm: parseInt(m[1]),
+      bps: 1,
+      version: 1,
+      raw: m[3],
+    };
+  }
+
   return {
     bpm: 0,
+    bps: 1,
     version: 3,
     raw: null,
   };
@@ -66,13 +83,14 @@ function parseStream(stream: string) {
 
 function songFromStream(stream: string): {
   bpm: number;
+  bps: number;
   newStepData: Array<number[]> | false;
   newJoinData: Array<number[]> | false;
 } {
-  let { bpm, version, raw } = parseStream(stream);
+  let { bpm, bps, version, raw } = parseStream(stream);
 
   if (!raw) {
-    return { bpm, newStepData: false, newJoinData: false };
+    return { bpm, bps, newStepData: false, newJoinData: false };
   }
 
   const newJoinData: Array<number[]> = [];
@@ -103,11 +121,12 @@ function songFromStream(stream: string): {
     return notes;
   });
 
-  return { bpm, newStepData, newJoinData };
+  return { bpm, bps, newStepData, newJoinData };
 }
 
 const initial = {
   bpm: 60,
+  bps: 2,
   numSteps: 8,
   stepData: [1, 2, 3, 4, 5, 6, 7, 8].map(() => []),
   joinData: [1, 2, 3, 4, 5, 6, 7, 8].map(() => []),
@@ -126,7 +145,13 @@ export default function SequencePage(): JSX.Element {
   const step = playing ? internalStep : -1;
 
   const [bpm, setBpm] = useState(initial.bpm);
+  const [bpmInput, setBpmInput] = useState(String(bpm));
+
+  const [bps, setBps] = useState(initial.bps);
+
   const [numSteps, setNumSteps] = useState(initial.numSteps);
+  const [numStepsInput, setnumStepsInput] = useState(String(numSteps));
+
   const [stepData, setStepData] = useState<Array<number[]>>(initial.stepData);
   const [joinData, setJoinData] = useState<Array<number[]>>(initial.joinData);
 
@@ -152,6 +177,7 @@ export default function SequencePage(): JSX.Element {
 
   function reset() {
     setBpm(initial.bpm);
+    setBps(initial.bps);
     setNumSteps(initial.numSteps);
     setStepData(initial.stepData);
     setJoinData(initial.joinData);
@@ -193,7 +219,9 @@ export default function SequencePage(): JSX.Element {
 
   function share() {
     navigate(
-      Paths.sequencePrefix(`/songs/${streamFromSong(bpm, stepData, joinData)}`)
+      Paths.sequencePrefix(
+        `/songs/${streamFromSong(bpm, bps, stepData, joinData)}`
+      )
     );
   }
 
@@ -201,9 +229,10 @@ export default function SequencePage(): JSX.Element {
   useEffect(() => {
     const stream = params.stream;
     if (typeof stream === "string") {
-      const { bpm, newStepData, newJoinData } = songFromStream(stream);
+      const { bpm, bps, newStepData, newJoinData } = songFromStream(stream);
       if (newStepData && newJoinData) {
         setBpm(bpm);
+        setBps(bps);
         setStepData(newStepData);
         setJoinData(newJoinData);
         setNumSteps(newStepData.length);
@@ -228,7 +257,7 @@ export default function SequencePage(): JSX.Element {
   function restartInterval() {
     stopInterval();
 
-    const delay = (60 / bpm) * 1000;
+    const delay = (60 / bpm) * bps * 1000;
     playInterval = window.setInterval(() => {
       setStep(currentStep => (currentStep + 1) % numSteps);
     }, delay);
@@ -242,10 +271,10 @@ export default function SequencePage(): JSX.Element {
     return () => {
       stopInterval();
     };
-  }, [bpm, numSteps, playing]);
+  }, [bpm, bps, numSteps, playing]);
 
   return (
-    <Template app="sequence">
+    <Template app="sequence" title="Simple Sequence" intro={null}>
       <div
         style={{
           alignItems: "center",
@@ -261,36 +290,74 @@ export default function SequencePage(): JSX.Element {
           isWaiting={false}
           progress={step / (numSteps - 1)}
         />
-        <label>
-          BPM{" "}
-          <input
-            style={{ width: "4em" }}
-            type="number"
-            value={bpm}
-            onChange={e => setBpm(Number(e.target.value) || 100)}
-          />
-        </label>
+        <div>
+          <label>
+            BPM{" "}
+            <input
+              style={{ width: "4em" }}
+              type="text"
+              value={bpmInput}
+              onFocus={e => e.target.select()}
+              onChange={e => setBpmInput(e.target.value)}
+              onBlur={e => {
+                const num = parseInt(e.target.value);
+                if (isNaN(num) || num < 1 || num > 400) {
+                  // Invalid
+                  setBpmInput(String(bpm));
+                  return;
+                }
+
+                setBpm(num);
+                setBpmInput(String(num));
+              }}
+            />
+          </label>
+          <div>
+            <label>
+              Beats/step{" "}
+              <span style={{ display: "flex" }}>
+                <input
+                  type="range"
+                  min="1"
+                  max="4"
+                  value={bps}
+                  onChange={e => setBps(Number(e.target.value))}
+                />
+                <span style={{ marginLeft: "0.5em" }}>{bps}</span>
+              </span>
+            </label>
+          </div>
+        </div>
+
         <label>
           Num steps{" "}
           <input
             style={{ width: "4em" }}
-            type="number"
-            value={numSteps}
-            onChange={e => {
-              const newVal = Number(e.target.value) || 4;
+            type="text"
+            value={numStepsInput}
+            onFocus={e => e.target.select()}
+            onChange={e => setnumStepsInput(e.target.value)}
+            onBlur={e => {
+              const num = parseInt(e.target.value);
+              if (isNaN(num) || num < 2) {
+                // Invalid
+                setnumStepsInput(String(numSteps));
+                return;
+              }
+
               const newSteps = stepData.slice();
               const newJoinData = joinData.slice();
-              while (newSteps.length < newVal) {
+              while (newSteps.length < num) {
                 newSteps.push([]);
                 newJoinData.push([]);
               }
-              while (newSteps.length > newVal) {
+              while (newSteps.length > num) {
                 newSteps.pop();
                 newJoinData.pop();
               }
               setStepData(newSteps);
               setJoinData(newJoinData);
-              setNumSteps(newVal);
+              setNumSteps(num);
             }}
           />
         </label>

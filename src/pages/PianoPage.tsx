@@ -1,5 +1,5 @@
 import React from "react";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 
 import * as C from "../constants";
 import Keyboard from "../ui/Keyboard";
@@ -56,6 +56,12 @@ export default function Wrapper() {
     />
   );
 }
+
+const example = Paths.pianoPrefix(
+  "/songs/C320C3c30C3e3bC423hC454bD3c8gC448uC3b8xD4299D459cC40eaC3aedD44elD" +
+    "3berD3ejnC42l8D3al9C39laD40lhD39ohC40oiC38oiD42p5C3eqtD40quC37tgD38thC" +
+    "40tlD3eu1C42wnD40x3D3713nC3613zC3e144D4214cD3e1fuD361gaD321gf/Hello%20World"
+);
 
 class PianoPage extends React.Component<PianoPageProps, PianoPageState> {
   // Holds which key(s) are being used to play a particular note
@@ -284,7 +290,18 @@ class PianoPage extends React.Component<PianoPageProps, PianoPageState> {
     const canReset = mode === Mode.oneKey || hasOperations;
 
     return (
-      <Template app="songs">
+      <Template
+        app="songs"
+        title="Simple Piano"
+        intro={
+          <p>
+            Wanna capture a <Link to={example}>short musical idea</Link> or
+            share it with others? Tap some notes or play your MIDI keyboard
+            (Chrome only), and click <i>Save</i>. You can share the resulting
+            page URL or bookmark it. <a href={C.SOURCE_URL}>Source</a>.
+          </p>
+        }
+      >
         <section className="piano-2col">
           <div>
             {mode === Mode.shared && (

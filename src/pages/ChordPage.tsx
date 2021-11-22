@@ -1,11 +1,13 @@
 import React, { MouseEvent } from "react";
 import {
+  Link,
   Navigate,
   useParams,
   useNavigate,
   useLocation,
 } from "react-router-dom";
 
+import * as C from "../constants";
 import BigPlay from "../ui/BigPlay";
 import Keyboard from "../ui/Keyboard";
 import Ops from "../Ops";
@@ -163,8 +165,21 @@ class ChordPage extends React.Component<ChordPageProps, ChordPageState> {
       }
     }
 
+    const example = Paths.chordPrefix("/43,56,60,62,65/G7b9sus");
+
     return (
-      <Template app="chord">
+      <Template
+        app="chord"
+        title="Simple Chord"
+        intro={
+          <p>
+            Wanna capture a <Link to={example}>chord</Link> or share it with
+            others? Tap some notes or play your MIDI keyboard (Chrome only), and
+            click <i>Save</i>. You can share the resulting page URL or bookmark
+            it. <a href={C.SOURCE_URL}>Source</a>.
+          </p>
+        }
+      >
         <section>
           <div>
             <BigPlay

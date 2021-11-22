@@ -2,6 +2,9 @@ body {
   width: 1246px;
   margin: 20px auto;
 }
+p {
+  max-width: 700px;
+}
 
 h2.Title {
   font-style: italic;
