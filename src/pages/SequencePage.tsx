@@ -232,10 +232,12 @@ export default function SequencePage(): JSX.Element {
       const { bpm, bps, newStepData, newJoinData } = songFromStream(stream);
       if (newStepData && newJoinData) {
         setBpm(bpm);
+        setBpmInput(String(bpm));
         setBps(bps);
         setStepData(newStepData);
         setJoinData(newJoinData);
         setNumSteps(newStepData.length);
+        setnumStepsInput(String(newStepData.length));
         setPlaying(false);
       }
     }
@@ -389,6 +391,7 @@ export default function SequencePage(): JSX.Element {
           setStepData(newStepData);
           setJoinData(newJoinData);
           setNumSteps(newStepData.length);
+          setnumStepsInput(String(newStepData.length));
           setPlaying(false);
           piano.stopAll();
           play(newStepData[changedStep], newJoinData[changedStep]);
