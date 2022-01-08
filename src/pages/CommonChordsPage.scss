@@ -1,8 +1,14 @@
+body {
+  width: auto;
+  padding: 2rem 2rem 4rem;
+}
+
 .CC {
-  margin: 2rem auto 4rem;
+  margin: 0 auto;
   max-width: 900px;
 
   .h2 b {
+    color: #337ab7;
     font-size: 1.1em;
     font-weight: inherit;
   }
@@ -38,12 +44,21 @@
   }
 
   .chord {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+
+    > span + span {
+      color: #777;
+      font-size: 0.8em;
+      margin-top: 0.75rem;
+    }
+
     .func,
     .note {
       margin-right: 0.05em;
     }
     .qual {
-      color: #777;
       font-size: 0.8em;
     }
     .bass {

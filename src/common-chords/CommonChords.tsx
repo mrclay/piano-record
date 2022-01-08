@@ -1,10 +1,29 @@
-import React from "react";
+import React, { FC } from "react";
 import Key from "../music-theory/Key";
 import { useStore } from "../store";
 import { getRenderers } from "./renderers";
 import { SeventhTeaser } from "./SeventhTeaser";
 
-function CommonChords({ musicKey }: { musicKey: Key }) {
+interface Keyed {
+  musicKey: Key;
+}
+
+export const Intro: FC<Keyed> = ({ musicKey }) => (
+  <>
+    <p>
+      This is a non-exhaustive roundup of chords songwriters often employ in{" "}
+      {musicKey.getQuality()} keys.
+    </p>
+    <p>
+      If you usually think of a key as having <i>seven chords</i>, for writing
+      purposes I encourage you to add these to your collection and get to know
+      the sound of them within the key. Consider them ready-for-use while
+      writing in {musicKey + ""}.
+    </p>
+  </>
+);
+
+function CommonChords({ musicKey }: Keyed) {
   const [relative] = useStore.relative();
   const { chords, f, f7, rom, note, Sep } = getRenderers(musicKey);
 
@@ -124,7 +143,7 @@ function CommonChords({ musicKey }: { musicKey: Key }) {
           {rom("I")} or {rom("V")}.
         </p>
 
-        <h2>{chords(f("iii m7b5"), f("v m7b5"), f("vii m7"))}</h2>
+        <h2>{chords(f("ii/ii m7b5"), f("ii/IV m7b5"), f("ii/vi m7"))}</h2>
         <p>
           These sometimes function as "secondary predominants", appearing before
           secondary dominants {rom("V/ii")}, {rom("V/IV")}, or {rom("V/vi")} (or

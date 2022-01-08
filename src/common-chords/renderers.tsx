@@ -14,8 +14,13 @@ const remove7thMap: Record<string, string | undefined> = {
   m7: "m",
   maj7: "",
   "7": "",
-  m7b5: "dim",
+  m7b5: "°",
   "+": "+",
+};
+
+const fancyMap: Record<string, string | undefined> = {
+  dim7: "°⁷",
+  m7b5: "ø⁷",
 };
 
 export const Sep = () => <span className="sep"> &bull; </span>;
@@ -59,21 +64,23 @@ export function getRenderers(key: Key) {
     els.forEach((el, i) => {
       const elKey = Object.values(el).join();
       const [func1, func2 = ""] = el.func.split("/");
-
-      let type = el.type;
-      if (relative) {
-        type = type.replace(/^m(7|$)/, "$1");
-      }
+      const type = fancyMap[el.type] || el.type;
 
       out.push(
-        <span key={elKey} className="chord" title={`${el.func} ${el.type}`}>
-          <span className={relative ? "func" : "note"}>
-            {relative ? func1 : el.root}
+        <span key={elKey} className="chord">
+          <span>
+            <span className="note">{el.root}</span>
+            {type !== "" && <span className="qual">{type}</span>}
+            {el.bassNote !== "" && <span className="bass">/{el.bassNote}</span>}
           </span>
-          {type !== "" && <span className="qual">{type}</span>}
-          {relative && func2 !== "" && <span className="func">/{func2}</span>}
-          {!relative && el.bassNote !== "" && (
-            <span className="bass">/{el.bassNote}</span>
+          {relative && (
+            <span>
+              <span className="func">{func1}</span>
+              {type !== "" && (
+                <span className="qual">{type.replace(/^m(7|$)/, "$1")}</span>
+              )}
+              {func2 !== "" && <span className="func">/{func2}</span>}
+            </span>
           )}
         </span>
       );
