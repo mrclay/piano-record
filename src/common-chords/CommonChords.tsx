@@ -5,9 +5,8 @@ import { getRenderers } from "./renderers";
 import { SeventhTeaser } from "./SeventhTeaser";
 
 function CommonChords({ musicKey }: { musicKey: Key }) {
-  const [sevenths] = useStore.sevenths();
-
-  const { chords, f, f7, rom, note } = getRenderers(musicKey, sevenths);
+  const [relative] = useStore.relative();
+  const { chords, f, f7, rom, note, Sep } = getRenderers(musicKey);
 
   return (
     <section>
@@ -32,8 +31,14 @@ function CommonChords({ musicKey }: { musicKey: Key }) {
         {rom("V")}, {rom("vi")} and {rom("ii")} chords.
       </p>
       <p>
-        The secondary dominant of {rom("iii")}, {note("V/iii")}7, is pretty
-        rarely used.
+        The secondary dominant of {rom("iii")}
+        {!relative && (
+          <>
+            {", "}
+            {note("V/iii")}7,
+          </>
+        )}{" "}
+        is pretty rarely used.
       </p>
 
       <h2>
@@ -62,7 +67,8 @@ function CommonChords({ musicKey }: { musicKey: Key }) {
       <h2>{chords(f("vii m7b5"))}</h2>
       <p>
         The 7th diatonic chord is far less popular and generally only used for
-        leading into {note("III")}7.
+        leading into {rom("V/vi")}
+        {!relative && <> ({note("III")}7)</>}.
       </p>
 
       <h2>{chords(f("I +"), f("V/vi + /#V"))}</h2>
@@ -127,7 +133,7 @@ function CommonChords({ musicKey }: { musicKey: Key }) {
 
         <h2>
           {chords(f("V 7b9"), f("V 7#9"), f("subV 7b5"))}
-          <span className="sep"> . </span> etc.
+          <Sep /> etc.
         </h2>
         <p>
           In jazz, dominant 7th chords are often "altered" with their 5th and/or

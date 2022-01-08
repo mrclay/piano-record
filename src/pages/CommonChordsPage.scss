@@ -2,6 +2,11 @@
   margin: 2rem auto 4rem;
   max-width: 900px;
 
+  .h2 b {
+    font-size: 1.1em;
+    font-weight: inherit;
+  }
+
   p {
     font-size: 17px;
     line-height: 1.5;
@@ -16,20 +21,27 @@
     display: flex;
     margin-bottom: 2rem;
 
-    >:first-child {
+    > :first-child {
       margin-right: 3rem;
     }
-    >:last-child {
+    > :last-child {
       margin-top: 1rem;
     }
   }
 
   .sep {
     color: #ccc;
-    margin: 0 0.5rem;
+    font-size: 0.5em;
+    margin: 0 1rem;
+    position: relative;
+    top: -0.5ex;
   }
 
   .chord {
+    .func,
+    .note {
+      margin-right: 0.05em;
+    }
     .qual {
       color: #777;
       font-size: 0.8em;

@@ -22,6 +22,7 @@ interface ParamsMatch {
 function CommonChordsPage() {
   const selectRef = useRef<HTMLSelectElement>(null);
   const [showSelect, setShowSelect] = useState(false);
+  const [relative, setRelative] = useStore.relative();
   const [sevenths, setSevenths] = useStore.sevenths();
   const navigate = useNavigate();
   const { urlKey = "" }: ParamsMatch = useParams();
@@ -45,7 +46,7 @@ function CommonChordsPage() {
       <div className="head-flex">
         <div>
           <h1 className="h2">
-            The Common Chords of: <i>{keyName}</i>
+            The Common Chords of <b>{keyName}</b>
           </h1>
         </div>
         <div>
@@ -91,7 +92,7 @@ function CommonChordsPage() {
                 onMouseEnter={() => setShowSelect(true)}
                 type="button"
               >
-                choose key
+                change key
               </button>
               )
             </small>
@@ -132,6 +133,16 @@ function CommonChordsPage() {
                 onChange={() => setSevenths(false)}
               />
               Keep it simple (mostly) with triads
+            </label>
+          </div>
+          <div className="checkbox">
+            <label>
+              <input
+                type="checkbox"
+                checked={relative}
+                onChange={e => setRelative(e.target.checked)}
+              />
+              Show Roman numerals
             </label>
           </div>
         </form>
