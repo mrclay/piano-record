@@ -22,21 +22,30 @@ interface TemplateProps {
   intro: ReactNode;
 }
 
+export const TemplateNav: FC = () => {
+  return (
+    <nav className="nav nav-tabs">
+      <ListItemLink to={Paths.pianoPrefix("/")}>Songs</ListItemLink>
+      <ListItemLink to={Paths.chordPrefix("/")}>Chords</ListItemLink>
+      <ListItemLink to={Paths.sequencePrefix("/")}>
+        Sequence (beta)
+      </ListItemLink>
+      <ListItemLink to={Paths.commonChordsPrefix("/C-major")}>
+        Common Chords
+      </ListItemLink>
+    </nav>
+  );
+};
+
 const Template: FC<TemplateProps> = ({ app, children, intro, title }) => {
   return (
     <div>
       <div>
-        <h1 className={"h2"}>{title}</h1>
+        <h1 className="h2">{title}</h1>
         {intro}
       </div>
 
-      <nav className="nav nav-tabs">
-        <ListItemLink to={Paths.pianoPrefix("/")}>Songs</ListItemLink>
-        <ListItemLink to={Paths.chordPrefix("/")}>Chords</ListItemLink>
-        <ListItemLink to={Paths.sequencePrefix("/")}>
-          Sequence (beta)
-        </ListItemLink>
-      </nav>
+      <TemplateNav />
 
       {children}
 

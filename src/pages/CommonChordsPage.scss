@@ -1,0 +1,62 @@
+.CC {
+  margin: 2rem auto 4rem;
+  max-width: 900px;
+
+  p {
+    font-size: 17px;
+    line-height: 1.5;
+  }
+
+  .key-switch {
+    padding: 0;
+  }
+
+  .head-flex {
+    align-items: center;
+    display: flex;
+    margin-bottom: 2rem;
+
+    >:first-child {
+      margin-right: 3rem;
+    }
+    >:last-child {
+      margin-top: 1rem;
+    }
+  }
+
+  .sep {
+    color: #ccc;
+    margin: 0 0.5rem;
+  }
+
+  .chord {
+    .qual {
+      color: #777;
+      font-size: 0.8em;
+    }
+    .bass {
+      font-size: 0.8em;
+    }
+  }
+
+  .tease7ths {
+    background: #eee;
+    margin: 4rem 0;
+    padding: 2rem;
+  }
+
+  .roman {
+    color: #666;
+    font-family: monospace;
+  }
+
+  p + h2 {
+    margin-top: 1.5em;
+  }
+
+  footer {
+    border-top: 1px solid #ccc;
+    margin-top: 4rem;
+    padding: 2rem 0;
+  }
+}

@@ -3,15 +3,10 @@ import { Route, Routes, Navigate, useLocation } from "react-router-dom";
 
 import Paths from "./Paths";
 
-setTimeout(() => {
-  import("./pages/ChordPage");
-  import("./pages/PianoPage");
-  import("./pages/SequencePage");
-}, 1500);
-
 const AsyncChord = lazy(() => import("./pages/ChordPage"));
 const AsyncPiano = lazy(() => import("./pages/PianoPage"));
 const AsyncSequence = lazy(() => import("./pages/SequencePage"));
+const AsyncCommonChords = lazy(() => import("./pages/CommonChordsPage"));
 
 // Key the component on pathname so we destroy it if path changes
 function PathKeyedComponent(C: ComponentType) {
@@ -65,6 +60,14 @@ const App = () => (
       <Route
         path={Paths.sequencePrefix("/")}
         element={PathKeyedComponent(AsyncSequence)}
+      />
+      <Route
+        path={Paths.commonChordsPrefix("/:urlKey")}
+        element={PathKeyedComponent(AsyncCommonChords)}
+      />
+      <Route
+        path={Paths.commonChordsPrefix()}
+        element={<Navigate to={Paths.commonChordsPrefix("/C-major")} />}
       />
       <Route path="/" element={<Navigate to={Paths.pianoPrefix("/")} />} />
     </Routes>

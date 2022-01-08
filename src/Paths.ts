@@ -4,6 +4,7 @@ const Paths = {
   pianoPath: "/piano/",
   chordPath: "/chord/",
   sequencePath: "/sequence/",
+  commonChordsPath: "/common-chords/",
 
   pianoPrefix(path = "") {
     path = path.replace(/^\//, "");
@@ -13,6 +14,11 @@ const Paths = {
   chordPrefix(path = "") {
     path = path.replace(/^\//, "");
     return Paths.chordPath + path;
+  },
+
+  commonChordsPrefix(path = "") {
+    path = path.replace(/^\//, "");
+    return Paths.commonChordsPath + path;
   },
 
   sequencePrefix(path = "") {
