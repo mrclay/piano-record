@@ -1,23 +1,16 @@
 import React from "react";
 import Key from "../music-theory/Key";
+import { useStore } from "../store";
 import { getRenderers } from "./renderers";
 import { SeventhTeaser } from "./SeventhTeaser";
 
-interface CommonChordsProps {
-  musicKey: Key;
-  sevenths: boolean;
-  enableSevenths(): void;
-}
+function CommonChords({ musicKey }: { musicKey: Key }) {
+  const [sevenths] = useStore.sevenths();
 
-function CommonChords({
-  enableSevenths,
-  musicKey,
-  sevenths,
-}: CommonChordsProps) {
-  const { chords, f, f7, rom } = getRenderers(musicKey, sevenths);
+  const { chords, f, f7, rom, note } = getRenderers(musicKey, sevenths);
 
   return (
-    <div>
+    <section>
       <h2>
         {chords(
           f("I maj7"),
@@ -39,8 +32,8 @@ function CommonChords({
         {rom("V")}, {rom("vi")} and {rom("ii")} chords.
       </p>
       <p>
-        The secondary dominant of {rom("iii")}, {f("V/iii").slice(1)}7, is
-        pretty rarely used.
+        The secondary dominant of {rom("iii")}, {note("V/iii")}7, is pretty
+        rarely used.
       </p>
 
       <h2>
@@ -69,13 +62,13 @@ function CommonChords({
       <h2>{chords(f("vii m7b5"))}</h2>
       <p>
         The 7th diatonic chord is far less popular and generally only used for
-        leading into {f("III").slice(1)}7.
+        leading into {note("III")}7.
       </p>
 
       <h2>{chords(f("I +"), f("V/vi + /#V"))}</h2>
       <p>
-        These are often used as passing chords between {f("I").slice(1)} and{" "}
-        {f("vi").slice(1)}m to harmonize the note {f("#v").slice(1)}.
+        These are often used as passing chords between {note("I")} and{" "}
+        {note("vi")}m to harmonize the note {note("#v")}.
       </p>
 
       <h2>{chords(f7("#i dim7"), f7("#iv dim7"), f7("#v dim7"))}</h2>
@@ -85,17 +78,17 @@ function CommonChords({
         {rom("vi")}.
       </p>
       <p>
-        {f("#ii").slice(1)}dim7 is sometimes called a "passing-tone" diminished
-        7th with {f("ii").slice(1)} passing to {f("iii").slice(1)}
+        {note("#ii")}dim7 is sometimes called a "passing-tone" diminished 7th
+        with {note("ii")} passing to {note("iii")}
         —or vice versa—but it may be clearer to think of it as an inversion of{" "}
-        {f("#iv").slice(1)}dim7.
+        {note("#iv")}dim7.
       </p>
 
-      <SeventhTeaser sevenths={sevenths} enableSevenths={enableSevenths}>
+      <SeventhTeaser>
         <h2>{chords(f7("bVII maj7"))}</h2>
         <p>
           This is borrowed from the mixolydian mode due to the presence of the
-          note {f("vi").slice(1)}.
+          note {note("vi")}.
         </p>
 
         <h2>{chords(f7("V 7b9"), f7("vii dim7"))}</h2>
@@ -105,9 +98,9 @@ function CommonChords({
 
         <h2>{chords(f7("iv mMaj7"), f7("bVII 7#11"))}</h2>
         <p>
-          The notes {f("bVI").slice(1)} and {f("iii").slice(1)} in these chords
-          help evoke the altered mode <em>mixolydian b6</em>, which is basically
-          aeolian but with a distinctive major 3rd.
+          The notes {note("bVI")} and {note("iii")} in these chords help evoke
+          the altered mode <em>mixolydian b6</em>, which is basically aeolian
+          but with a distinctive major 3rd.
         </p>
 
         <h2>{chords(f7("subV/V 7"), f7("subV 7"))}</h2>
@@ -141,7 +134,7 @@ function CommonChords({
           9th chord tones lowered or raised. These are just some examples.
         </p>
       </SeventhTeaser>
-    </div>
+    </section>
   );
 }
 

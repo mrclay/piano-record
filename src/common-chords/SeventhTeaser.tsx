@@ -1,15 +1,9 @@
 import React, { FC } from "react";
+import { useStore } from "../store";
 
-interface SeventhTeaserProps {
-  sevenths: boolean;
-  enableSevenths(): void;
-}
+export const SeventhTeaser: FC = ({ children }) => {
+  const [sevenths, setSevenths] = useStore.sevenths();
 
-export const SeventhTeaser: FC<SeventhTeaserProps> = ({
-  children,
-  sevenths,
-  enableSevenths,
-}) => {
   if (sevenths) {
     return <>{children}</>;
   }
@@ -20,7 +14,7 @@ export const SeventhTeaser: FC<SeventhTeaserProps> = ({
         <button
           type="button"
           className="btn btn-link"
-          onClick={() => enableSevenths()}
+          onClick={() => setSevenths(true)}
         >
           Enable 7th chords
         </button>{" "}

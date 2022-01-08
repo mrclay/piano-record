@@ -1,12 +1,12 @@
 import React, { ReactNode } from "react";
 import Key from "../music-theory/Key";
 
-export type Chord = [
-  roman: string,
-  note: string,
-  type: string,
-  bassNote: string
-];
+interface Chord {
+  func: string;
+  root: string;
+  type: string;
+  bassNote: string;
+}
 
 const remove7thMap: Record<string, string | undefined> = {
   m7: "m",
@@ -19,36 +19,46 @@ const remove7thMap: Record<string, string | undefined> = {
 export function getRenderers(key: Key, sevenths: boolean) {
   const rom = (str: string) => <b className="roman">{str}</b>;
 
+  const note = (func: string) => <b className="roman">{f7(func).root}</b>;
+
+  // Does not allow removing sevenths
   const f7 = (str: string): Chord => {
-    const [one, two = "", three = ""] = str.split(" ");
-    const note = key.getNoteFromRoman(one).toString();
+    const [func, type = "", three = ""] = str.split(" ");
+    const root = key.getNoteFromRoman(func).toString();
     const bassNote = three
       ? key.getNoteFromRoman(three.replace("/", "")).toString()
       : "";
-    return [one, note, two, bassNote];
+    return {
+      func,
+      type,
+      root,
+      bassNote,
+    };
   };
 
   // Allows removing 7ths
   const f = (str: string): Chord => {
-    const [roman, note, type, bassNote] = f7(str);
-    return sevenths
-      ? [roman, note, type, bassNote]
-      : [roman, note, remove7thMap[type] || "", bassNote];
+    let { func, root, type, bassNote } = f7(str);
+    if (!sevenths) {
+      type = remove7thMap[type] || "";
+    }
+    return { func, root, type, bassNote };
   };
 
   function chords(...els: Chord[]) {
     const out: ReactNode[] = [];
     els.forEach((el, i) => {
+      const elKey = Object.values(el).join();
       out.push(
-        <span key={el.join()} className="chord" title={`${el[0]} ${el[2]}`}>
-          <span className="note">{el[1]}</span>
-          <span className="qual">{el[2]}</span>
-          {el[3] !== "" && <span className="bass">/{el[3]}</span>}
+        <span key={elKey} className="chord" title={`${el.func} ${el.type}`}>
+          <span className="note">{el.root}</span>
+          <span className="qual">{el.type}</span>
+          {el.bassNote !== "" && <span className="bass">/{el.bassNote}</span>}
         </span>
       );
       if (i < els.length - 1) {
         out.push(
-          <span key={el.join() + "sep"} className="sep">
+          <span key={elKey + "sep"} className="sep">
             {" "}
             .{" "}
           </span>
@@ -58,5 +68,5 @@ export function getRenderers(key: Key, sevenths: boolean) {
     return out;
   }
 
-  return { rom, f, f7, chords };
+  return { rom, f, f7, chords, note };
 }

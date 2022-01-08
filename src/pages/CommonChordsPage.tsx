@@ -6,6 +6,7 @@ import Note from "../music-theory/Note";
 import "./CommonChordsPage.scss";
 import Paths from "../Paths";
 import CommonChords from "../common-chords/CommonChords";
+import { useStore } from "../store";
 
 Note.unicodeAccidentals = true;
 
@@ -21,7 +22,7 @@ interface ParamsMatch {
 function CommonChordsPage() {
   const selectRef = useRef<HTMLSelectElement>(null);
   const [showSelect, setShowSelect] = useState(false);
-  const [sevenths, setSevenths] = useState(true);
+  const [sevenths, setSevenths] = useStore.sevenths();
   const navigate = useNavigate();
   const { urlKey = "" }: ParamsMatch = useParams();
   const key = keys.find(el => el.toString().replace(" ", "-") === urlKey);
@@ -138,11 +139,7 @@ function CommonChordsPage() {
 
       <hr />
 
-      <CommonChords
-        enableSevenths={() => setSevenths(true)}
-        musicKey={key}
-        sevenths={sevenths}
-      />
+      <CommonChords musicKey={key} />
 
       <footer>
         <p>
