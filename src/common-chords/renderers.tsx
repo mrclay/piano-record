@@ -34,7 +34,7 @@ export function getRenderers(key: Key) {
   const note = (func: string) => f7(func).root;
 
   // Does not allow removing sevenths
-  const f7 = (str: string): Chord => {
+  const f7 = (str: string, song?: string): Chord => {
     const [func, type = "", three = ""] = str.split(" ");
     const root = key.getNoteFromRoman(func).toString();
     const bassNote = three
@@ -51,7 +51,7 @@ export function getRenderers(key: Key) {
   };
 
   // Allows removing 7ths
-  const f = (str: string): Chord => {
+  const f = (str: string, song?: string): Chord => {
     let { func, root, type, bassNote } = f7(str);
     if (!sevenths) {
       type = remove7thMap[type] || "";
