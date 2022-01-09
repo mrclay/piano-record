@@ -14,9 +14,9 @@ const Ops = {
     ].join("");
   },
 
-  decodeOp(token: string): TimedOp {
+  decodeOp(token: string, offset = 0): TimedOp {
     const command = token[0].charCodeAt(0) - C.ORD_A_UPPER;
-    const note = parseInt(token.substr(1, 2), 16);
+    const note = parseInt(token.substr(1, 2), 16) + offset;
     const time = parseInt(token.substr(3), 36);
     const op: Op = [command, note];
     return [op, time];
@@ -51,7 +51,7 @@ const Ops = {
     return operations.map(el => Ops.encodeOp(el[0], el[1])).join("");
   },
 
-  operationsFromStream(stream: string): TimedOp[] {
+  operationsFromStream(stream: string, offset = 0): TimedOp[] {
     if (!stream) {
       return [];
     }
@@ -61,7 +61,7 @@ const Ops = {
     let operations = [];
 
     while ((token = pattern.exec(stream))) {
-      operations.push(Ops.decodeOp(token[0]));
+      operations.push(Ops.decodeOp(token[0], offset));
     }
 
     return operations;

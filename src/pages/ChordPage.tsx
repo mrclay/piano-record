@@ -5,6 +5,7 @@ import {
   useParams,
   useNavigate,
   useLocation,
+  useSearchParams,
 } from "react-router-dom";
 
 import * as C from "../constants";
@@ -31,12 +32,16 @@ interface ChordPageState {
   title: string;
 }
 
-function stateFromProps({ notes, title = "" }: MatchItems): ChordPageState {
+function stateFromProps({
+  params: { notes, title = "" },
+  transpose,
+}: ChordPageProps): ChordPageState {
   const activeKeys = Piano.getActiveKeys();
+  const offset = parseInt(transpose || "0");
 
   const notesArr = notes ? notes.split(",") : [];
   notesArr.forEach(note => {
-    activeKeys[note] = true;
+    activeKeys[parseInt(note) + offset] = true;
   });
 
   return {
@@ -50,12 +55,14 @@ export default function Wrapper() {
   const navigate = useNavigate();
   const params: MatchItems = useParams();
   const { pathname } = useLocation();
+  const [searchParams] = useSearchParams();
   return (
     <ChordPage
       key={pathname}
       pathname={pathname}
       navigate={navigate}
       params={params}
+      transpose={searchParams.get("transpose") || "0"}
     />
   );
 }
@@ -70,7 +77,7 @@ class ChordPage extends React.Component<ChordPageProps, ChordPageState> {
     this.piano = new Piano();
     this.playTimeout = null;
 
-    this.state = stateFromProps(props.params);
+    this.state = stateFromProps(props);
   }
 
   componentDidMount() {
@@ -139,7 +146,7 @@ class ChordPage extends React.Component<ChordPageProps, ChordPageState> {
 
   reset = () => {
     this.stop();
-    this.setState(stateFromProps(this.props.params));
+    this.setState(stateFromProps(this.props));
     this.props.navigate(Paths.chordPrefix("/"));
   };
 

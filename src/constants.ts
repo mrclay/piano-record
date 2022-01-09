@@ -43,6 +43,7 @@ export interface RouteComponentProps<T extends object = {}> {
   navigate: NavigateFunction;
   params: T;
   pathname: string;
+  transpose: string;
 }
 
 /**

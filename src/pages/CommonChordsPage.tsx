@@ -7,6 +7,7 @@ import Paths from "../Paths";
 import CommonChords, { Intro } from "../common-chords/CommonChords";
 import { useStore } from "../store";
 import "./CommonChordsPage.scss";
+import { getInterval } from "../music-theory/Interval";
 
 Note.unicodeAccidentals = true;
 
@@ -30,6 +31,12 @@ function CommonChordsPage() {
     navigate(Paths.commonChordsPrefix("/C-major"));
     return null;
   }
+
+  const { deltaSemitones } = getInterval(
+    "C",
+    musicKey.getTonicNote().toString()
+  );
+  const offset = deltaSemitones < 6 ? deltaSemitones : deltaSemitones - 12;
 
   const uCase = (qual: string) => qual.replace(/^m/, "M");
 
@@ -57,15 +64,14 @@ function CommonChordsPage() {
                   );
                 }
               }}
+              defaultValue={musicKey.toString()}
             >
               <optgroup label="major">
                 {keys
                   .filter(key => key.getQuality() === "major")
                   .map(key => key + "")
                   .map(name => (
-                    <option key={name} selected={name === musicKey.toString()}>
-                      {name}
-                    </option>
+                    <option key={name}>{name}</option>
                   ))}
               </optgroup>
               <optgroup label="minor">
@@ -77,7 +83,7 @@ function CommonChordsPage() {
       </div>
 
       <section>
-        <Intro musicKey={musicKey} />
+        <Intro musicKey={musicKey} offset={offset} />
         <hr />
         <form style={{ margin: "2rem 4rem" }}>
           <div className="radio">
@@ -117,7 +123,7 @@ function CommonChordsPage() {
 
       <hr />
 
-      <CommonChords musicKey={musicKey} />
+      <CommonChords musicKey={musicKey} offset={offset} />
 
       <footer>
         <p>

@@ -1,5 +1,11 @@
 import React from "react";
-import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
+import {
+  Link,
+  useLocation,
+  useNavigate,
+  useParams,
+  useSearchParams,
+} from "react-router-dom";
 
 import * as C from "../constants";
 import Keyboard from "../ui/Keyboard";
@@ -47,12 +53,14 @@ export default function Wrapper() {
   const navigate = useNavigate();
   const params: MatchItems = useParams();
   const { pathname } = useLocation();
+  const [searchParams] = useSearchParams();
   return (
     <PianoPage
       key={pathname}
       pathname={pathname}
       navigate={navigate}
       params={params}
+      transpose={searchParams.get("transpose") || "0"}
     />
   );
 }
@@ -89,12 +97,14 @@ class PianoPage extends React.Component<PianoPageProps, PianoPageState> {
   }
 
   static stateFromProps(
-    { params, pathname }: PianoPageProps,
+    { params, pathname, transpose }: PianoPageProps,
     recorder: Recorder
   ): PianoPageState {
     const stream = params.stream || "";
     const title = params.title ? decodeURIComponent(params.title) : "";
-    const ops = Ops.operationsFromStream(stream);
+    const offset = parseInt(transpose || "0");
+    const ops = Ops.operationsFromStream(stream, offset);
+    console.log(ops);
 
     if (recorder) {
       recorder.setOperations(ops);

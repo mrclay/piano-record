@@ -7,6 +7,7 @@ import Sequencer from "../ui/Sequencer";
 import Template from "./Template";
 import Preview from "../ui/Preview";
 import Saver from "../ui/Saver";
+import { useSearchParams } from "react-router-dom";
 
 function streamFromSong(
   bpm: number,
@@ -81,7 +82,10 @@ function parseStream(stream: string) {
   };
 }
 
-function songFromStream(stream: string): {
+function songFromStream(
+  stream: string,
+  offset = 0
+): {
   bpm: number;
   bps: number;
   newStepData: Array<number[]> | false;
@@ -109,7 +113,7 @@ function songFromStream(stream: string): {
       }
 
       chunk = chunk.replace(/^0/, "");
-      const note = parseInt(chunk, 16);
+      const note = parseInt(chunk, 16) + offset;
 
       notes.push(note);
       if (isJoin) {
@@ -137,6 +141,8 @@ let playInterval: number;
 export default function SequencePage(): JSX.Element {
   const navigate = useNavigate();
   const params = useParams();
+  const [searchParams] = useSearchParams();
+  const offset = parseInt(searchParams.get("transpose") || "0");
 
   const piano = useMemo(() => new Piano(), []);
 
@@ -229,7 +235,10 @@ export default function SequencePage(): JSX.Element {
   useEffect(() => {
     const stream = params.stream;
     if (typeof stream === "string") {
-      const { bpm, bps, newStepData, newJoinData } = songFromStream(stream);
+      const { bpm, bps, newStepData, newJoinData } = songFromStream(
+        stream,
+        offset
+      );
       if (newStepData && newJoinData) {
         setBpm(bpm);
         setBpmInput(String(bpm));
@@ -241,7 +250,7 @@ export default function SequencePage(): JSX.Element {
         setPlaying(false);
       }
     }
-  }, [params.stream]);
+  }, [params.stream, offset]);
 
   // Play each step
   useEffect(() => {

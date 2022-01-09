@@ -39,19 +39,32 @@ body {
     color: #ccc;
     font-size: 0.5em;
     margin: 0 1rem;
-    position: relative;
-    top: -0.5ex;
   }
 
   .chord {
-    display: inline-flex;
-    flex-direction: column;
     align-items: center;
+    display: flex;
+    flex-wrap: wrap;
 
-    > span + span {
-      color: #777;
-      font-size: 0.8em;
-      margin-top: 0.75rem;
+    > a:link,
+    > a:hover {
+      text-decoration: none;
+
+      > span:first-child {
+        border-bottom: 2px solid #337ab7;
+      }
+    }
+
+    > * {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+
+      > span + span {
+        color: #777;
+        font-size: 0.8em;
+        margin-top: 0.75rem;
+      }
     }
 
     .func,
