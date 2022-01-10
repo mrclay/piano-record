@@ -41,7 +41,7 @@ body {
     margin: 0 1rem;
   }
 
-  .chord {
+  .chordSet {
     align-items: center;
     display: flex;
     flex-wrap: wrap;
@@ -56,14 +56,29 @@ body {
     }
 
     > * {
+      align-items: center;
       display: flex;
       flex-direction: column;
-      align-items: center;
+      position: relative;
 
       > span + span {
         color: #777;
         font-size: 0.8em;
         margin-top: 0.75rem;
+      }
+    }
+
+    > * + * {
+      margin-left: 4rem;
+      position: relative;
+
+      &::before {
+        color: #ccc;
+        content: " \2022 ";
+        font-size: 0.5em;
+        position: absolute;
+        left: -2.5rem;
+        top: 25%;
       }
     }
 
@@ -77,6 +92,10 @@ body {
     .bass {
       font-size: 0.8em;
     }
+  }
+
+  .keyWrapper {
+    margin: 2rem 0;
   }
 
   .tease7ths {

@@ -80,13 +80,13 @@ export default class Piano extends EventTarget {
       case C.OP_NOTE_DOWN:
         tonePiano.keyDown({ midi: op[1] });
         activeKeys[op[1]] = true;
-        this.send(PianoEvents.activeKeysChange, activeKeys);
+        this.send(PianoEvents.activeKeysChange, { ...activeKeys });
         return;
 
       case C.OP_NOTE_UP:
         tonePiano.keyUp({ midi: op[1] });
         activeKeys[op[1]] = false;
-        this.send(PianoEvents.activeKeysChange, activeKeys);
+        this.send(PianoEvents.activeKeysChange, { ...activeKeys });
         return;
 
       default:

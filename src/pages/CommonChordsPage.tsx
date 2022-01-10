@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import Key from "../music-theory/Key";
 import { majorKeys } from "../music-theory/constants";
@@ -23,20 +23,25 @@ interface ParamsMatch {
 function CommonChordsPage() {
   const [relative, setRelative] = useStore.relative();
   const [sevenths, setSevenths] = useStore.sevenths();
+  const [offset, setOffset] = useStore.offset();
   const navigate = useNavigate();
   const { urlKey = "" }: ParamsMatch = useParams();
   const musicKey = keys.find(el => el.toString().replace(" ", "-") === urlKey);
+
+  useEffect(() => {
+    if (musicKey) {
+      const { deltaSemitones } = getInterval(
+        "C",
+        musicKey.getTonicNote().toString()
+      );
+      setOffset(deltaSemitones < 6 ? deltaSemitones : deltaSemitones - 12);
+    }
+  }, [musicKey]);
 
   if (!musicKey) {
     navigate(Paths.commonChordsPrefix("/C-major"));
     return null;
   }
-
-  const { deltaSemitones } = getInterval(
-    "C",
-    musicKey.getTonicNote().toString()
-  );
-  const offset = deltaSemitones < 6 ? deltaSemitones : deltaSemitones - 12;
 
   const uCase = (qual: string) => qual.replace(/^m/, "M");
 

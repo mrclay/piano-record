@@ -7,11 +7,13 @@ import Piano, { PianoEvents } from "./Piano";
 export type RecorderProgressListener = (progress: number) => void;
 export type RecorderStateListener = (state: RecorderState) => void;
 export type RecorderStopListener = () => void;
+export type RecorderCompleteListener = RecorderStopListener;
 
 export enum RecorderEvent {
   progress = "progress",
   state = "state",
   stop = "stop",
+  complete = "complete",
 }
 
 export enum RecorderState {
@@ -167,6 +169,7 @@ export default class Recorder extends EventTarget {
           this.piano.performOperation(el[0], false);
           numPerformed++;
           if (numPerformed === numOperations) {
+            this.send(RecorderEvent.complete);
             this.stop();
           }
         }, el[1] * C.TIME_RESOLUTION_DIVISOR)
