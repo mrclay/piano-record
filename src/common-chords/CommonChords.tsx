@@ -156,7 +156,7 @@ function CommonChords({ musicKey, offset }: Keyed) {
         els={[
           f(
             "I +",
-            "http://mrclay.org/piano/songs/C300C374C406D30bcD37bcD40biC2fc2C35ccC39ckC3ecmD35jiD39jmD3ejuD2fk5C34kiC38kmC3bkmD34scD38scD3bskC35tcC39teC3ctfD3514zD3c152D3915c"
+            "http://mrclay.org/piano/songs/C300C37mC4016D3068D376oD4072C3076C387sC408aD30joD38kiC30kmD40koC39lkC3cluC40mmD39ziD3czqD30zuD40zw"
           ),
           f(
             "V/vi + /#V",
