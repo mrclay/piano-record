@@ -74,7 +74,7 @@ function CommonChords({ musicKey, offset }: Keyed) {
       />
 
       <p>
-        These are <strong>borrowed chords</strong> from the minor (aeolian)
+        These are <strong>borrowed chords</strong> from the parallel minor (aeolian)
         mode.
       </p>
 
