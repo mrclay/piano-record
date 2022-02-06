@@ -156,6 +156,7 @@ export function ChordSet({ els }: ChordSetProps): JSX.Element {
               key={elKey + "but"}
               href={el.songUrl}
               target="_blank"
+              rel="noreferrer"
               onClick={e => selectChord(e)}
             >
               {content}
