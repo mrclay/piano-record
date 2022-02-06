@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router";
+import * as Tone from "tone";
 import Paths from "../Paths";
 import Piano, { ActiveKeys } from "../Piano";
 import Keyboard from "../ui/Keyboard";
@@ -174,8 +175,10 @@ export default function SequencePage(): JSX.Element {
   function handleStart() {
     // Hack to directly tie a keypress to sound generation so the WebAudio API
     // will allow sound on the page.
-    piano.startNote(1);
-    piano.stopNote(1);
+    const sine = new Tone.Oscillator(60, "sine").toDestination();
+    sine.volume.value = -60;
+    sine.start();
+    sine.stop();
 
     setPlaying(true);
     setStep(0);
