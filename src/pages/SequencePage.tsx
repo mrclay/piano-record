@@ -172,6 +172,11 @@ export default function SequencePage(): JSX.Element {
   );
 
   function handleStart() {
+    // Hack to directly tie a keypress to sound generation so the WebAudio API
+    // will allow sound on the page.
+    piano.startNote(1);
+    piano.stopNote(1);
+
     setPlaying(true);
     setStep(0);
   }
