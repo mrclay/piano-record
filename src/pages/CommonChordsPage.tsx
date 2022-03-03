@@ -20,6 +20,8 @@ interface ParamsMatch {
   urlKey?: string;
 }
 
+const uCase = (qual: string) => qual.replace(/^m/, "M");
+
 function CommonChordsPage() {
   const [relative, setRelative] = useStore.relative();
   const [sevenths, setSevenths] = useStore.sevenths();
@@ -35,6 +37,10 @@ function CommonChordsPage() {
         musicKey.getTonicNote().toString()
       );
       setOffset(deltaSemitones < 6 ? deltaSemitones : deltaSemitones - 12);
+
+      const quality = uCase(musicKey.getQuality());
+      const keyName = musicKey.toString();
+      document.title = `The Common Chords of ${quality} Keys: ${keyName}`;
     }
   }, [musicKey]);
 
@@ -42,8 +48,6 @@ function CommonChordsPage() {
     navigate(Paths.commonChordsPrefix("/C-major"));
     return null;
   }
-
-  const uCase = (qual: string) => qual.replace(/^m/, "M");
 
   return (
     <div className="CC">
