@@ -2,7 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom";
 import { BrowserRouter as Router } from "react-router-dom";
 
-import "./index.css";
+import "./index.scss";
 import "./ui/Keyboard/index.scss";
 import App from "./App";
 

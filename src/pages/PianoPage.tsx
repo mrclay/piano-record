@@ -395,18 +395,17 @@ class PianoPage extends React.Component<PianoPageProps, PianoPageState> {
               isRecording={recorderState === RecorderState.recording}
             />
 
-            {canReset && (
+            {canReset ? (
               <button
                 type="button"
                 onClick={this.reset}
                 id="reset"
                 title="Start over"
                 className="btn btn-danger med-btn"
-                style={{ marginLeft: "1em" }}
               >
                 <i className="fa fa-trash" aria-label="Start over" />
               </button>
-            )}
+            ) : <span className="fakeReset" />}
           </div>
         </section>
 

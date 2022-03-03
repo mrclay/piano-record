@@ -1,6 +1,10 @@
+#root {
+  margin: 0 auto;
+  max-width: 1246px;
+  padding: 20px;
+}
 body {
-  width: 1246px;
-  margin: 20px auto;
+  margin: 0;
 }
 p {
   max-width: 700px;
@@ -36,8 +40,19 @@ section {
 #status {
   display: inline-block;
   text-align: right;
-  font: 30px monospace;
+  font: 30px/44px monospace;
   font-style: italic;
+  margin-right: 1rem;
+
+  + .med-btn {
+    margin-right: 0;
+    width: 45px;
+  }
+}
+
+.fakeReset {
+  display: inline-block;
+  width: 45px;
 }
 
 #status.recording i {
@@ -93,12 +108,21 @@ button .progress {
 
 .piano-2col {
   display: flex;
-  align-items: flex-end;
-  min-height: 4.5em;
-  margin-top: 10px;
-}
-.piano-2col > div:first-child {
-  flex: 1;
+  flex-direction: column;
+  margin: 2rem 0 0;
+  min-width: 600px;
+
+  > div {
+    min-height: 6rem;
+  }
+
+  @media (min-width: 800px) {
+    flex-direction: row;
+
+    > div:first-child {
+      flex: 1;
+    }
+  }
 }
 
 .med-btn {
