@@ -10,6 +10,7 @@ import { ActiveKeys, PianoActiveKeysListener, PianoEvents } from "../Piano";
 import { RecorderCompleteListener, RecorderEvent } from "../Recorder";
 import { useStore } from "../store";
 import Keyboard from "../ui/Keyboard";
+import { useCommonChordsQuery } from "./useCommonChordsQuery";
 
 export interface Chord {
   func: string;
@@ -71,12 +72,11 @@ interface ChordSetProps {
 
 export function ChordSet({ els }: ChordSetProps): JSX.Element {
   const ref = useRef({ song: "" }).current;
+  const { relative, sevenths } = useCommonChordsQuery();
 
   const [chordSet, setChordSet] = useStore.chordSet();
   const [song, setSong] = useStore.song();
   ref.song = song;
-  const [relative] = useStore.relative();
-  const [sevenths] = useStore.sevenths();
   const [recorder] = useStore.recorder();
   const [offset] = useStore.offset();
 

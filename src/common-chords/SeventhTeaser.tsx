@@ -1,8 +1,8 @@
 import React, { FC } from "react";
-import { useStore } from "../store";
+import { useCommonChordsQuery } from "./useCommonChordsQuery";
 
 export const SeventhTeaser: FC = ({ children }) => {
-  const [sevenths, setSevenths] = useStore.sevenths();
+  const { sevenths, setSevenths } = useCommonChordsQuery();
 
   if (sevenths) {
     return <>{children}</>;

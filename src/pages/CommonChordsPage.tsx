@@ -8,6 +8,7 @@ import CommonChords, { Intro } from "../common-chords/CommonChords";
 import { useStore } from "../store";
 import "./CommonChordsPage.scss";
 import { getInterval } from "../music-theory/Interval";
+import { useCommonChordsQuery } from "../common-chords/useCommonChordsQuery";
 
 Note.unicodeAccidentals = true;
 
@@ -23,8 +24,9 @@ interface ParamsMatch {
 const uCase = (qual: string) => qual.replace(/^m/, "M");
 
 function CommonChordsPage() {
-  const [relative, setRelative] = useStore.relative();
-  const [sevenths, setSevenths] = useStore.sevenths();
+  const { relative, sevenths, qs, setRelative, setSevenths } =
+    useCommonChordsQuery();
+
   const [offset, setOffset] = useStore.offset();
   const navigate = useNavigate();
   const { urlKey = "" }: ParamsMatch = useParams();
@@ -68,7 +70,7 @@ function CommonChordsPage() {
                 if (newKey) {
                   navigate(
                     Paths.commonChordsPrefix(
-                      `/${newKey!.toString().replace(" ", "-")}`
+                      `/${newKey!.toString().replace(" ", "-")}${qs}`
                     )
                   );
                 }
