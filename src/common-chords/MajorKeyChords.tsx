@@ -1,30 +1,10 @@
-import React, { FC } from "react";
-import Key from "../music-theory/Key";
+import React from "react";
 import { ChordSet } from "./ChordSet";
+import { Keyed } from "./Intro";
 import { getRenderers } from "./renderers";
 import { SeventhTeaser } from "./SeventhTeaser";
 
-interface Keyed {
-  musicKey: Key;
-  offset: number;
-}
-
-export const Intro: FC<Keyed> = ({ musicKey }) => (
-  <>
-    <p>
-      This is a non-exhaustive roundup of chords songwriters often employ in{" "}
-      {musicKey.getQuality()} keys.
-    </p>
-    <p>
-      If you usually think of a key as having <i>seven chords</i>, for writing
-      purposes I encourage you to add these to your collection and get to know
-      the sound of them within the key. Consider them ready-for-use while
-      writing in {musicKey + ""}.
-    </p>
-  </>
-);
-
-function CommonChords({ musicKey, offset }: Keyed) {
+function MajorKeyChords({ musicKey, offset }: Keyed) {
   const { f, f7, rom, note } = getRenderers(musicKey, offset);
 
   return (
@@ -74,8 +54,8 @@ function CommonChords({ musicKey, offset }: Keyed) {
       />
 
       <p>
-        These are <strong>borrowed chords</strong> from the parallel minor (aeolian)
-        mode.
+        These are <strong>borrowed chords</strong> from the parallel minor
+        (aeolian) mode.
       </p>
 
       <ChordSet
@@ -136,6 +116,21 @@ function CommonChords({ musicKey, offset }: Keyed) {
       <p>
         These are often used in rock &amp; blues with the 7th notes just for
         color rather than serving a dominant function.
+      </p>
+
+      <ChordSet
+        els={[
+          f7(
+            "#iv m7b5",
+            "http://mrclay.org/piano/songs/C370C3cfC40jC45uC4c9lD4cb8C4cc4D3cegD40ekD37emD45euD4cf6C36feC3cfmC40fuC45g4C51gjC4fl0D51l6C4crgD4froC4atiD4ctuD36vmD3cvuD40vyD45wdD4ax0C35x2C3cx8C40xgC45xrC48xyD3c1a0D451a1D401a2D351a2D481a4"
+          ),
+        ]}
+      />
+
+      <p>
+        This chord can be thought of as the {note("vi")}m triad with a tense{" "}
+        {note("#iv")} bass note beneath. Usually the {note("#iv")} bass falls to{" "}
+        {note("IV")} in the {rom("IV")} chord.
       </p>
 
       <ChordSet
@@ -300,11 +295,11 @@ function CommonChords({ musicKey, offset }: Keyed) {
           els={[
             f(
               "V/ii 7#9",
-              "http://localhost:3000/piano/songs/C300C37mC40uC437gC45b0D43bgD30byD37c0D40c4D45d6C2ddbC34dgC37dsC3decC48ehC46liD48lqD34ogD2dohD37omD3donD46poC45q9C32rqC39s0C41soD3915bD4515fD4115gD3215g"
+              "http://mrclay.org/piano/songs/C300C37mC40uC437gC45b0D43bgD30byD37c0D40c4D45d6C2ddbC34dgC37dsC3decC48ehC46liD48lqD34ogD2dohD37omD3donD46poC45q9C32rqC39s0C41soD3915bD4515fD4115gD3215g"
             ),
             f(
               "subV 7b5",
-              "http://mrclay.org/piano/record/C320C39jC3clC4113D32b1D39baD3cbhC31c2D41c3C37cnC3bd1C41dhD31ooD37osD3bp3D41peC30prC37qjC3bqrC40roD3b12sD3712zD30132D40133"
+              "http://mrclay.org/piano/songs/C320C39jC3clC4113D32b1D39baD3cbhC31c2D41c3C37cnC3bd1C41dhD31ooD37osD3bp3D41peC30prC37qjC3bqrC40roD3b12sD3712zD30132D40133"
             ),
           ]}
         />
@@ -313,9 +308,21 @@ function CommonChords({ musicKey, offset }: Keyed) {
           with their 5th and/or 9th chord tones lowered or raised. Commonly done
           in jazz.
         </p>
+        <ChordSet
+          els={[
+            f7(
+              "VII 7",
+              "http://mrclay.org/piano/songs/C370C3cgC4016C481cC4c8eD488mD37dsD3cdyD40e2D4ceyC36f2C39fcC3bfqC3ffyC51geD51jaC51k8D3bsaD39scD36sgD3fsoD51tmC34tsC37u4C3cuaC40umC54v0C53yiD54ysC5110aD5310iC4f124D5112eD401a2D341a4D371a6D3c1a6D4f1a8"
+            ),
+          ]}
+        />
+        <p>
+          {note("VII")}7 is often used as a smoother substitute for{" "}
+          {note("#iv")}dim7, often inverted as {note("VII")}7/{note("#iv")}.
+        </p>
       </SeventhTeaser>
     </section>
   );
 }
 
-export default CommonChords;
+export default MajorKeyChords;

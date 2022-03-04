@@ -1,20 +1,22 @@
 import React, { useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import Key from "../music-theory/Key";
-import { majorKeys } from "../music-theory/constants";
+import { majorKeys, minorKeys, ThirdQuality } from "../music-theory/constants";
 import Note from "../music-theory/Note";
 import Paths from "../Paths";
-import CommonChords, { Intro } from "../common-chords/CommonChords";
 import { useStore } from "../store";
 import "./CommonChordsPage.scss";
 import { getInterval } from "../music-theory/Interval";
 import { useCommonChordsQuery } from "../common-chords/useCommonChordsQuery";
+import { Intro } from "../common-chords/Intro";
+import MajorKeyChords from "../common-chords/MajorKeyChords";
+import MinorKeyChords from "../common-chords/MinorKeyChords";
 
 Note.unicodeAccidentals = true;
 
 const keys: Key[] = [
   ...majorKeys.map(name => Key.major(name)),
-  // ...minorKeys.map(name => Key.minor(name)),
+  ...minorKeys.map(name => Key.minor(name)),
 ];
 
 interface ParamsMatch {
@@ -79,14 +81,19 @@ function CommonChordsPage() {
             >
               <optgroup label="major">
                 {keys
-                  .filter(key => key.getQuality() === "major")
+                  .filter(key => key.getQuality() === ThirdQuality.MAJOR)
                   .map(key => key + "")
                   .map(name => (
                     <option key={name}>{name}</option>
                   ))}
               </optgroup>
               <optgroup label="minor">
-                <option disabled>Coming soon!</option>
+                {keys
+                  .filter(key => key.getQuality() === ThirdQuality.MINOR)
+                  .map(key => key + "")
+                  .map(name => (
+                    <option key={name}>{name}</option>
+                  ))}
               </optgroup>
             </select>
           </form>
@@ -134,7 +141,11 @@ function CommonChordsPage() {
 
       <hr />
 
-      <CommonChords musicKey={musicKey} offset={offset} />
+      {musicKey.getQuality() === ThirdQuality.MAJOR ? (
+        <MajorKeyChords musicKey={musicKey} offset={offset} />
+      ) : (
+        <MinorKeyChords musicKey={musicKey} offset={offset} />
+      )}
 
       <footer>
         <p>

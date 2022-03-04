@@ -1,5 +1,5 @@
 import React from "react";
-import { unicodeAccidentalsMap } from "../music-theory/constants";
+import { ThirdQuality, unicodeAccidentalsMap } from "../music-theory/constants";
 import Key from "../music-theory/Key";
 import Paths from "../Paths";
 import { Chord } from "./ChordSet";
@@ -7,14 +7,16 @@ import { Chord } from "./ChordSet";
 const rom = (str: string) => <b className="roman">{str}</b>;
 
 export function getRenderers(key: Key, offset: number) {
+  const majKey = key.getQuality() === ThirdQuality.MAJOR ? key : Key.major(key.getTonicNote());
+
   const note = (func: string) => f7(func).root;
 
   // Does not allow removing sevenths
   const f7 = (str: string, songUrl = ""): Chord => {
     const [func, type = "", three = ""] = str.split(" ");
-    const root = key.getNoteFromRoman(func).toString();
+    const root = majKey.getNoteFromRoman(func).toString();
     const bassNote = three
-      ? key.getNoteFromRoman(three.replace("/", "")).toString()
+      ? majKey.getNoteFromRoman(three.replace("/", "")).toString()
       : "";
 
     let url = songUrl.replace(Paths.home, "");
