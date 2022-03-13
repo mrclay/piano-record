@@ -144,7 +144,7 @@ export default class Recorder extends EventTarget {
     this.operations.push([op, dividedTime - this.firstTime]);
   }
 
-  play() {
+  play(speed = 1) {
     const numOperations = this.operations.length;
     if (!numOperations) {
       return false;
@@ -172,7 +172,7 @@ export default class Recorder extends EventTarget {
             this.send(RecorderEvent.complete);
             this.stop();
           }
-        }, el[1] * C.TIME_RESOLUTION_DIVISOR)
+        }, el[1] * C.TIME_RESOLUTION_DIVISOR * (1 / speed))
       );
     });
 

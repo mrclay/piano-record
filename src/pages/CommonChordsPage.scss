@@ -96,6 +96,11 @@ body {
 
   .keyWrapper {
     margin: 2rem 0;
+
+    > div + div {
+      margin: 0 auto;
+      width: 1246px;
+    }
   }
 
   .tease7ths {

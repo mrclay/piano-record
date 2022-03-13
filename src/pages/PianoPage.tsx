@@ -26,6 +26,8 @@ import Title from "../ui/Title";
 import Preview from "../ui/Preview";
 import Saver from "../ui/Saver";
 import Status from "../ui/Status";
+import PianoSpeed from "../ui/PianoSpeed";
+import { useStore } from "../store";
 
 enum Mode {
   recording = "recording",
@@ -38,7 +40,9 @@ interface MatchItems {
   title?: string;
 }
 
-interface PianoPageProps extends C.RouteComponentProps<MatchItems> {}
+interface PianoPageProps extends C.RouteComponentProps<MatchItems> {
+  pianoSpeed: number;
+}
 
 interface PianoPageState {
   activeKeys: ActiveKeys;
@@ -54,12 +58,14 @@ export default function Wrapper() {
   const params: MatchItems = useParams();
   const { pathname } = useLocation();
   const [searchParams] = useSearchParams();
+  const [pianoSpeed] = useStore.pianoSpeed();
   return (
     <PianoPage
       key={pathname}
       pathname={pathname}
       navigate={navigate}
       params={params}
+      pianoSpeed={pianoSpeed}
       transpose={searchParams.get("transpose") || "0"}
     />
   );
@@ -104,7 +110,6 @@ class PianoPage extends React.Component<PianoPageProps, PianoPageState> {
     const title = params.title ? decodeURIComponent(params.title) : "";
     const offset = parseInt(transpose || "0");
     const ops = Ops.operationsFromStream(stream, offset);
-    console.log(ops);
 
     if (recorder) {
       recorder.setOperations(ops);
@@ -160,7 +165,7 @@ class PianoPage extends React.Component<PianoPageProps, PianoPageState> {
   };
 
   play = () => {
-    this.recorder.play();
+    this.recorder.play(this.props.pianoSpeed / 100);
   };
 
   stop = () => {
@@ -413,6 +418,7 @@ class PianoPage extends React.Component<PianoPageProps, PianoPageState> {
           activeKeys={activeKeys}
           onKeyClick={mode === Mode.recording ? this.onKeyClick : undefined}
         />
+        <PianoSpeed />
 
         <section style={{ minHeight: "8rem" }}>
           {mode === Mode.shared && (

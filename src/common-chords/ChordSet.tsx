@@ -7,9 +7,14 @@ import React, {
 } from "react";
 import Ops from "../Ops";
 import { ActiveKeys, PianoActiveKeysListener, PianoEvents } from "../Piano";
-import { RecorderCompleteListener, RecorderEvent } from "../Recorder";
+import {
+  RecorderCompleteListener,
+  RecorderEvent,
+  RecorderState,
+} from "../Recorder";
 import { useStore } from "../store";
 import Keyboard from "../ui/Keyboard";
+import PianoSpeed from "../ui/PianoSpeed";
 import { useCommonChordsQuery } from "./useCommonChordsQuery";
 
 export interface Chord {
@@ -62,6 +67,9 @@ function Keys(): JSX.Element {
   return (
     <div style={style} className="keyWrapper">
       <Keyboard activeKeys={activeKeys} />
+      <div>
+        <PianoSpeed />
+      </div>
     </div>
   );
 }
@@ -78,6 +86,7 @@ export function ChordSet({ els }: ChordSetProps): JSX.Element {
   const [song, setSong] = useStore.song();
   ref.song = song;
   const [recorder] = useStore.recorder();
+  const [pianoSpeed] = useStore.pianoSpeed();
   const [offset] = useStore.offset();
 
   useEffect(() => {
@@ -104,7 +113,7 @@ export function ChordSet({ els }: ChordSetProps): JSX.Element {
           setChordSet(ref);
           setSong(stream);
           recorder.setOperations(Ops.operationsFromStream(stream, offset));
-          recorder.play();
+          recorder.play(pianoSpeed / 100);
         } else {
           recorder.stop();
           setChordSet({});
@@ -112,8 +121,15 @@ export function ChordSet({ els }: ChordSetProps): JSX.Element {
         }
       }
     },
-    [offset]
+    [offset, pianoSpeed]
   );
+
+  useEffect(() => {
+    if (recorder.getState() === RecorderState.playing) {
+      recorder.stop();
+      recorder.play(pianoSpeed / 100);
+    }
+  }, [pianoSpeed]);
 
   return (
     <>
