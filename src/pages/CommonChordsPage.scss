@@ -98,8 +98,13 @@ body {
     margin: 2rem 0;
 
     > div + div {
+      display: flex;
       margin: 0 auto;
       width: 1246px;
+
+      p {
+        padding: 1rem 1rem 0 2rem;
+      }
     }
   }
 

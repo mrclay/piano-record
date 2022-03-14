@@ -1,5 +1,7 @@
 import React, {
   CSSProperties,
+  MouseEvent,
+  ReactNode,
   useCallback,
   useEffect,
   useRef,
@@ -15,6 +17,7 @@ import {
 import { useStore } from "../store";
 import Keyboard from "../ui/Keyboard";
 import PianoSpeed from "../ui/PianoSpeed";
+import SongChords from "../ui/SongChords";
 import { useCommonChordsQuery } from "./useCommonChordsQuery";
 
 export interface Chord {
@@ -22,6 +25,7 @@ export interface Chord {
   root: string;
   type: string;
   bassNote: string;
+  songChords?: ReactNode;
   songUrl: string;
   require7th: boolean;
 }
@@ -68,7 +72,7 @@ function Keys(): JSX.Element {
     <div style={style} className="keyWrapper">
       <Keyboard activeKeys={activeKeys} />
       <div>
-        <PianoSpeed />
+        <PianoSpeed /> <SongChords />
       </div>
     </div>
   );
@@ -78,12 +82,18 @@ interface ChordSetProps {
   els: Chord[];
 }
 
+interface ChordSetRef {
+  song: string;
+  songChords?: ReactNode;
+}
+
 export function ChordSet({ els }: ChordSetProps): JSX.Element {
-  const ref = useRef({ song: "" }).current;
+  const ref = useRef<ChordSetRef>({ song: "" }).current;
   const { relative, sevenths } = useCommonChordsQuery();
 
   const [chordSet, setChordSet] = useStore.chordSet();
   const [song, setSong] = useStore.song();
+  const [, setSongChords] = useStore.songChords();
   ref.song = song;
   const [recorder] = useStore.recorder();
   const [pianoSpeed] = useStore.pianoSpeed();
@@ -100,25 +110,26 @@ export function ChordSet({ els }: ChordSetProps): JSX.Element {
     };
   }, []);
 
-  const selectChord = useCallback<React.MouseEventHandler<HTMLAnchorElement>>(
-    e => {
+  const selectChord = useCallback(
+    (e: MouseEvent<HTMLAnchorElement>, chord: Chord) => {
       e.preventDefault();
-      const el = (e.target as HTMLElement).closest("a");
-      if (el && el.href) {
-        const [, streamAndName] = el.href.split(/\/piano\/(?:songs|record)\//);
-        const stream = streamAndName.replace(/(\/|\?).*/, "");
 
-        if (ref.song !== stream || chordSet !== ref) {
-          ref.song = stream;
-          setChordSet(ref);
-          setSong(stream);
-          recorder.setOperations(Ops.operationsFromStream(stream, offset));
-          recorder.play(pianoSpeed / 100);
-        } else {
-          recorder.stop();
-          setChordSet({});
-          setSong("");
-        }
+      const [, streamAndName] = chord.songUrl.split(
+        /\/piano\/(?:songs|record)\//
+      );
+      const stream = streamAndName.replace(/(\/|\?).*/, "");
+
+      if (ref.song !== stream || chordSet !== ref) {
+        ref.song = stream;
+        setSongChords(chord.songChords);
+        setChordSet(ref);
+        setSong(stream);
+        recorder.setOperations(Ops.operationsFromStream(stream, offset));
+        recorder.play(pianoSpeed / 100);
+      } else {
+        recorder.stop();
+        setChordSet({});
+        setSong("");
       }
     },
     [offset, pianoSpeed]
@@ -173,7 +184,7 @@ export function ChordSet({ els }: ChordSetProps): JSX.Element {
               href={el.songUrl}
               target="_blank"
               rel="noreferrer"
-              onClick={e => selectChord(e)}
+              onClick={e => selectChord(e, el)}
             >
               {content}
             </a>

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { ReactNode } from "react";
 import { ThirdQuality, unicodeAccidentalsMap } from "../music-theory/constants";
 import Key from "../music-theory/Key";
 import Paths from "../Paths";
@@ -12,7 +12,7 @@ export function getRenderers(key: Key, offset: number) {
   const note = (func: string) => f7(func).root;
 
   // Does not allow removing sevenths
-  const f7 = (str: string, songUrl = ""): Chord => {
+  const f7 = (str: string, songUrl = "", songChords?: ReactNode): Chord => {
     const [func, type = "", three = ""] = str.split(" ");
     const root = majKey.getNoteFromRoman(func).toString();
     const bassNote = three
@@ -31,14 +31,15 @@ export function getRenderers(key: Key, offset: number) {
       type,
       root,
       bassNote,
+      songChords,
       songUrl: url,
       require7th: true,
     };
   };
 
   // Allows removing 7ths
-  const f = (str: string, songUrl = ""): Chord => {
-    const chord = f7(str, songUrl);
+  const f = (str: string, songUrl = "", songChords?: ReactNode): Chord => {
+    const chord = f7(str, songUrl, songChords);
     chord.require7th = false;
     return chord;
   };
