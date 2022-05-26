@@ -56,6 +56,7 @@ function CommonChordsPage() {
 
   return (
     <Template
+      showLimitations={false}
       title={[
         <>The Common Chords of {uCase(musicKey.getQuality())} Keys</>,
         <form className="form-inline">
@@ -140,17 +141,6 @@ function CommonChordsPage() {
         ) : (
           <MinorKeyChords musicKey={musicKey} offset={offset} />
         )}
-
-        <footer>
-          <p>
-            By Steve Clay.{" "}
-            <a href="https://twitter.com/mrclay_org">@mrclay_org</a>. (
-            <a href="https://github.com/mrclay/piano-record/blob/main/src/common-chords/CommonChords.tsx">
-              Source code
-            </a>
-            )
-          </p>
-        </footer>
       </div>
     </Template>
   );

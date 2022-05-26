@@ -76,6 +76,10 @@ function MajorKeyChords({ musicKey, offset }: Keyed) {
         These are <strong>borrowed chords</strong> from the parallel minor
         (aeolian) mode.
       </p>
+      <p>
+        {note("bVII")} and {note("v")}m are also often borrowed in the
+        mixolydian mode.
+      </p>
 
       <ChordSet
         els={[
@@ -280,8 +284,8 @@ function MajorKeyChords({ musicKey, offset }: Keyed) {
       <p>
         Borrowed from phrygian, {rom("bII")} most often appears following{" "}
         {rom("V/V")}, {rom("ii")}, or {rom("bVI")} and often goes to {rom("I")}{" "}
-        or {rom("V")}. In classical music, it often appears in 1st inversion ({note("bII")}/{note("iv")}) as
-        a substitute for the {rom("iv")} chord.
+        or {rom("V")}. In classical music, it often appears in 1st inversion (
+        {note("bII")}/{note("iv")}) as a substitute for the {rom("iv")} chord.
       </p>
 
       <SeventhTeaser>
