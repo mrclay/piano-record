@@ -137,8 +137,6 @@ const initial = {
   joinData: [1, 2, 3, 4, 5, 6, 7, 8].map(() => []),
 };
 
-let playInterval: number;
-
 export default function SequencePage(): JSX.Element {
   const navigate = useNavigate();
   const params = useParams();
@@ -264,33 +262,13 @@ export default function SequencePage(): JSX.Element {
   useEffect(() => {
     if (playing) {
       play(currentNotes, currentJoins);
+
+      const delay = (60 / bpm) * bps * 1000;
+      window.setTimeout(() => {
+        setStep(currentStep => (currentStep + 1) % numSteps);
+      }, delay);
     }
   }, [step]);
-
-  function stopInterval() {
-    if (playInterval) {
-      clearInterval(playInterval);
-    }
-  }
-
-  function restartInterval() {
-    stopInterval();
-
-    const delay = (60 / bpm) * bps * 1000;
-    playInterval = window.setInterval(() => {
-      setStep(currentStep => (currentStep + 1) % numSteps);
-    }, delay);
-  }
-
-  // Restart interval if song changes
-  useEffect(() => {
-    setStep(0);
-    restartInterval();
-
-    return () => {
-      stopInterval();
-    };
-  }, [bpm, bps, numSteps, playing]);
 
   return (
     <Template title="Sequence" intro={null}>
