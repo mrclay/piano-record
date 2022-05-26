@@ -176,8 +176,7 @@ class ChordPage extends React.Component<ChordPageProps, ChordPageState> {
 
     return (
       <Template
-        app="chord"
-        title="Simple Chord"
+        title="Chord"
         intro={
           <p>
             Wanna capture a <Link to={example}>chord</Link> or share it with

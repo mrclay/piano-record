@@ -306,8 +306,7 @@ class PianoPage extends React.Component<PianoPageProps, PianoPageState> {
 
     return (
       <Template
-        app="songs"
-        title="Simple Piano"
+        title="Melody"
         intro={
           <p>
             Wanna capture a <Link to={example}>short musical idea</Link> or

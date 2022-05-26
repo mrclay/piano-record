@@ -22,19 +22,6 @@ body {
     padding: 0;
   }
 
-  .head-flex {
-    align-items: center;
-    display: flex;
-    margin-bottom: 2rem;
-
-    > :first-child {
-      margin-right: 3rem;
-    }
-    > :last-child {
-      margin-top: 1rem;
-    }
-  }
-
   .sep {
     color: #ccc;
     font-size: 0.5em;

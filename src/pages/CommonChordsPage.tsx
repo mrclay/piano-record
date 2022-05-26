@@ -11,6 +11,7 @@ import { useCommonChordsQuery } from "../common-chords/useCommonChordsQuery";
 import { Intro } from "../common-chords/Intro";
 import MajorKeyChords from "../common-chords/MajorKeyChords";
 import MinorKeyChords from "../common-chords/MinorKeyChords";
+import Template from "./Template";
 
 Note.unicodeAccidentals = true;
 
@@ -54,110 +55,104 @@ function CommonChordsPage() {
   }
 
   return (
-    <div className="CC">
-      <div className="head-flex">
-        <div>
-          <h1 className="h2">
-            The Common Chords of {uCase(musicKey.getQuality())} Keys
-          </h1>
-        </div>
-        <div>
-          <form className="form-inline">
-            <select
-              className="form-control"
-              onChange={e => {
-                const newKey = keys.find(
-                  el => el.toString() === e.target.value
+    <Template
+      title={[
+        <>The Common Chords of {uCase(musicKey.getQuality())} Keys</>,
+        <form className="form-inline">
+          <select
+            className="form-control"
+            onChange={e => {
+              const newKey = keys.find(el => el.toString() === e.target.value);
+              if (newKey) {
+                navigate(
+                  Paths.commonChordsPrefix(
+                    `/${newKey!.toString().replace(" ", "-")}${qs}`
+                  )
                 );
-                if (newKey) {
-                  navigate(
-                    Paths.commonChordsPrefix(
-                      `/${newKey!.toString().replace(" ", "-")}${qs}`
-                    )
-                  );
-                }
-              }}
-              defaultValue={musicKey.toString()}
-            >
-              <optgroup label="major">
-                {keys
-                  .filter(key => key.getQuality() === ThirdQuality.MAJOR)
-                  .map(key => key + "")
-                  .map(name => (
-                    <option key={name}>{name}</option>
-                  ))}
-              </optgroup>
-              <optgroup label="minor">
-                {keys
-                  .filter(key => key.getQuality() === ThirdQuality.MINOR)
-                  .map(key => key + "")
-                  .map(name => (
-                    <option key={name}>{name}</option>
-                  ))}
-              </optgroup>
-            </select>
+              }
+            }}
+            defaultValue={musicKey.toString()}
+          >
+            <optgroup label="major">
+              {keys
+                .filter(key => key.getQuality() === ThirdQuality.MAJOR)
+                .map(key => key + "")
+                .map(name => (
+                  <option key={name}>{name}</option>
+                ))}
+            </optgroup>
+            <optgroup label="minor">
+              {keys
+                .filter(key => key.getQuality() === ThirdQuality.MINOR)
+                .map(key => key + "")
+                .map(name => (
+                  <option key={name}>{name}</option>
+                ))}
+            </optgroup>
+          </select>
+        </form>,
+      ]}
+      intro={<Intro musicKey={musicKey} offset={offset} />}
+    >
+      <div className="CC">
+        <section>
+          <hr />
+          <form style={{ margin: "2rem 4rem" }}>
+            <div className="radio">
+              <label>
+                <input
+                  type="radio"
+                  name="sevenths"
+                  checked={sevenths}
+                  onChange={() => setSevenths(true)}
+                />
+                Show 7th chords in case I want to play the sevenths
+              </label>
+            </div>
+            <div className="radio">
+              <label>
+                <input
+                  type="radio"
+                  name="sevenths"
+                  checked={!sevenths}
+                  onChange={() => setSevenths(false)}
+                />
+                Keep it simple (mostly) with triads
+              </label>
+            </div>
+            <div className="checkbox">
+              <label>
+                <input
+                  type="checkbox"
+                  checked={relative}
+                  onChange={e => setRelative(e.target.checked)}
+                />
+                Show Roman numerals
+              </label>
+            </div>
           </form>
-        </div>
-      </div>
+        </section>
 
-      <section>
-        <Intro musicKey={musicKey} offset={offset} />
         <hr />
-        <form style={{ margin: "2rem 4rem" }}>
-          <div className="radio">
-            <label>
-              <input
-                type="radio"
-                name="sevenths"
-                checked={sevenths}
-                onChange={() => setSevenths(true)}
-              />
-              Show 7th chords in case I want to play the sevenths
-            </label>
-          </div>
-          <div className="radio">
-            <label>
-              <input
-                type="radio"
-                name="sevenths"
-                checked={!sevenths}
-                onChange={() => setSevenths(false)}
-              />
-              Keep it simple (mostly) with triads
-            </label>
-          </div>
-          <div className="checkbox">
-            <label>
-              <input
-                type="checkbox"
-                checked={relative}
-                onChange={e => setRelative(e.target.checked)}
-              />
-              Show Roman numerals
-            </label>
-          </div>
-        </form>
-      </section>
 
-      <hr />
+        {musicKey.getQuality() === ThirdQuality.MAJOR ? (
+          <MajorKeyChords musicKey={musicKey} offset={offset} />
+        ) : (
+          <MinorKeyChords musicKey={musicKey} offset={offset} />
+        )}
 
-      {musicKey.getQuality() === ThirdQuality.MAJOR ? (
-        <MajorKeyChords musicKey={musicKey} offset={offset} />
-      ) : (
-        <MinorKeyChords musicKey={musicKey} offset={offset} />
-      )}
-
-      <footer>
-        <p>
-          By Steve Clay.{" "}
-          <a href="https://twitter.com/mrclay_org">@mrclay_org</a>. (
-          <a href="https://github.com/mrclay/piano-record/blob/main/src/common-chords/CommonChords.tsx">
-            Source code
-          </a>
-          )
-        </p>
-      </footer>
-    </div>
+        <footer>
+          <p>
+            By Steve Clay.{" "}
+            <a href="https://twitter.com/mrclay_org">@mrclay_org</a>. (
+            <a href="https://github.com/mrclay/piano-record/blob/main/src/common-chords/CommonChords.tsx">
+              Source code
+            </a>
+            )
+          </p>
+        </footer>
+      </div>
+    </Template>
   );
 }
 

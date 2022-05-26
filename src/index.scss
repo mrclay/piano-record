@@ -10,6 +10,38 @@ p {
   max-width: 700px;
 }
 
+.TemplateNav {
+  display: flex;
+
+  .fa {
+    margin-right: 5px;
+  }
+
+  li:last-child {
+    margin-left: auto;
+  }
+}
+
+.head-flex {
+  margin: 0 auto 2rem;
+  max-width: 900px;
+  align-items: center;
+  display: flex;
+
+  > :first-child {
+    margin-right: 3rem;
+  }
+
+  > :last-child {
+    margin-top: 1rem;
+  }
+}
+
+.Template-intro {
+  margin: 0 auto;
+  max-width: 900px;
+}
+
 h2.Title {
   font-style: italic;
   display: inline-block;

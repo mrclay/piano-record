@@ -293,7 +293,7 @@ export default function SequencePage(): JSX.Element {
   }, [bpm, bps, numSteps, playing]);
 
   return (
-    <Template app="sequence" title="Simple Sequence" intro={null}>
+    <Template title="Sequence" intro={null}>
       <div
         style={{
           alignItems: "center",
@@ -405,6 +405,8 @@ export default function SequencePage(): JSX.Element {
         stepData={stepData}
         joinData={joinData}
         onStepsChange={(newStepData, newJoinData, changedStep) => {
+          // console.log(JSON.stringify([newStepData, newJoinData]));
+
           setStepData(newStepData);
           setJoinData(newJoinData);
           setNumSteps(newStepData.length);

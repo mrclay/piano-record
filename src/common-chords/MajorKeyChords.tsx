@@ -265,6 +265,25 @@ function MajorKeyChords({ musicKey, offset }: Keyed) {
         {note("#iv")}dim7.
       </p>
 
+      <ChordSet
+        els={[
+          f(
+            "bII maj7",
+            "http://mrclay.org/piano/songs/C300C37bC3bhC40nD304pD3b4rD404xD374zC335rC3a67C3e6fC436nD33d9D3edfD3advD43dxC2cerC33f1C3cfdC43fhD2ckqD3ckqD33kxD43l3C31lrC38m9C3cmhC41mjD31wlD3cwnD38wrD41xlC30y1C37yvC3byxC40z5D3718hD3b18lD3018rD4018r",
+            <>
+              {note("I")}maj7 - {note("bIII")}maj7 - {note("bVI")}maj7 -{" "}
+              <b>{note("bII")}maj7</b> - {note("I")}maj7
+            </>
+          ),
+        ]}
+      />
+      <p>
+        Borrowed from phrygian, {rom("bII")} most often appears following{" "}
+        {rom("V/V")}, {rom("ii")}, or {rom("bVI")} and often goes to {rom("I")}{" "}
+        or {rom("V")}. In classical music, it often appears in 1st inversion ({note("bII")}/{note("iv")}) as
+        a substitute for the {rom("iv")} chord.
+      </p>
+
       <SeventhTeaser>
         <ChordSet
           els={[
@@ -305,6 +324,13 @@ function MajorKeyChords({ musicKey, offset }: Keyed) {
         <ChordSet
           els={[
             f7(
+              "bVII 7#11",
+              "http://mrclay.org/piano/songs/C320C35cC39rC3c16C415wC3e91D4194D35a9D32aaD39alD3cayD3ebcC2ebnC35bzC38c0C3ackC40d2C3eliD40ltD2emhD35mkD38moD3amzC30o6D3eo8C34oaC37odC3cosD3010wD3c10zD37110D34112",
+              <>
+                {note("ii")}m7 - <b>{note("bVII")}7#11</b> - {note("I")}
+              </>
+            ),
+            f7(
               "iv mMaj7",
               "http://mrclay.org/piano/songs/C300C34eC3718C3c7yC3eakD3cb2D34c4D30c6D37c8D3ecwC35d4C38diC3cdsC40eiC3eo8D40ogD38q0D35q1D3cqaC34rcC37rgD3eroC3cs8D3c12bD3412qD3712r",
               <>
@@ -312,19 +338,14 @@ function MajorKeyChords({ musicKey, offset }: Keyed) {
                 {note("iii")}
               </>
             ),
-            f7(
-              "bVII 7#11",
-              "http://mrclay.org/piano/songs/C320C35cC39rC3c16C415wC3e91D4194D35a9D32aaD39alD3cayD3ebcC2ebnC35bzC38c0C3ackC40d2C3eliD40ltD2emhD35mkD38moD3amzC30o6D3eo8C34oaC37odC3cosD3010wD3c10zD37110D34112",
-              <>
-                {note("ii")}m7 - <b>{note("bVII")}7#11</b> - {note("I")}
-              </>
-            ),
           ]}
         />
         <p>
           The notes {note("bVI")} and {note("iii")} in these chords help evoke
           the altered mode <em>mixolydian b6</em>, which is basically aeolian
-          but with a distinctive major 3rd.
+          but with a distinctive major 3rd. The {rom("bVII")}7 chord is
+          sometimes called the <strong>backdoor V</strong>, as it resolves
+          nicely to the tonic.
         </p>
         <ChordSet
           els={[
@@ -349,23 +370,6 @@ function MajorKeyChords({ musicKey, offset }: Keyed) {
           {rom("V/V")} and {rom("V")} typically resolving to {rom("V")} and{" "}
           {rom("I")}. In sheet music you may find the 7th notated as an
           augmented 6th.
-        </p>
-        <ChordSet
-          els={[
-            f7(
-              "bII maj7",
-              "http://mrclay.org/piano/songs/C300C37bC3bhC40nD304pD3b4rD404xD374zC335rC3a67C3e6fC436nD33d9D3edfD3advD43dxC2cerC33f1C3cfdC43fhD2ckqD3ckqD33kxD43l3C31lrC38m9C3cmhC41mjD31wlD3cwnD38wrD41xlC30y1C37yvC3byxC40z5D3718hD3b18lD3018rD4018r",
-              <>
-                {note("I")}maj7 - {note("bIII")}maj7 - {note("bVI")}maj7 -{" "}
-                <b>{note("bII")}maj7</b> - {note("I")}maj7
-              </>
-            ),
-          ]}
-        />
-        <p>
-          Borrowed from phrygian, {rom("bII")} most often appears following{" "}
-          {rom("V/V")}, {rom("ii")}, or {rom("bVI")} and often goes to{" "}
-          {rom("I")} or {rom("V")}.
         </p>
         <ChordSet
           els={[

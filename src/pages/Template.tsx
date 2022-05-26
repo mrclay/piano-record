@@ -17,35 +17,56 @@ const ListItemLink: FC<ListItemLinkProps> = ({ to, ...rest }) => {
 };
 
 interface TemplateProps {
-  app: string;
-  title: string;
+  title: ReactNode | ReactNode[];
   intro: ReactNode;
 }
 
 export const TemplateNav: FC = () => {
   return (
-    <nav className="nav nav-tabs">
-      <ListItemLink to={Paths.pianoPrefix("/")}>Songs</ListItemLink>
-      <ListItemLink to={Paths.chordPrefix("/")}>Chords</ListItemLink>
+    <nav className="nav nav-tabs TemplateNav">
+      <ListItemLink to={Paths.pianoPrefix("/")}>
+        <i className="fa fa-music" aria-hidden="true" /> Melody
+      </ListItemLink>
+      <ListItemLink to={Paths.chordPrefix("/")}>
+        <i className="fa fa-flask" aria-hidden="true" /> Chord
+      </ListItemLink>
       <ListItemLink to={Paths.sequencePrefix("/")}>
-        Sequence (beta)
+        <i className="fa fa-repeat" aria-hidden="true" /> Sequence
       </ListItemLink>
       <ListItemLink to={Paths.commonChordsPrefix("/C-major")}>
-        Common Chords
+        <i className="fa fa-book" aria-hidden="true" /> Common Chords
       </ListItemLink>
+      <li>
+        <a href="https://github.com/mrclay/piano-record">
+          <i className="fa fa-github" aria-hidden="true" /> Source code
+        </a>
+      </li>
+      <li>
+        <a href="/music/">Steve's music</a>
+      </li>
     </nav>
   );
 };
 
-const Template: FC<TemplateProps> = ({ app, children, intro, title }) => {
+const Template: FC<TemplateProps> = ({ children, intro, title }) => {
+  const titleEls = Array.isArray(title) ? title : [title];
   return (
     <div>
-      <div>
-        <h1 className="h2">{title}</h1>
-        {intro}
+      <TemplateNav />
+
+      <div className="head-flex">
+        {titleEls.map((item, i) =>
+          i === 0 ? (
+            <div>
+              <h1 className="h2">{item}</h1>
+            </div>
+          ) : (
+            <div>{item}</div>
+          )
+        )}
       </div>
 
-      <TemplateNav />
+      <div className="Template-intro">{intro}</div>
 
       {children}
 
