@@ -103,9 +103,9 @@ export default function Sequencer({
       ...stepData.slice(stepIdx),
     ];
     const newJoinData = [
-      ...joinData.slice(0, stepIdx),
-      joinData[stepIdx].slice(),
-      ...joinData.slice(stepIdx),
+      ...joinData.slice(0, stepIdx + 1),
+      stepData[stepIdx].slice(),
+      ...joinData.slice(stepIdx + 1),
     ];
     onStepsChange(newStepData, newJoinData, stepIdx + 1);
   };
