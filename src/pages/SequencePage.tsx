@@ -276,8 +276,9 @@ export default function SequencePage(): JSX.Element {
         style={{
           alignItems: "center",
           margin: "20px 0",
+          maxWidth: "750px",
           display: "flex",
-          justifyContent: "space-evenly",
+          justifyContent: "space-between",
         }}
       >
         <Preview
@@ -363,7 +364,7 @@ export default function SequencePage(): JSX.Element {
           className="btn btn-primary med-btn"
           onClick={share}
         >
-          <i className="fa fa-floppy-o" aria-hidden="true" /> <span>Share</span>
+          <i className="fa fa-floppy-o" aria-hidden="true" /> <span>Save</span>
         </button>
         <button
           type="button"
@@ -398,10 +399,10 @@ export default function SequencePage(): JSX.Element {
 
       {params.stream && (
         <section>
-          <h3>This is not saved</h3>
+          <h3>Share it</h3>
           <p>
-            This sequence exists only as a URL, so bookmark this page or copy it
-            to clipboard: <Saver href={window.location.href} />
+            Copy to clipboard:{" "}
+            <Saver href={window.location.href} title="" />
           </p>
         </section>
       )}

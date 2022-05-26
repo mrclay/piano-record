@@ -374,7 +374,7 @@ class PianoPage extends React.Component<PianoPageProps, PianoPageState> {
               <button
                 type="button"
                 onClick={this.save}
-                className="btn btn-danger med-btn"
+                className="btn btn-primary med-btn"
               >
                 <i className="fa fa-save" aria-hidden="true" />{" "}
                 <span>Save</span>
@@ -385,7 +385,7 @@ class PianoPage extends React.Component<PianoPageProps, PianoPageState> {
               <button
                 type="button"
                 onClick={this.share}
-                className="btn btn-danger med-btn"
+                className="btn btn-primary med-btn"
               >
                 <i className="fa fa-save" aria-hidden="true" />{" "}
                 <span>Share</span>
@@ -409,7 +409,9 @@ class PianoPage extends React.Component<PianoPageProps, PianoPageState> {
               >
                 <i className="fa fa-trash" aria-label="Start over" />
               </button>
-            ) : <span className="fakeReset" />}
+            ) : (
+              <span className="fakeReset" />
+            )}
           </div>
         </section>
 
@@ -422,10 +424,9 @@ class PianoPage extends React.Component<PianoPageProps, PianoPageState> {
         <section style={{ minHeight: "8rem" }}>
           {mode === Mode.shared && (
             <>
-              <h3>This is not saved</h3>
+              <h3>Share it</h3>
               <p>
-                This "recording" exists only as a URL, so bookmark this page or
-                copy it to clipboard:{" "}
+                Copy to clipboard:{" "}
                 <Saver href={window.location.href} title={title} />
               </p>
             </>

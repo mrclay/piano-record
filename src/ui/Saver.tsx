@@ -4,12 +4,12 @@ import Clipboard from "react-clipboard.js";
 import * as C from "../constants";
 import Ops from "../Ops";
 
-interface TableProps {
+interface SaverProps {
   href: string;
   title?: string;
 }
 
-export default function Table({ href, title = "" }: TableProps) {
+export default function Saver({ href, title = "" }: SaverProps) {
   const [saved, setSaved] = useState("");
 
   const htmlize = Ops.encodeHtml;
@@ -36,14 +36,16 @@ export default function Table({ href, title = "" }: TableProps) {
         data-clipboard-text={markdownLink}
         onSuccess={() => setSaved(markdownLink)}
       >
-        Markdown {saved === markdownLink && "copied!"}
+        <i className="fa fa-code" aria-hidden="true" /> Markdown link{" "}
+        {saved === markdownLink && "copied!"}
       </Clipboard>
       <Clipboard
         className="btn btn-default"
         data-clipboard-text={htmlLink}
         onSuccess={() => setSaved(htmlLink)}
       >
-        HTML {saved === htmlLink && "copied!"}
+        <i className="fa fa-code" aria-hidden="true" /> HTML link{" "}
+        {saved === htmlLink && "copied!"}
       </Clipboard>
     </span>
   );

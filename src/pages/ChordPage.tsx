@@ -224,10 +224,10 @@ class ChordPage extends React.Component<ChordPageProps, ChordPageState> {
         />
         {this.props.params.notes && (
           <section>
-            <h3>This is not saved</h3>
+            <h3>Share it</h3>
             <p>
-              This chord exists only as a URL, so bookmark this page or copy it
-              to clipboard: <Saver href={window.location.href} title={title} />
+              Copy to clipboard:{" "}
+              <Saver href={window.location.href} title={title} />
             </p>
           </section>
         )}
