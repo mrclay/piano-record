@@ -107,6 +107,16 @@ export default function Sequencer({
       stepData[stepIdx].slice(),
       ...joinData.slice(stepIdx + 1),
     ];
+
+    // Don't add step unless it would be lossy
+    if (
+      newJoinData[newJoinData.length - 1].length === 0 &&
+      newStepData[newStepData.length - 1].length === 0
+    ) {
+      newJoinData.pop();
+      newStepData.pop();
+    }
+
     onStepsChange(newStepData, newJoinData, stepIdx + 1);
   };
 
