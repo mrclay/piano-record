@@ -1,4 +1,10 @@
-import React, { MouseEvent } from "react";
+import React, {
+  MouseEvent,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import {
   Link,
   Navigate,
@@ -13,120 +19,100 @@ import BigPlay from "../ui/BigPlay";
 import Keyboard from "../ui/Keyboard";
 import Ops from "../Ops";
 import Paths from "../Paths";
-import Piano, { ActiveKeys } from "../Piano";
+import Piano from "../Piano";
 import Template from "./Template";
 import Title from "../ui/Title";
 import Saver from "../ui/Saver";
-import { RouteComponentProps } from "../constants";
 
 interface MatchItems {
   notes?: string;
   title?: string;
 }
 
-interface ChordPageProps extends RouteComponentProps<MatchItems> {}
+type Action = "stop" | "play" | "setTitle";
 
-interface ChordPageState {
-  activeKeys: ActiveKeys;
-  playing: boolean;
-  title: string;
-}
+const example = Paths.chordPrefix("/43,56,60,62,65/G7b9sus");
 
-function stateFromProps({
-  params: { notes, title = "" },
-  transpose,
-}: ChordPageProps): ChordPageState {
-  const activeKeys = Piano.getActiveKeys();
-  const offset = parseInt(transpose || "0");
+export default function ChordPage() {
+  const pianoRef = useRef<Piano | null>(null);
+  if (!pianoRef.current) {
+    pianoRef.current = new Piano();
+  }
+  const piano = pianoRef.current;
 
-  const notesArr = notes ? notes.split(",") : [];
-  notesArr.forEach(note => {
-    activeKeys[parseInt(note) + offset] = true;
-  });
+  const timeout = useRef<number | null>(null);
 
-  return {
-    activeKeys,
-    playing: false,
-    title: decodeURIComponent(title),
-  };
-}
-
-export default function Wrapper() {
   const navigate = useNavigate();
   const params: MatchItems = useParams();
   const { pathname } = useLocation();
   const [searchParams] = useSearchParams();
-  return (
-    <ChordPage
-      key={pathname}
-      pathname={pathname}
-      navigate={navigate}
-      params={params}
-      transpose={searchParams.get("transpose") || "0"}
-    />
-  );
-}
+  const transpose = searchParams.get("transpose") || "0";
 
-class ChordPage extends React.Component<ChordPageProps, ChordPageState> {
-  piano: Piano;
-  playTimeout: number | null;
+  const [activeKeys, setActiveKeys] = useState(Piano.getActiveKeys());
+  const [title, setTitle] = useState("");
+  const [action, setAction] = useState<Action>("stop");
 
-  constructor(props: ChordPageProps) {
-    super(props);
+  const activeKeysRef = useRef(activeKeys);
+  activeKeysRef.current = activeKeys;
 
-    this.piano = new Piano();
-    this.playTimeout = null;
-
-    this.state = stateFromProps(props);
-  }
-
-  componentDidMount() {
+  useEffect(() => {
     document.title = "Simple Chord";
-    this.piano.addEventListener("reset", this.reset);
-  }
+    piano.addEventListener("reset", reset);
 
-  componentWillUnmount() {
-    this.piano.removeEventListener("reset", this.reset);
-  }
+    return () => {
+      piano.removeEventListener("reset", reset);
+    };
+  }, []);
 
-  setTitle = (title: string) => {
-    this.setState({ title: title.trim() }, () => this.save("setTitle"));
-  };
+  useEffect(() => {
+    const { notes, title } = params;
+    const initActiveKeys = Piano.getActiveKeys();
+    const offset = parseInt(transpose || "0");
 
-  play = () => {
-    const { activeKeys } = this.state;
-
-    this.piano.stopAll();
-    Object.keys(activeKeys).forEach(note => {
-      if (activeKeys[note]) {
-        this.piano.startNote(Number(note));
-      }
+    const notesArr = notes ? notes.split(",") : [];
+    notesArr.forEach(note => {
+      initActiveKeys[parseInt(note) + offset] = true;
     });
-    this.setState({ playing: true });
 
-    // play for 5 secs
-    if (this.playTimeout) {
-      clearTimeout(this.playTimeout);
+    setActiveKeys(initActiveKeys);
+    setTitle(decodeURIComponent(title || ""));
+    setAction("stop");
+  }, [params, transpose]);
+
+  // Handle key/action changes
+  useEffect(() => {
+    if (timeout.current) {
+      clearTimeout(timeout.current);
     }
-    this.playTimeout = window.setTimeout(this.stop, 5000);
-  };
+    piano.stopAll();
 
-  stop = () => {
-    if (this.playTimeout) {
-      clearTimeout(this.playTimeout);
-      this.playTimeout = null;
+    if (action === "setTitle") {
+      save(null, true);
+      setAction("stop");
+      return;
     }
-    this.piano.stopAll();
-    this.setState({ playing: false });
-  };
 
-  save = (e: MouseEvent<HTMLButtonElement> | string) => {
-    const { activeKeys, title } = this.state;
+    if (action === "play") {
+      Object.entries(activeKeys).forEach(([note, value]) => {
+        if (value) {
+          piano.startNote(Number(note));
+        }
+      });
 
+      timeout.current = window.setTimeout(() => {
+        setAction("stop");
+      }, 5000);
+    }
+  }, [action, activeKeys]);
+
+  const save = (
+    e: MouseEvent<HTMLButtonElement> | null,
+    replaceUrl = false
+  ) => {
     let notes: number[] = [];
-    Object.keys(activeKeys).forEach(key => {
-      if (activeKeys[key]) {
-        notes.push(Number(key));
+    Object.entries(activeKeys).forEach(([note, value]) => {
+      if (value) {
+        notes.push(Number(note));
       }
     });
 
@@ -139,99 +125,99 @@ class ChordPage extends React.Component<ChordPageProps, ChordPageState> {
       path += "/" + Ops.fixedEncodeURIComponent(title);
     }
 
-    this.props.navigate(Paths.chordPrefix(path), {
-      replace: e === "setTitle",
+    navigate(Paths.chordPrefix(path), {
+      replace: replaceUrl,
     });
   };
 
-  reset = () => {
-    this.stop();
-    this.setState(stateFromProps(this.props));
-    this.props.navigate(Paths.chordPrefix("/"));
+  const reset = () => {
+    setAction("stop");
+    piano.stopAll();
+    setActiveKeys(Piano.getActiveKeys());
+    setTitle("");
+    navigate(Paths.chordPrefix("/"));
   };
 
-  onKeyClick = (note: number) => {
-    let activeKeys = {
-      ...this.state.activeKeys,
-    };
-    activeKeys[note] = !activeKeys[note];
-
-    this.setState({ activeKeys }, this.play);
+  const handleTitleSet = (title: string) => {
+    setTitle(title.trim());
+    setAction("setTitle");
   };
 
-  render() {
-    const { activeKeys, playing, title } = this.state;
+  const onKeyClick = useCallback((note: number) => {
+    setAction("play");
+    setActiveKeys(activeKeys => ({
+      ...activeKeys,
+      [note]: !activeKeys[note],
+    }));
+  }, []);
 
-    if (window.location.hash) {
-      // legacy URLs
-      const m = window.location.hash.match(/n=([\d,]+)(?:&c=(.*))?/);
-      if (m) {
-        const path = m[2] ? `/${m[1]}/${m[2]}` : `/${m[1]}`;
+  if (window.location.hash) {
+    // legacy URLs
+    const m = window.location.hash.match(/n=([\d,]+)(?:&c=(.*))?/);
+    if (m) {
+      const path = m[2] ? `/${m[1]}/${m[2]}` : `/${m[1]}`;
 
-        return <Navigate to={Paths.chordPrefix(path)} />;
-      }
+      return <Navigate to={Paths.chordPrefix(path)} />;
     }
-
-    const example = Paths.chordPrefix("/43,56,60,62,65/G7b9sus");
-
-    return (
-      <Template
-        title="Chord"
-        intro={
-          <p>
-            Wanna capture a <Link to={example}>chord</Link> or share it with
-            others? Tap some notes or play your MIDI keyboard (Chrome only), and
-            click <i>Save</i>. You can share the resulting page URL or bookmark
-            it. <a href={C.SOURCE_URL}>Source</a>.
-          </p>
-        }
-      >
-        <section>
-          <div>
-            <BigPlay
-              isPlaying={playing}
-              handlePlay={this.play}
-              handleStop={this.stop}
-              progress={0}
-              isWaiting={false}
-            />
-            <Title title={title} onChange={this.setTitle} />
-            {!title && "(click to rename)"}
-            <button
-              type="button"
-              onClick={this.save}
-              id="save"
-              className="btn btn-primary med-btn"
-              style={{ marginLeft: "1em" }}
-            >
-              <i className="fa fa-floppy-o" aria-hidden="true" />{" "}
-              <span>Save</span>
-            </button>
-            <button
-              type="button"
-              onClick={this.reset}
-              id="reset"
-              className="btn btn-danger med-btn"
-            >
-              <i className="fa fa-trash" aria-label="Reset" />
-            </button>
-          </div>
-        </section>
-        <Keyboard
-          key={this.props.pathname}
-          activeKeys={activeKeys}
-          onKeyClick={this.onKeyClick}
-        />
-        {this.props.params.notes && (
-          <section>
-            <h3>Share it</h3>
-            <p>
-              Copy to clipboard:{" "}
-              <Saver href={window.location.href} title={title} />
-            </p>
-          </section>
-        )}
-      </Template>
-    );
   }
+
+  return (
+    <Template
+      title="Chord"
+      intro={
+        <p>
+          Wanna capture a <Link to={example}>chord</Link> or share it with
+          others? Tap some notes or play your MIDI keyboard (Chrome only), and
+          click <i>Save</i>. You can share the resulting page URL or bookmark
+          it. <a href={C.SOURCE_URL}>Source</a>.
+        </p>
+      }
+    >
+      <section>
+        <div>
+          <BigPlay
+            isPlaying={action === "play"}
+            handlePlay={() => setAction("play")}
+            handleStop={() => setAction("stop")}
+            progress={0}
+            isWaiting={false}
+          />
+          <Title title={title} onChange={handleTitleSet} />
+          {!title && "(click to rename)"}
+          <button
+            type="button"
+            onClick={save}
+            id="save"
+            className="btn btn-primary med-btn"
+            style={{ marginLeft: "1em" }}
+          >
+            <i className="fa fa-floppy-o" aria-hidden="true" />{" "}
+            <span>Save</span>
+          </button>
+          <button
+            type="button"
+            onClick={reset}
+            id="reset"
+            className="btn btn-danger med-btn"
+          >
+            <i className="fa fa-trash" aria-label="Reset" />
+          </button>
+        </div>
+      </section>
+      <Keyboard
+        key={pathname}
+        activeKeys={activeKeys}
+        onKeyClick={onKeyClick}
+      />
+      {params.notes && (
+        <section>
+          <h3>Share it</h3>
+          <p>
+            Copy to clipboard:{" "}
+            <Saver href={window.location.href} title={title} />
+          </p>
+        </section>
+      )}
+    </Template>
+  );
 }

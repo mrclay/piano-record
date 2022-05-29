@@ -20,6 +20,10 @@ export default function Title({ onChange, title }: TitleProps) {
     }
   }, [isEditing]);
 
+  useEffect(() => {
+    setValue(title || "");
+  }, [title]);
+
   const className = value ? "titled" : "untitled";
   return (
     <h2 className={`Title ${className}`}>
