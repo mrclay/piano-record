@@ -135,6 +135,19 @@ class PianoPage extends React.Component<PianoPageProps, PianoPageState> {
   }
 
   componentDidMount() {
+    // legacy URLs
+    if (window.location.hash) {
+      const m = window.location.hash.match(/s=(\w+)(?:&t=(.*))?/);
+      if (m) {
+        const path = m[2] ? `/songs/${m[1]}/${m[2]}` : `/songs/${m[1]}`;
+        setTimeout(() => {
+          // React router picky about how soon navigate is called
+          this.props.navigate(Paths.pianoPrefix(path));
+        }, 1);
+        return;
+      }
+    }
+
     document.title = "Simple Piano";
     //this.recorder.addEventListener(RecorderEvent.state, this.onRecorderState);
     this.recorder.addEventListener(
@@ -272,17 +285,6 @@ class PianoPage extends React.Component<PianoPageProps, PianoPageState> {
   };
 
   render() {
-    // legacy URLs
-    if (window.location.hash) {
-      const m = window.location.hash.match(/s=(\w+)(?:&t=(.*))?/);
-      if (m) {
-        const path = m[2] ? `/songs/${m[1]}/${m[2]}` : `/songs/${m[1]}`;
-
-        this.props.navigate(Paths.pianoPrefix(path));
-        return null;
-      }
-    }
-
     const { title, mode, activeKeys, progress, stream } = this.state;
 
     const recorderState = this.recorder.getState();
