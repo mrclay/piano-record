@@ -17,12 +17,12 @@ const degreeSet = new CircularSet<Degree>(
 );
 
 export function degreeFromRoman(roman: FlexDegree): Degree {
-  if (typeof roman === 'object') {
+  if (typeof roman === "object") {
     return roman;
   }
 
   const upper = roman.toUpperCase();
-  const degree = degreeSet.items.find((el) => el.roman === upper);
+  const degree = degreeSet.items.find(el => el.roman === upper);
   if (!degree) {
     throw new Error(`Invalid degree "${roman}"`);
   }

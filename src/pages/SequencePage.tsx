@@ -401,8 +401,7 @@ export default function SequencePage(): JSX.Element {
         <section>
           <h3>Share it</h3>
           <p>
-            Copy to clipboard:{" "}
-            <Saver href={window.location.href} title="" />
+            Copy to clipboard: <Saver href={window.location.href} title="" />
           </p>
         </section>
       )}

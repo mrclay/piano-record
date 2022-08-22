@@ -49,7 +49,12 @@ export const TemplateNav: FC = () => {
   );
 };
 
-const Template: FC<TemplateProps> = ({ children, intro, title, showLimitations = true }) => {
+const Template: FC<TemplateProps> = ({
+  children,
+  intro,
+  title,
+  showLimitations = true,
+}) => {
   const titleEls = Array.isArray(title) ? title : [title];
   return (
     <div>
@@ -77,13 +82,12 @@ const Template: FC<TemplateProps> = ({ children, intro, title, showLimitations =
           <>
             <h3>Limitations</h3>
             <p>
-              <strong>No velocity is captured.</strong> There are a{" "}
-              <i>lot</i> of piano samples and I'd have to pull a ton more of
-              them in on the initial page load, or hack the velocity by playing
-              the existing ones at different volumes, probably not sounding
-              great. I've also considered just bailing on the piano sound and
-              generating something pleasant with Tone.js. I'm open to
-              suggestions.
+              <strong>No velocity is captured.</strong> There are a <i>lot</i>{" "}
+              of piano samples and I'd have to pull a ton more of them in on the
+              initial page load, or hack the velocity by playing the existing
+              ones at different volumes, probably not sounding great. I've also
+              considered just bailing on the piano sound and generating
+              something pleasant with Tone.js. I'm open to suggestions.
             </p>
             <p>
               <strong>Captured timing is imperfect</strong>. Due to the reliance

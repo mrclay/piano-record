@@ -5,7 +5,5 @@ import { useStore } from "../store";
 export default function SongChords() {
   const [songChords] = useStore.songChords();
 
-  return (
-   <p>{songChords}</p>
-  );
+  return <p>{songChords}</p>;
 }

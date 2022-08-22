@@ -9,7 +9,7 @@ export default function PianoSpeed() {
     <div className="btn-group" role="group">
       {[50, 75, 100].map(perc => (
         <button
-          key={perc + ''}
+          key={perc + ""}
           title={`Set speed to ${perc}%`}
           type="button"
           className={`btn btn-default ${perc === speed ? "active" : ""}`}
