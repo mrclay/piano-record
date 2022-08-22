@@ -24,6 +24,16 @@ export default function Title({ onChange, title }: TitleProps) {
     setValue(title || "");
   }, [title]);
 
+  const save = () => {
+    setIsEditing(false);
+    onChange(value);
+  };
+
+  const escape = () => {
+    setValue(saved);
+    setIsEditing(false);
+  };
+
   const className = value ? "titled" : "untitled";
   return (
     <h2 className={`Title ${className}`}>
@@ -34,16 +44,15 @@ export default function Title({ onChange, title }: TitleProps) {
           tabIndex={0}
           value={value}
           onInput={e => setValue(e.currentTarget.value)}
+          onBlur={save}
           onKeyUp={e => {
             if (e.key === "Enter") {
-              setIsEditing(false);
               e.preventDefault();
-              onChange(value);
+              save();
             }
             if (e.key === "Escape") {
-              setValue(saved);
-              setIsEditing(false);
               e.preventDefault();
+              escape();
             }
             e.stopPropagation();
           }}

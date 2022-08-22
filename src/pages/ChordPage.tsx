@@ -116,30 +116,30 @@ export default function ChordPage() {
     setAction("play");
   }
 
-  const save = (
-    e: MouseEvent<HTMLButtonElement> | null,
-    replaceUrl = false
-  ) => {
-    let notes: number[] = [];
-    Object.entries(activeKeys).forEach(([note, value]) => {
-      if (value) {
-        notes.push(Number(note));
+  const save = useCallback(
+    (e: MouseEvent<HTMLButtonElement> | null, replaceUrl = false) => {
+      let notes: number[] = [];
+      Object.entries(activeKeys).forEach(([note, value]) => {
+        if (value) {
+          notes.push(Number(note));
+        }
+      });
+
+      if (!notes.length) {
+        return;
       }
-    });
 
-    if (!notes.length) {
-      return;
-    }
+      let path = notes.join(",");
+      if (title) {
+        path += "/" + Ops.fixedEncodeURIComponent(title);
+      }
 
-    let path = notes.join(",");
-    if (title) {
-      path += "/" + Ops.fixedEncodeURIComponent(title);
-    }
-
-    navigate(Paths.chordPrefix(path), {
-      replace: replaceUrl,
-    });
-  };
+      navigate(Paths.chordPrefix(path), {
+        replace: replaceUrl,
+      });
+    },
+    [activeKeys, title]
+  );
 
   const reset = () => {
     setAction("stop");
