@@ -77,7 +77,7 @@ const Template: FC<TemplateProps> = ({ children, intro, title, showLimitations =
           <>
             <h3>Limitations</h3>
             <p>
-              <strong>No velocity is captured (yet).</strong> There are a{" "}
+              <strong>No velocity is captured.</strong> There are a{" "}
               <i>lot</i> of piano samples and I'd have to pull a ton more of
               them in on the initial page load, or hack the velocity by playing
               the existing ones at different volumes, probably not sounding

@@ -13,8 +13,8 @@ import {
   useLocation,
   useSearchParams,
 } from "react-router-dom";
+import * as Tone from "tone";
 
-import * as C from "../constants";
 import BigPlay from "../ui/BigPlay";
 import Keyboard from "../ui/Keyboard";
 import Ops from "../Ops";
@@ -105,6 +105,17 @@ export default function ChordPage() {
     }
   }, [action, activeKeys]);
 
+  function handlePlay() {
+    // Hack to directly tie a keypress to sound generation so the WebAudio API
+    // will allow sound on the page.
+    const sine = new Tone.Oscillator(60, "sine").toDestination();
+    sine.volume.value = -60;
+    sine.start();
+    sine.stop();
+
+    setAction("play");
+  }
+
   const save = (
     e: MouseEvent<HTMLButtonElement> | null,
     replaceUrl = false
@@ -169,7 +180,7 @@ export default function ChordPage() {
           Wanna capture a <Link to={example}>chord</Link> or share it with
           others? Tap some notes or play your MIDI keyboard (Chrome only), and
           click <i>Save</i>. You can share the resulting page URL or bookmark
-          it. <a href={C.SOURCE_URL}>Source</a>.
+          it.
         </p>
       }
     >
@@ -177,7 +188,7 @@ export default function ChordPage() {
         <div>
           <BigPlay
             isPlaying={action === "play"}
-            handlePlay={() => setAction("play")}
+            handlePlay={handlePlay}
             handleStop={() => setAction("stop")}
             progress={0}
             isWaiting={false}

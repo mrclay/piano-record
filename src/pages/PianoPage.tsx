@@ -314,7 +314,7 @@ class PianoPage extends React.Component<PianoPageProps, PianoPageState> {
             Wanna capture a <Link to={example}>short musical idea</Link> or
             share it with others? Tap some notes or play your MIDI keyboard
             (Chrome only), and click <i>Save</i>. You can share the resulting
-            page URL or bookmark it. <a href={C.SOURCE_URL}>Source</a>.
+            page URL or bookmark it.
           </p>
         }
       >
