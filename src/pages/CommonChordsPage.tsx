@@ -47,7 +47,7 @@ function CommonChordsPage() {
       const keyName = musicKey.toString();
       document.title = `The Common Chords of ${quality} Keys: ${keyName}`;
     }
-  }, [musicKey]);
+  }, [musicKey, setOffset]);
 
   if (!musicKey) {
     navigate(Paths.commonChordsPrefix("/C-major"));

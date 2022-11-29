@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import * as Tone from "tone";
 import Paths from "../Paths";
@@ -197,37 +197,40 @@ export default function SequencePage(): JSX.Element {
     setPlaying(false);
   }
 
-  function play(currentNotes: number[], currentJoins: number[]) {
-    // Keep track of which are started
-    const bannedNotes: ActiveKeys = {};
-    // Handle notes already playing
-    Object.entries(Piano.getActiveKeys())
-      .filter(([k, v]) => v === true)
-      .forEach(([noteStr]) => {
-        const note = Number(noteStr);
-        const willJoin = currentJoins.includes(note);
-        const willPlay = currentNotes.includes(note);
+  const play = useCallback(
+    (currentNotes: number[], currentJoins: number[]) => {
+      // Keep track of which are started
+      const bannedNotes: ActiveKeys = {};
+      // Handle notes already playing
+      Object.entries(Piano.getActiveKeys())
+        .filter(([k, v]) => v === true)
+        .forEach(([noteStr]) => {
+          const note = Number(noteStr);
+          const willJoin = currentJoins.includes(note);
+          const willPlay = currentNotes.includes(note);
 
-        if (willPlay) {
-          bannedNotes[note] = true;
-          if (willJoin) {
-            // Let it ring
+          if (willPlay) {
+            bannedNotes[note] = true;
+            if (willJoin) {
+              // Let it ring
+            } else {
+              piano.stopNote(note);
+              piano.startNote(note);
+            }
           } else {
             piano.stopNote(note);
-            piano.startNote(note);
           }
-        } else {
-          piano.stopNote(note);
+        });
+
+      // Start notes that still need starting
+      currentNotes.forEach(note => {
+        if (!bannedNotes[note]) {
+          piano.startNote(note);
         }
       });
-
-    // Start notes that still need starting
-    currentNotes.forEach(note => {
-      if (!bannedNotes[note]) {
-        piano.startNote(note);
-      }
-    });
-  }
+    },
+    [piano]
+  );
 
   function share() {
     navigate(

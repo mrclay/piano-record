@@ -55,6 +55,63 @@ export default function ChordPage() {
   const activeKeysRef = useRef(activeKeys);
   activeKeysRef.current = activeKeys;
 
+  const reset = useCallback(() => {
+    setAction("stop");
+    piano.stopAll();
+    setActiveKeys(Piano.getActiveKeys());
+    setTitle("");
+    navigate(Paths.chordPrefix("/"));
+  }, [navigate, piano]);
+
+  const handleTitleSet = (title: string) => {
+    setTitle(title.trim());
+    setAction("setTitle");
+  };
+
+  const onKeyClick = useCallback((note: number) => {
+    setAction("play");
+    setActiveKeys(activeKeys => ({
+      ...activeKeys,
+      [note]: !activeKeys[note],
+    }));
+  }, []);
+
+  function handlePlay() {
+    // Hack to directly tie a keypress to sound generation so the WebAudio API
+    // will allow sound on the page.
+    const sine = new Tone.Oscillator(60, "sine").toDestination();
+    sine.volume.value = -60;
+    sine.start();
+    sine.stop();
+
+    setAction("play");
+  }
+
+  const save = useCallback(
+    (e: MouseEvent<HTMLButtonElement> | null, replaceUrl = false) => {
+      let notes: number[] = [];
+      Object.entries(activeKeys).forEach(([note, value]) => {
+        if (value) {
+          notes.push(Number(note));
+        }
+      });
+
+      if (!notes.length) {
+        return;
+      }
+
+      let path = notes.join(",");
+      if (title) {
+        path += "/" + Ops.fixedEncodeURIComponent(title);
+      }
+
+      navigate(Paths.chordPrefix(path), {
+        replace: replaceUrl,
+      });
+    },
+    [activeKeys, navigate, title]
+  );
+
   useEffect(() => {
     document.title = "Simple Chord";
     piano.addEventListener("reset", reset);
@@ -62,7 +119,7 @@ export default function ChordPage() {
     return () => {
       piano.removeEventListener("reset", reset);
     };
-  }, []);
+  }, [piano, reset]);
 
   useEffect(() => {
     const { notes, title } = params;
@@ -103,64 +160,7 @@ export default function ChordPage() {
         setAction("stop");
       }, 5000);
     }
-  }, [action, activeKeys]);
-
-  function handlePlay() {
-    // Hack to directly tie a keypress to sound generation so the WebAudio API
-    // will allow sound on the page.
-    const sine = new Tone.Oscillator(60, "sine").toDestination();
-    sine.volume.value = -60;
-    sine.start();
-    sine.stop();
-
-    setAction("play");
-  }
-
-  const save = useCallback(
-    (e: MouseEvent<HTMLButtonElement> | null, replaceUrl = false) => {
-      let notes: number[] = [];
-      Object.entries(activeKeys).forEach(([note, value]) => {
-        if (value) {
-          notes.push(Number(note));
-        }
-      });
-
-      if (!notes.length) {
-        return;
-      }
-
-      let path = notes.join(",");
-      if (title) {
-        path += "/" + Ops.fixedEncodeURIComponent(title);
-      }
-
-      navigate(Paths.chordPrefix(path), {
-        replace: replaceUrl,
-      });
-    },
-    [activeKeys, title]
-  );
-
-  const reset = () => {
-    setAction("stop");
-    piano.stopAll();
-    setActiveKeys(Piano.getActiveKeys());
-    setTitle("");
-    navigate(Paths.chordPrefix("/"));
-  };
-
-  const handleTitleSet = (title: string) => {
-    setTitle(title.trim());
-    setAction("setTitle");
-  };
-
-  const onKeyClick = useCallback((note: number) => {
-    setAction("play");
-    setActiveKeys(activeKeys => ({
-      ...activeKeys,
-      [note]: !activeKeys[note],
-    }));
-  }, []);
+  }, [action, activeKeys, piano, save]);
 
   if (window.location.hash) {
     // legacy URLs

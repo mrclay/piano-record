@@ -108,7 +108,7 @@ export function ChordSet({ els }: ChordSetProps): JSX.Element {
     return () => {
       recorder.removeEventListener(RecorderEvent.complete, completeListener);
     };
-  }, []);
+  }, [recorder, setSong]);
 
   const selectChord = useCallback(
     (e: MouseEvent<HTMLAnchorElement>, chord: Chord) => {
@@ -132,7 +132,16 @@ export function ChordSet({ els }: ChordSetProps): JSX.Element {
         setSong("");
       }
     },
-    [offset, pianoSpeed]
+    [
+      chordSet,
+      offset,
+      pianoSpeed,
+      recorder,
+      ref,
+      setChordSet,
+      setSong,
+      setSongChords,
+    ]
   );
 
   useEffect(() => {
@@ -140,7 +149,7 @@ export function ChordSet({ els }: ChordSetProps): JSX.Element {
       recorder.stop();
       recorder.play(pianoSpeed / 100);
     }
-  }, [pianoSpeed]);
+  }, [pianoSpeed, recorder]);
 
   return (
     <>
