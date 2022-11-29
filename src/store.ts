@@ -1,23 +1,34 @@
 import { ReactNode } from "react";
-import createStore from "teaful";
+import { atom, useAtom, Atom } from "jotai";
+import { atomWithStorage } from "jotai/utils";
 import Recorder from "./Recorder";
 
 const SPEED_KEY = "CC-speed";
 
-const initialStore = {
-  recorder: new Recorder(),
-  chordSet: {},
-  song: "",
-  songChords: undefined as ReactNode | undefined,
-  offset: 0,
-  pianoSpeed: Number(sessionStorage.getItem(SPEED_KEY) || "100"),
+type AtomSet<T = {}> = {
+  [Property in keyof T]: Atom<T[Property]>;
+};
+type HookSet<T = {}> = {
+  [Property in keyof T]: () => [
+    T[Property],
+    (val: T[Property] | ((prev: T[Property]) => T[Property])) => void
+  ];
 };
 
-export const { useStore, getStore } = createStore(
-  initialStore,
-  ({ store, prevStore }) => {
-    if (store.pianoSpeed !== prevStore.pianoSpeed) {
-      sessionStorage.setItem(SPEED_KEY, store.pianoSpeed + "");
-    }
-  }
-);
+export const atoms = {
+  recorder: atom(new Recorder()),
+  chordSet: atom({} as object),
+  song: atom(""),
+  songChords: atom(undefined as ReactNode | undefined),
+  offset: atom(0),
+  pianoSpeed: atomWithStorage(SPEED_KEY, 100),
+};
+
+function createUseStoreHook<T>(atomSet: AtomSet<T>) {
+  return Object.fromEntries(
+    // @ts-ignore
+    Object.entries(atomSet).map(([k, v]) => [k, () => useAtom(v)])
+  ) as unknown as HookSet<T>;
+}
+
+export const useStore = createUseStoreHook(atoms);
