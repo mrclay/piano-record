@@ -1,9 +1,9 @@
-import React, { FC, ReactNode } from "react";
+import React, { FC, PropsWithChildren, ReactNode } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 
 import Paths from "../Paths";
 
-interface ListItemLinkProps {
+interface ListItemLinkProps extends PropsWithChildren {
   to: string;
 }
 
@@ -15,12 +15,6 @@ const ListItemLink: FC<ListItemLinkProps> = ({ to, ...rest }) => {
     </li>
   );
 };
-
-interface TemplateProps {
-  title: ReactNode | ReactNode[];
-  intro: ReactNode;
-  showLimitations?: boolean;
-}
 
 export const TemplateNav: FC = () => {
   return (
@@ -48,6 +42,12 @@ export const TemplateNav: FC = () => {
     </nav>
   );
 };
+
+interface TemplateProps extends PropsWithChildren {
+  title: ReactNode | ReactNode[];
+  intro: ReactNode;
+  showLimitations?: boolean;
+}
 
 const Template: FC<TemplateProps> = ({
   children,

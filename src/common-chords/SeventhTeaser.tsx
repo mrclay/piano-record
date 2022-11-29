@@ -1,7 +1,7 @@
-import React, { FC } from "react";
+import React, { FC, PropsWithChildren } from "react";
 import { useCommonChordsQuery } from "./useCommonChordsQuery";
 
-export const SeventhTeaser: FC = ({ children }) => {
+export const SeventhTeaser: FC<PropsWithChildren> = ({ children }) => {
   const { sevenths, setSevenths } = useCommonChordsQuery();
 
   if (sevenths) {

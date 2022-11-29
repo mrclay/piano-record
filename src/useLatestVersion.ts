@@ -7,7 +7,7 @@ export function useLatestVersion<T extends Function>(handler: T) {
     handlerRef.current = handler;
   });
 
-  return useCallback((...args) => {
+  return useCallback((...args: any[]) => {
     const fn = handlerRef.current;
     return fn(...args);
   }, []);
