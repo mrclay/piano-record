@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router";
+import { useSearchParams } from "react-router-dom";
 import * as Tone from "tone";
 import Paths from "../Paths";
 import Piano, { ActiveKeys } from "../Piano";
@@ -8,9 +9,79 @@ import Sequencer from "../ui/Sequencer";
 import Template from "./Template";
 import Preview from "../ui/Preview";
 import Saver from "../ui/Saver";
-import { useSearchParams } from "react-router-dom";
+
+interface SNote {
+  value: number;
+  begin: number;
+  end: number;
+}
 
 function streamFromSong(
+  bpm: number,
+  bps: number,
+  stepData: Array<number[]>,
+  joinData: Array<number[]>
+) {
+  const allNotes: SNote[] = [];
+  const actives: Record<number, SNote | undefined> = {};
+
+  stepData.forEach((notes, stepIdx) => {
+    const allValues = new Set<number>([
+      ...Object.keys(actives).map(Number),
+      ...notes,
+    ]);
+    allValues.forEach(value => {
+      const isNote = stepData[stepIdx].includes(value);
+      const isJoin = joinData[stepIdx].includes(value);
+      const last = actives[value];
+
+      if (isNote) {
+        if (last) {
+          if (isJoin) {
+            last.end = stepIdx;
+          } else {
+            const newNote: SNote = { value, begin: stepIdx, end: stepIdx };
+            allNotes.push(newNote);
+            actives[value] = newNote;
+          }
+        } else {
+          const newNote: SNote = { value, begin: stepIdx, end: stepIdx };
+          allNotes.push(newNote);
+          actives[value] = newNote;
+        }
+      } else {
+        // Note has ended
+        delete actives[value];
+      }
+    });
+  });
+
+  let out = `v5,${bpm},${bps},${stepData.length},`;
+  out += allNotes
+    .map(snote => {
+      let start = snote.begin.toString(16);
+      if (start.length < 2) {
+        start = "0" + start;
+      }
+
+      let value = snote.value.toString(16);
+      if (value.length < 4) {
+        value = "0" + value;
+      }
+
+      let len = (snote.end - snote.begin).toString(16);
+      if (len === "0") {
+        len = "";
+      }
+
+      return `${start}${value}${len}`;
+    })
+    .join(".");
+
+  return out;
+}
+
+function streamFromSong4(
   bpm: number,
   bps: number,
   stepData: Array<number[]>,
@@ -35,13 +106,13 @@ function streamFromSong(
 function parseStream(stream: string) {
   let m;
 
-  m = stream.match(/^v4,(\d+),([1-4]),(.+)$/);
+  m = stream.match(/^v([45]),(\d+),([1-4]),(.+)$/);
   if (m) {
     return {
-      bpm: parseInt(m[1]),
-      bps: parseInt(m[2]),
-      version: 4,
-      raw: m[3],
+      bpm: parseInt(m[2]),
+      bps: parseInt(m[3]),
+      version: Number(m[1]),
+      raw: m[4],
     };
   }
 
@@ -99,6 +170,10 @@ function songFromStream(
   }
 
   const newJoinData: Array<number[]> = [];
+
+  if (version === 5) {
+  }
+
   const newStepData = raw.split("-").map(str => {
     const notes: number[] = [];
     const joins: number[] = [];
@@ -232,7 +307,7 @@ export default function SequencePage(): JSX.Element {
   function share() {
     navigate(
       Paths.sequencePrefix(
-        `/songs/${streamFromSong(bpm, bps, stepData, joinData)}`
+        `/songs/${streamFromSong4(bpm, bps, stepData, joinData)}`
       )
     );
   }
@@ -378,6 +453,13 @@ export default function SequencePage(): JSX.Element {
           <i className="fa fa-trash" aria-label="Start over" />
         </button>
       </div>
+
+      <pre style={{ whiteSpace: "pre-wrap" }}>
+        {streamFromSong4(bpm, bps, stepData, joinData)}
+      </pre>
+      <pre style={{ whiteSpace: "pre-wrap" }}>
+        {streamFromSong(bpm, bps, stepData, joinData)}
+      </pre>
 
       <Sequencer
         currentStepIndex={step}
