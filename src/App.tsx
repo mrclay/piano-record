@@ -2,6 +2,7 @@ import React, { ComponentType, lazy, Suspense } from "react";
 import { Route, Routes, Navigate, useLocation } from "react-router-dom";
 
 import Paths from "./Paths";
+import { AdScript } from "./ui/Ads";
 
 const AsyncChord = lazy(() => import("./pages/ChordPage"));
 const AsyncPiano = lazy(() => import("./pages/PianoPage"));
@@ -71,6 +72,8 @@ const App = () => (
       />
       <Route path="/" element={<Navigate to={Paths.pianoPrefix("/")} />} />
     </Routes>
+
+    <AdScript />
   </div>
 );
 

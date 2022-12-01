@@ -28,6 +28,7 @@ import Saver from "../ui/Saver";
 import Status from "../ui/Status";
 import PianoSpeed from "../ui/PianoSpeed";
 import { useStore } from "../store";
+import { BottomRightAd } from "../ui/Ads";
 
 enum Mode {
   recording = "recording",
@@ -423,17 +424,17 @@ class PianoPage extends React.Component<PianoPageProps, PianoPageState> {
         />
         <PianoSpeed />
 
-        <section style={{ minHeight: "8rem" }}>
-          {mode === Mode.shared && (
-            <>
-              <h3>Share it</h3>
-              <p>
-                Copy to clipboard:{" "}
-                <Saver href={window.location.href} title={title} />
-              </p>
-            </>
-          )}
-        </section>
+        <BottomRightAd />
+
+        {mode === Mode.shared && (
+          <section style={{ minHeight: "8rem" }}>
+            <h3>Share it</h3>
+            <p>
+              Copy to clipboard:{" "}
+              <Saver href={window.location.href} title={title} />
+            </p>
+          </section>
+        )}
       </Template>
     );
   }

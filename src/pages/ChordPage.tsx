@@ -23,6 +23,7 @@ import Piano from "../Piano";
 import Template from "./Template";
 import Title from "../ui/Title";
 import Saver from "../ui/Saver";
+import { BottomRightAd } from "../ui/Ads";
 
 interface MatchItems {
   notes?: string;
@@ -220,6 +221,9 @@ export default function ChordPage() {
         activeKeys={activeKeys}
         onKeyClick={onKeyClick}
       />
+
+      <BottomRightAd />
+
       {params.notes && (
         <section>
           <h3>Share it</h3>

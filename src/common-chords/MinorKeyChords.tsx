@@ -2,6 +2,7 @@ import React from "react";
 import { ChordSet } from "./ChordSet";
 import { Keyed } from "./Intro";
 import { getRenderers } from "./renderers";
+import { HorizontalAd } from "../ui/Ads";
 
 function MinorKeyChords({ musicKey, offset }: Keyed) {
   const { f, f7, rom, note } = getRenderers(musicKey, offset);
@@ -75,6 +76,8 @@ function MinorKeyChords({ musicKey, offset }: Keyed) {
       <p>
         These are two <strong>borrowed chords</strong> from the dorian mode.
       </p>
+
+      <HorizontalAd />
 
       <ChordSet
         els={[
@@ -176,6 +179,8 @@ function MinorKeyChords({ musicKey, offset }: Keyed) {
         The parallel major tonic is sometimes used not as secondary dominant,
         but just because it sounds surprising but familiar.
       </p>
+
+      <HorizontalAd />
 
       <ChordSet
         els={[
@@ -310,6 +315,8 @@ function MinorKeyChords({ musicKey, offset }: Keyed) {
         with their 5th and/or 9th chord tones lowered or raised. Commonly done
         in jazz.
       </p>
+
+      <HorizontalAd />
 
       <ChordSet
         els={[

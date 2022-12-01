@@ -2,6 +2,7 @@ import React, { FC, PropsWithChildren, ReactNode } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 
 import Paths from "../Paths";
+import { BottomCenterAd } from "../ui/Ads";
 
 interface ListItemLinkProps extends PropsWithChildren {
   to: string;
@@ -78,6 +79,9 @@ const Template: FC<TemplateProps> = ({
 
       <section>
         <hr />
+
+        <BottomCenterAd />
+
         {Boolean(showLimitations) && (
           <>
             <h3>Limitations</h3>

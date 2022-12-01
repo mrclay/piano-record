@@ -9,6 +9,7 @@ import Template from "./Template";
 import Preview from "../ui/Preview";
 import Saver from "../ui/Saver";
 import { useSearchParams } from "react-router-dom";
+import { BottomRightAd } from "../ui/Ads";
 
 function streamFromSong(
   bpm: number,
@@ -399,6 +400,8 @@ export default function SequencePage(): JSX.Element {
         }}
       />
       <Keyboard activeKeys={activeKeys} />
+
+      <BottomRightAd />
 
       {params.stream && (
         <section>

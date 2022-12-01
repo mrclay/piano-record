@@ -172,3 +172,39 @@ button .progress {
 .nav-tabs li:first-child {
   margin-left: 15px;
 }
+
+.BottomRightAd {
+  background: #eeeeee;
+  display: flex;
+  flex-direction: column;
+  float: right;
+  height: 43rem;
+  margin: 4rem 0 2rem 2rem;
+  max-width: 300px;
+  width: 33%;
+
+  @media (max-width: 599px) {
+    display: none;
+  }
+}
+
+.BottomCenterAd {
+  background: #eeeeee;
+  display: flex;
+  flex-direction: column;
+  height: 15rem;
+  margin: 2rem 0;
+
+  @media (min-width: 600px) {
+    display: none;
+  }
+}
+
+.HorizontalAd {
+  background: #eeeeee;
+  display: flex;
+  flex-direction: column;
+  height: 12rem;
+  margin: 4rem 2rem;
+}
+
