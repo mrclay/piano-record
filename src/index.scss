@@ -182,10 +182,6 @@ button .progress {
   margin: 4rem 0 2rem 2rem;
   max-width: 300px;
   width: 33%;
-
-  @media (max-width: 599px) {
-    display: none;
-  }
 }
 
 .BottomCenterAd {
@@ -194,10 +190,6 @@ button .progress {
   flex-direction: column;
   height: 15rem;
   margin: 2rem 0;
-
-  @media (min-width: 600px) {
-    display: none;
-  }
 }
 
 .HorizontalAd {
