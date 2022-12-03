@@ -1,8 +1,7 @@
-import EventTarget from "dom-event-target";
-
 import * as C from "./constants";
 import { TimedOp, Op } from "./Ops";
 import Piano, { PianoEvents } from "./Piano";
+import { EventTarget } from "./dom-event-target";
 
 export type RecorderProgressListener = (progress: number) => void;
 export type RecorderStateListener = (state: RecorderState) => void;
@@ -162,7 +161,7 @@ export default class Recorder extends EventTarget {
       this.send(RecorderEvent.progress, (now - startTime) / lastTime);
     }, this.progressPeriod);
 
-    this.operations.forEach(el => {
+    this.operations.forEach((el) => {
       // relying on the timer is awful, but tone-piano's "time" arguments just don't work.
       this.playAllIntervals.push(
         window.setTimeout(() => {
@@ -190,7 +189,7 @@ export default class Recorder extends EventTarget {
       clearInterval(interval);
     }
 
-    Object.keys(this.keyTimeouts).forEach(note => {
+    Object.keys(this.keyTimeouts).forEach((note) => {
       clearTimeout(this.keyTimeouts[note]);
     });
     this.keyTimeouts = Object.create(null);

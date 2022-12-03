@@ -1,8 +1,8 @@
-import EventTarget from "dom-event-target";
 import * as C from "./constants";
 import Ops, { MidiOp, Op } from "./Ops";
 import SimplePiano from "./SimplePiano";
 import { RANGE } from "./constants";
+import { EventTarget } from "./dom-event-target";
 
 export type ActiveKeys = Record<string, boolean | undefined>;
 
@@ -64,7 +64,7 @@ export default class Piano extends EventTarget {
   }
 
   stopAll() {
-    Object.keys(activeKeys).forEach(note => this.stopNote(Number(note)));
+    Object.keys(activeKeys).forEach((note) => this.stopNote(Number(note)));
   }
 
   performOperation(op: Op, sendOp = true) {
@@ -100,9 +100,9 @@ export default class Piano extends EventTarget {
       return;
     }
 
-    navigator.requestMIDIAccess().then(midiAccess => {
-      midiAccess.inputs.forEach(input => {
-        input.addEventListener("midimessage", e => {
+    navigator.requestMIDIAccess().then((midiAccess) => {
+      midiAccess.inputs.forEach((input) => {
+        input.addEventListener("midimessage", (e) => {
           if (!this.monitorMidi) {
             return;
           }

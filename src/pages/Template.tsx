@@ -64,11 +64,11 @@ const Template: FC<TemplateProps> = ({
       <div className="head-flex">
         {titleEls.map((item, i) =>
           i === 0 ? (
-            <div>
+            <div key={i}>
               <h1 className="h2">{item}</h1>
             </div>
           ) : (
-            <div>{item}</div>
+            <div key={i}>{item}</div>
           )
         )}
       </div>

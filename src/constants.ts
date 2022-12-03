@@ -2,23 +2,15 @@ import { NavigateFunction } from "react-router-dom";
 
 import { Command } from "./Ops";
 
-export const SOURCE_URL = "https://github.com/mrclay/piano-record";
-
-let samplesUrl = "http://mrclay.org/piano/media/";
+let samplesUrl = "//mrclay.org/piano/media/";
 if (process.env.NODE_ENV !== "production") {
-  samplesUrl = "//localhost:3000/piano/media/";
+  samplesUrl = "/media/";
 }
 export const SAMPLES_URL = samplesUrl;
 
 export const RANGE = [36, 96];
-export const VELOCITIES = 1;
-export const USE_RELEASE = false;
 export const TIME_RESOLUTION_DIVISOR = 4;
 export const ORD_A_UPPER = "A".charCodeAt(0);
-
-export const STOPPED = "stopped";
-export const RECORDING = "recording";
-export const PLAYING = "playing";
 
 export const OP_PEDAL_DOWN: Command = 0;
 export const OP_PEDAL_UP: Command = 1;
@@ -33,7 +25,6 @@ export const MIDI0_L1 = 252; // L1 button on Edirol GM2
 export const MIDI0_TUNE = 176; // TODO use for metronome?
 
 export const MIDI1_PEDAL = 64;
-export const MIDI1_TUNE = 10;
 
 export const MIDI2_RELEASE_VELOCITY = 0;
 
