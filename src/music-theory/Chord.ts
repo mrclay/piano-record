@@ -1,5 +1,11 @@
 import Note from "./Note";
-import { Char, readNotePattern } from "./constants";
+import {
+  Char,
+  majorKeys,
+  minorKeys,
+  readNotePattern,
+  ThirdQuality,
+} from "./constants";
 import Key from "./Key";
 import { boundModulo } from "./CircularSet";
 
@@ -12,6 +18,7 @@ interface ChordType {
 export interface Chord {
   root: Note;
   type: ChordType;
+  typeStr: string;
 }
 
 export function parseChord(name: string): Chord | null {
@@ -31,6 +38,7 @@ export function parseChord(name: string): Chord | null {
   return {
     root,
     type: tuple[1],
+    typeStr: rest,
   };
 }
 
@@ -87,27 +95,13 @@ export const chordTypes: Record<string, ChordType> = {
   },
 };
 
-export const typeMatches: Array<[string, ChordType]> = [];
-Object.values(chordTypes).map(type => {
-  typeMatches.push([type.symbol, type]);
-  type.aliases.forEach(alias => typeMatches.push([alias, type]));
-});
-
-typeMatches.sort((a, b) => {
-  if (a[0].length > b[0].length) {
-    return -1;
-  }
-  if (a[0].length < b[0].length) {
-    return 1;
-  }
-  return 0;
-});
-
 const majorScores = {
-  "I maj7": 10,
+  // Bump for tonic
+  "I maj7": 15,
   "IV maj7": 10,
   "V 7": 10,
-  "vi m7": 10,
+  "V +": 6,
+  "vi m7": 9,
   "ii m7": 9,
   "iii m7": 9,
   "bIII maj7": 5,
@@ -119,7 +113,7 @@ const majorScores = {
   "V/V 7": 5,
   "V/vi 7": 5,
   "V/ii 7": 4,
-  "IV 7": 4,
+  "IV 7": 5,
   "bVI 7": 2,
   "#iv m7b5": 3,
   "vii m7b5": 3,
@@ -136,6 +130,50 @@ const majorScores = {
   "V maj7": -10,
   "II maj7": -10,
 };
+const minorScores = {
+  // Bump for tonic
+  "i m7": 15,
+  "V 7": 10,
+  "V +": 6,
+  "iv m7": 10,
+  "vii dim7": 9,
+  "bIII maj7": 9,
+  "v m7": 9,
+  "bVI maj7": 9,
+  "bVII 7": 9,
+  "ii m7b5": 9,
+
+  "ii m7": 5,
+  "IV 7": 5,
+  "bII maj7": 5,
+  "ii/bVI m7": 3,
+
+  "V/iv 7": 4,
+  "V/V 7": 4,
+  "V/bVI 7": 4,
+  "I maj7": 2,
+
+  "I mMaj7": 2,
+  "bVI 7": 2,
+  "subV 7": 2,
+  "bI ": 1,
+};
+
+export const typeMatches: Array<[string, ChordType]> = [];
+Object.values(chordTypes).map(type => {
+  typeMatches.push([type.symbol, type]);
+  type.aliases.forEach(alias => typeMatches.push([alias, type]));
+});
+
+typeMatches.sort((a, b) => {
+  if (a[0].length > b[0].length) {
+    return -1;
+  }
+  if (a[0].length < b[0].length) {
+    return 1;
+  }
+  return 0;
+});
 
 // Get normalized strings of chromatic notes in triad and seventh
 // E.g. Cm7   => "0,3,7" and "0,3,7,10"
@@ -155,28 +193,44 @@ function chordAsStrings(chord: Chord) {
   return { triad, seventh };
 }
 
-export function scoreChord(
-  key: Key,
-  test: Chord
-): { func: string; score: number } {
-  const testStrings = chordAsStrings(test);
+interface ScoredChord {
+  given: Chord;
+  score: number;
+  chordInKey?: Chord;
+  func?: string;
+}
 
-  for (const [name, score] of Object.entries(majorScores)) {
+export function scoreChord(key: Key, given: Chord): ScoredChord {
+  const testStrings = chordAsStrings(given);
+
+  const scoreList =
+    key.getQuality() === ThirdQuality.MAJOR ? majorScores : minorScores;
+  const majKey =
+    key.getQuality() === ThirdQuality.MAJOR
+      ? key
+      : Key.major(key.getTonicNote());
+
+  let best: ScoredChord = { score: 0, given };
+
+  for (const [name, score] of Object.entries(scoreList)) {
     const [func, type] = name.split(" ");
-    const root = key.getNoteFromRoman(func).toString();
-    const chord = parseChord(`${root}${type}`);
-    if (!chord) {
+    const root = majKey.getNoteFromRoman(func).toString();
+    const chordInKey = parseChord(`${root}${type}`);
+    if (!chordInKey) {
       throw new Error(`Cannot parse chord type: ${type}`);
     }
 
-    const strings = chordAsStrings(chord);
+    const strings = chordAsStrings(chordInKey);
 
     if (testStrings.triad !== strings.triad) {
       continue;
     }
 
     if (!testStrings.seventh) {
-      return { func, score };
+      if (score > best.score) {
+        best = { given, chordInKey, func, score };
+      }
+      continue;
     }
 
     if (testStrings.seventh !== strings.seventh) {
@@ -185,8 +239,37 @@ export function scoreChord(
     }
 
     // Seventh matched, bump score a tiny bit
-    return { func, score: score + 1 };
+    if (score + 1 > best.score) {
+      best = { given, chordInKey, func, score: score + 1 };
+    }
   }
 
-  return { func: "", score: 0 };
+  return best;
 }
+
+export const scoreProgression = (chords: Chord[]) => {
+  const keys: Key[] = [
+    ...majorKeys.map(name => Key.major(name)),
+    ...minorKeys.map(name => Key.minor(name)),
+  ];
+
+  return keys
+    .map(key => {
+      const scores = chords.map(el => scoreChord(key, el));
+      const breakdown = scores.map(el => el.score).join(" + ");
+      const total = scores.reduce((acc, curr) => acc + curr.score, 0);
+
+      return {
+        key,
+        total,
+        breakdown,
+        scores,
+      };
+    })
+    .sort((a, b) => {
+      if (a.total === b.total) {
+        return 0;
+      }
+      return a.total > b.total ? -1 : 1;
+    });
+};

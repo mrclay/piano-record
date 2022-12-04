@@ -5,31 +5,32 @@ import React, {
   useMemo,
   useState,
 } from "react";
-import { useNavigate, useParams } from "react-router";
-import { useLocation, useSearchParams } from "react-router-dom";
+import { useParams } from "react-router";
+// import { useLocation, useSearchParams } from "react-router-dom";
 import { debounce } from "throttle-debounce";
 
 import Template from "./Template";
 import { BottomRightAd } from "../ui/Ads";
 import Saver from "../ui/Saver";
-import { Chord, parseChord, scoreChord } from "../music-theory/Chord";
-import Key from "../music-theory/Key";
-import { majorKeys } from "../music-theory/constants";
+import { Chord, parseChord, scoreProgression } from "../music-theory/Chord";
+import Paths from "../Paths";
 
 interface MatchItems {
   data?: string;
 }
 
-export default function GuessKeyPage() {
-  const navigate = useNavigate();
-  const params: MatchItems = useParams();
-  const { pathname } = useLocation();
-  const [searchParams] = useSearchParams();
+const DEFAULT_VALUE = "";
 
-  const [value, setValue] = useState("");
+export default function GuessKeyPage() {
+  // const navigate = useNavigate();
+  const params: MatchItems = useParams();
+  // const { pathname } = useLocation();
+  // const [searchParams] = useSearchParams();
+
+  const [value, setValue] = useState(DEFAULT_VALUE);
 
   // Debounced value
-  const [dValue, setDValue] = useState("");
+  const [dValue, setDValue] = useState(DEFAULT_VALUE);
 
   const chords = useMemo(() => {
     return dValue
@@ -52,36 +53,19 @@ export default function GuessKeyPage() {
     updateDValue(value);
   }, [value]);
 
-  const scores = useMemo(
-    () =>
-      majorKeys
-        .map(noteName => {
-          const key = Key.major(noteName);
-          const scores = foundChords.map(el => scoreChord(key, el));
-          let breakdown = scores.map(el => el.score).join(" + ");
-          const hasTonic = foundChords.some(
-            el => el.root.getChromatic() === key.getTonicNote().getChromatic()
-          );
-          if (hasTonic) {
-            breakdown += " + 10 for the tonic";
-          }
-          const total = scores.reduce((acc, curr) => acc + curr.score, 0);
-
-          return {
-            key: key.toString(),
-            total: total + (hasTonic ? 10 : 0),
-            breakdown,
-            scores,
-          };
-        })
-        .sort((a, b) => {
-          if (a.total === b.total) {
-            return 0;
-          }
-          return a.total > b.total ? -1 : 1;
-        }),
-    [foundChords]
-  );
+  const scores = useMemo(() => {
+    const rows = scoreProgression(foundChords)
+      .filter(s => s.total > 0)
+      .map(row => ({
+        ...row,
+        hasTopScore: false,
+      }));
+    if (rows.length) {
+      const top = rows[0].total;
+      rows.forEach(row => (row.hasTopScore = row.total === top));
+    }
+    return rows;
+  }, [foundChords]);
 
   return (
     <Template
@@ -122,42 +106,66 @@ export default function GuessKeyPage() {
       }
     >
       <section className="GTK">
-        <table
-          className="table table-bordered"
-          style={{
-            opacity: foundChords.length === 0 ? 0 : 1,
-          }}
-        >
-          <thead>
-            <tr>
-              <th scope="column">Key</th>
-              <th scope="column">Score</th>
-              <th scope="column">Score breakdown</th>
-              <th scope="column">Functions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {scores.map((el, keyIdx) => (
-              <tr key={el.key} className={keyIdx === 0 ? "success" : ""}>
-                <td>{el.key}</td>
-                <td>{el.total}</td>
-                <td>{el.breakdown}</td>
-                <td>
-                  {el.scores.map((el2, idx) => (
-                    <Fragment key={idx}>
-                      {idx !== 0 && " - "}
-                      {el2.func ? (
-                        <b>{el2.func}</b>
-                      ) : (
-                        <span className="text-muted">N/A</span>
-                      )}
-                    </Fragment>
-                  ))}
-                </td>
+        <div>
+          <table
+            className="table table-bordered"
+            style={{
+              opacity: foundChords.length === 0 ? 0 : 1,
+            }}
+          >
+            <thead>
+              <tr>
+                <th scope="column">Key</th>
+                <th scope="column">Functions</th>
+                <th scope="column">Score</th>
+                <th scope="column">Score breakdown</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {scores.map((el, keyIdx) => (
+                <tr
+                  key={el.key.toString()}
+                  className={[
+                    el.hasTopScore ? "success" : "",
+                    keyIdx > 4 ? "text-muted" : "",
+                  ].join(" ")}
+                >
+                  <td>
+                    <a
+                      href={Paths.commonChordsPrefix(
+                        `/${el.key.toString(true).replace(" ", "-")}`
+                      )}
+                      style={{ fontWeight: el.hasTopScore ? "600" : "inherit" }}
+                    >
+                      {el.key.toString(true)}
+                    </a>
+                  </td>
+                  <td>
+                    {el.scores.map((el2, idx) => (
+                      <Fragment key={idx}>
+                        {idx !== 0 && " - "}
+                        {el2.func && el2.chordInKey ? (
+                          <span className="chord">
+                            {el2.func + " "}
+                            {el.hasTopScore && (
+                              <span className="fixedName">
+                                {el2.chordInKey.root + el2.given.typeStr}
+                              </span>
+                            )}
+                          </span>
+                        ) : (
+                          <span className="text-muted">N/A</span>
+                        )}
+                      </Fragment>
+                    ))}
+                  </td>
+                  <td>{el.total}</td>
+                  <td>{el.breakdown}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
 
         <BottomRightAd />
       </section>

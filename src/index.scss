@@ -195,6 +195,13 @@ button .progress {
     width: 60rem;
   }
 
+  .chord {
+    align-items: center;
+    display: inline-flex;
+    flex-direction: column;
+    vertical-align: bottom;
+  }
+
   .BottomRightAd {
     float: none;
     margin: 0 2rem 2rem 4rem;

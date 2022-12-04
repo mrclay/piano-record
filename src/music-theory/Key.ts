@@ -86,7 +86,7 @@ export default class Key extends CircularSet<Note> {
     return this.items.map(note => note + "");
   }
 
-  toString() {
-    return `${this.getTonicNote()} ${this.getQuality()}`;
+  toString(unicode = false) {
+    return `${this.getTonicNote().toString(unicode)} ${this.getQuality()}`;
   }
 }
