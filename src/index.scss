@@ -191,8 +191,7 @@ button .progress {
   flex-wrap: wrap;
 
   table {
-    float: right;
-    width: 60rem;
+    max-width: 60rem;
   }
 
   .chord {
