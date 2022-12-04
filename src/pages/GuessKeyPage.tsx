@@ -44,7 +44,7 @@ export default function GuessKeyPage() {
   );
 
   const updateDValue = useCallback(
-    debounce(500, v => setDValue(v)),
+    debounce(250, v => setDValue(v)),
     [setDValue]
   );
 
@@ -89,27 +89,37 @@ export default function GuessKeyPage() {
       title="Guess the Key"
       intro={
         <>
-          <p>Type some chords and this tool will attempt to guess the key.</p>
+          <p>
+            Type some chords and this tool will attempt to guess the key. (Beta!
+            Major keys only for the moment.)
+          </p>
 
           <p>
             <input
               type="text"
               value={value}
+              placeholder="Type chords here"
               className="form-control"
               onChange={e => setValue(e.target.value)}
             />
           </p>
 
-          <h3>Parsed chords</h3>
-          <pre>
-            {chords.map((el, idx) => (
-              <Fragment key={idx}>
-                {idx !== 0 && " - "}
-                {el === null && <span>N/A</span>}
-                {el !== null && <b>{el.root + el.type.symbol}</b>}
-              </Fragment>
-            ))}
-          </pre>
+          <div
+            style={{
+              opacity: foundChords.length === 0 ? 0 : 1,
+            }}
+          >
+            <h3>Parsed chords</h3>
+            <pre>
+              {chords.map((el, idx) => (
+                <Fragment key={idx}>
+                  {idx !== 0 && " - "}
+                  {el === null && <span>N/A</span>}
+                  {el !== null && <b>{el.root + el.type.symbol}</b>}
+                </Fragment>
+              ))}
+            </pre>
+          </div>
         </>
       }
     >
@@ -138,7 +148,11 @@ export default function GuessKeyPage() {
                   {el.scores.map((el2, idx) => (
                     <Fragment key={idx}>
                       {idx !== 0 && " - "}
-                      <b key={idx}>{el2.func || "N/A"}</b>
+                      {el2.func ? (
+                        <b>{el2.func}</b>
+                      ) : (
+                        <span className="text-muted">N/A</span>
+                      )}
                     </Fragment>
                   ))}
                 </td>
