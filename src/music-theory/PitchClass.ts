@@ -8,7 +8,8 @@ export interface PitchClass {
   // C = 0 ... B = 6
   readonly idx: number;
 
-  // Width in semitones (1 for B and E, 2 for rest)
+  // How many semitones are added going to the next pitch class
+  // (1 for B and E, 2 for rest)
   readonly width: number;
 
   // Chromatic offset within C major

@@ -1,14 +1,26 @@
-export const readNotePattern = /^([A-Ga-g])(♭|b|bb|𝄫|♯|#|𝄪|##|x|♮|)$/;
+export const readNotePattern = /^([A-Ga-g])(♭|bb|b|𝄫|♯|##|#|𝄪|x|♮|)/;
+
+export enum Char {
+  FLAT = "♭",
+  DOUBLEFLAT = "𝄫",
+  NATURAL = "♮",
+  SHARP = "♯",
+  DOUBLESHARP = "𝄪",
+  DIM = "\u00B0",
+  HALFDIM = "\u00F8",
+  TRIANGLE = "\u0394",
+}
+
 export const readAccidentalsMap: Record<string, number> = {
   bb: -2,
-  "𝄫": -2,
+  [Char.DOUBLEFLAT]: -2,
   b: -1,
-  "♭": -1,
+  [Char.FLAT]: -1,
   "": 0,
-  "♮": 0,
-  "♯": 1,
+  [Char.NATURAL]: 0,
+  [Char.NATURAL]: 1,
   "#": 1,
-  "𝄪": 2,
+  [Char.DOUBLESHARP]: 2,
   "##": 2,
   x: 2,
 };
@@ -21,11 +33,11 @@ export const writeAccidentalsMap: Record<string, string> = {
   "2": "x",
 };
 export const unicodeAccidentalsMap: Record<string, string> = {
-  "-2": "𝄫",
-  "-1": "♭",
+  "-2": Char.DOUBLEFLAT,
+  "-1": Char.FLAT,
   "0": "",
-  "1": "♯",
-  "2": "𝄪",
+  "1": Char.SHARP,
+  "2": Char.DOUBLESHARP,
 };
 
 export const diatonicOffsets = [2, 2, 1, 2, 2, 2, 1];

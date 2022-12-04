@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import {
   Link,
   useLocation,
@@ -58,12 +58,6 @@ export default function Wrapper() {
   const navigate = useNavigate();
   const params: MatchItems = useParams();
   const { pathname } = useLocation();
-
-  useEffect(() => {
-    if (pathname === "/piano/") {
-      navigate(Paths.pianoPrefix("/record"));
-    }
-  }, []);
 
   const [searchParams] = useSearchParams();
   const [pianoSpeed] = useStore.pianoSpeed();

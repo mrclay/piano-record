@@ -29,6 +29,9 @@ export const TemplateNav: FC = () => {
       <ListItemLink to={Paths.sequencePrefix("/")}>
         <i className="fa fa-repeat" aria-hidden="true" /> Sequence
       </ListItemLink>
+      <ListItemLink to={Paths.guessKeyPrefix("/")}>
+        <i className="fa fa-key" aria-hidden="true" /> Guess the Key
+      </ListItemLink>
       <ListItemLink to={Paths.commonChordsPrefix("/C-major")}>
         <i className="fa fa-book" aria-hidden="true" /> Common Chords
       </ListItemLink>

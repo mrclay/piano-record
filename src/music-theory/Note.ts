@@ -5,6 +5,7 @@ import {
   writeAccidentalsMap,
   unicodeAccidentalsMap,
 } from "./constants";
+import { boundModulo } from "./CircularSet";
 
 export type FlexNote = Note | string;
 
@@ -19,6 +20,10 @@ export default class Note {
   constructor(pitch: PitchClass, sharps: number) {
     this.pitchClass = pitch;
     this.sharps = sharps;
+  }
+
+  getChromatic() {
+    return boundModulo(12, this.pitchClass.chromatic + this.sharps);
   }
 
   static fromName(name: FlexNote): Note {
@@ -38,7 +43,7 @@ export default class Note {
   getNextNote(semitones: number) {
     return new Note(
       incPitchClass(this.pitchClass),
-      semitones - (this.pitchClass.width - this.sharps)
+      this.sharps + semitones - this.pitchClass.width
     );
   }
 

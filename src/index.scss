@@ -173,6 +173,22 @@ button .progress {
   margin-left: 15px;
 }
 
+.GTK {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+
+  table {
+    float: right;
+    width: 60rem;
+  }
+
+  .BottomRightAd {
+    float: none;
+    margin: 0 2rem 2rem 4rem;
+  }
+}
+
 .BottomRightAd {
   background: #eeeeee;
   display: flex;

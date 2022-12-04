@@ -8,6 +8,7 @@ const AsyncChord = lazy(() => import("./pages/ChordPage"));
 const AsyncPiano = lazy(() => import("./pages/PianoPage"));
 const AsyncSequence = lazy(() => import("./pages/SequencePage"));
 const AsyncCommonChords = lazy(() => import("./pages/CommonChordsPage"));
+const AsyncGuessKey = lazy(() => import("./pages/GuessKeyPage"));
 
 // Key the component on pathname so we destroy it if path changes
 function PathKeyedComponent(C: ComponentType) {
@@ -43,7 +44,7 @@ const App = () => {
         />
         <Route
           path={Paths.pianoPrefix("/")}
-          element={PathKeyedComponent(AsyncPiano)}
+          element={<Navigate to={Paths.pianoPrefix("/record")} />}
         />
         <Route
           path={Paths.chordPrefix("/:notes/:title")}
@@ -72,6 +73,10 @@ const App = () => {
         <Route
           path={Paths.commonChordsPrefix()}
           element={<Navigate to={Paths.commonChordsPrefix("/C-major")} />}
+        />
+        <Route
+          path={Paths.guessKeyPrefix("/")}
+          element={PathKeyedComponent(AsyncGuessKey)}
         />
         <Route path="/" element={<Navigate to={Paths.pianoPrefix("/")} />} />
       </Routes>
