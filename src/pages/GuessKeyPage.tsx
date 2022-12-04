@@ -180,15 +180,15 @@ export default function GuessKeyPage() {
                   These are based on my study of songs for 25+ years, not any
                   real data.
                 </em>
-                It naively gives each user-provided chord the best score it can
-                find in the tables (and an extra point if the user has given a
-                7th chord and it matches).
               </p>
               <p>
-                It does not (yet) consider the order of chords at all. A better
-                algorithm might identify common changes and award additional
-                points, or remove them for "strange" changes. The next step here
-                is to set up a test suite where contributors can add songs.
+                It gives each user-provided chord the best score it can find in
+                the tables (and an extra point if the user has given a 7th chord
+                and it matches) and naively adds them together. It does not
+                (yet) consider the order of chords at all. A better algorithm
+                might identify common changes and award additional points, or
+                remove them for "strange" changes. The next step here is to set
+                up a test suite where contributors can add songs.
               </p>
             </>
           )}

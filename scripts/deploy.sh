@@ -11,4 +11,6 @@ if [[ ${MC_USERNAME} == "" ]]; then
   exit 1
 fi
 
+npm run build
+
 rsync -avzh ${SRC} ${MC_USERNAME}@mrclay.org:${DEST}
