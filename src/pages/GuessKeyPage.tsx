@@ -36,10 +36,10 @@ export default function GuessKeyPage() {
       .trim()
       .replace(/ [-|] /g, " ")
       .split(/\s+/)
-      .map(str => parseChord(str));
+      .map(str => parseChord(str) || str);
   }, [dValue]);
   const foundChords = useMemo(
-    () => chords.filter((el): el is Chord => el !== null),
+    () => chords.filter((el): el is Chord => typeof el === "object"),
     [chords]
   );
 
@@ -104,22 +104,20 @@ export default function GuessKeyPage() {
             />
           </p>
 
-          <div
-            style={{
-              opacity: foundChords.length === 0 ? 0 : 1,
-            }}
-          >
-            <h3>Parsed chords</h3>
-            <pre>
-              {chords.map((el, idx) => (
-                <Fragment key={idx}>
-                  {idx !== 0 && " - "}
-                  {el === null && <span>N/A</span>}
-                  {el !== null && <b>{el.root + el.type.symbol}</b>}
-                </Fragment>
-              ))}
-            </pre>
-          </div>
+          {Boolean(
+            foundChords.length && chords.length !== foundChords.length
+          ) && (
+            <div className="alert alert-danger" role="alert">
+              <strong>These chords could not be parsed:</strong>
+              {chords
+                .filter((el): el is string => typeof el === "string")
+                .map(str => (
+                  <code style={{ marginLeft: "10px" }} key={str}>
+                    {str}
+                  </code>
+                ))}
+            </div>
+          )}
         </>
       }
     >

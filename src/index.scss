@@ -12,13 +12,29 @@ p {
 
 .TemplateNav {
   display: flex;
+  flex-wrap: wrap;
 
-  .fa {
-    margin-right: 5px;
+  > li {
+    display: flex;
+    flex-direction: column;
   }
 
-  li:last-child {
-    margin-left: auto;
+  > li > a {
+    flex: 1;
+    padding: 10px;
+  }
+
+  @media (max-width: 829px) {
+    background: #eee;
+
+    > li > a {
+      border-radius: 0;
+    }
+  }
+  @media (min-width: 830px) {
+    li:last-child {
+      margin-left: auto;
+    }
   }
 }
 
@@ -167,10 +183,6 @@ button .progress {
   vertical-align: baseline;
   font-size: 3rem;
   margin-right: 20px;
-}
-
-.nav-tabs li:first-child {
-  margin-left: 15px;
 }
 
 .GTK {
