@@ -122,6 +122,7 @@ const majorScores = {
   "bVII maj7": 2,
   "iv maj7": 5,
   "bII 7": 2,
+  "bV 7": 2,
   "iii m7b5": 1,
   "v m7b5": 1,
   "vii m7": 1,
@@ -175,10 +176,10 @@ typeMatches.sort((a, b) => {
   return 0;
 });
 
-// Get normalized strings of chromatic notes in triad and seventh
+// Get normalized strings of chromatic degrees in triad and seventh
 // E.g. Cm7   => "0,3,7" and "0,3,7,10"
 //      Fmaj7 => "0,5,9" and "0,4,5,9"
-function chordAsStrings(chord: Chord) {
+function getChromaticDegrees(chord: Chord) {
   const chromaticRoot = chord.root.getChromatic();
 
   const chordNotes = [0, ...chord.type.offsets].map(offset =>
@@ -200,8 +201,20 @@ interface ScoredChord {
   func?: string;
 }
 
-export function scoreChord(key: Key, given: Chord): ScoredChord {
-  const testStrings = chordAsStrings(given);
+interface ScoreChordArgs {
+  key: Key;
+  given: Chord;
+  prev?: Chord;
+  next?: Chord;
+}
+
+export function scoreChord({
+  key,
+  given,
+  prev,
+  next,
+}: ScoreChordArgs): ScoredChord {
+  const givenCDegrees = getChromaticDegrees(given);
 
   const scoreList =
     key.getQuality() === ThirdQuality.MAJOR ? majorScores : minorScores;
@@ -210,7 +223,7 @@ export function scoreChord(key: Key, given: Chord): ScoredChord {
       ? key
       : Key.major(key.getTonicNote());
 
-  let best: ScoredChord = { score: 0, given };
+  let ret: ScoredChord = { score: -99, given };
 
   for (const [name, score] of Object.entries(scoreList)) {
     const [func, type] = name.split(" ");
@@ -220,31 +233,50 @@ export function scoreChord(key: Key, given: Chord): ScoredChord {
       throw new Error(`Cannot parse chord type: ${type}`);
     }
 
-    const strings = chordAsStrings(chordInKey);
+    const compareCDegrees = getChromaticDegrees(chordInKey);
 
-    if (testStrings.triad !== strings.triad) {
+    if (givenCDegrees.triad !== compareCDegrees.triad) {
+      // Not same triad
       continue;
     }
 
-    if (!testStrings.seventh) {
-      if (score > best.score) {
-        best = { given, chordInKey, func, score };
+    if (
+      givenCDegrees.seventh &&
+      compareCDegrees.seventh &&
+      givenCDegrees.seventh !== compareCDegrees.seventh
+    ) {
+      // Has a 7th that doesn't match.
+      continue;
+    }
+
+    let boost = 0;
+    if (givenCDegrees.seventh) {
+      // Full seventh matched
+      boost += 1;
+    }
+    if (!prev) {
+      // First chord...
+      if (score === 15) {
+        // ...is the tonic
+        boost += 2;
+      } else if (score < 4) {
+        // ...is unusual
+        boost -= 2;
       }
-      continue;
     }
 
-    if (testStrings.seventh !== strings.seventh) {
-      // Non-matching 7th
-      continue;
+    if (!ret.chordInKey) {
+      ret.chordInKey = chordInKey;
     }
-
-    // Seventh matched, bump score a tiny bit
-    if (score + 1 > best.score) {
-      best = { given, chordInKey, func, score: score + 1 };
+    if (!ret.func) {
+      ret.func = func;
+    }
+    if (score + boost > ret.score) {
+      ret.score = score + boost;
     }
   }
 
-  return best;
+  return { ...ret, score: Math.max(ret.score, -5) };
 }
 
 export const scoreProgression = (chords: Chord[]) => {
@@ -255,7 +287,14 @@ export const scoreProgression = (chords: Chord[]) => {
 
   return keys
     .map(key => {
-      const scores = chords.map(el => scoreChord(key, el));
+      const scores = chords.map((el, idx) =>
+        scoreChord({
+          key,
+          given: el,
+          prev: chords[idx - 1],
+          next: chords[idx + 1],
+        })
+      );
       const breakdown = scores.map(el => el.score).join(" + ");
       const total = scores.reduce((acc, curr) => acc + curr.score, 0);
 

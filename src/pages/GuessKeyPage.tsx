@@ -73,19 +73,28 @@ export default function GuessKeyPage() {
       title="Guess the Key"
       intro={
         <>
-          <p>
-            Type some chords and this tool will attempt to guess the key. (Beta!
-            Major keys only for the moment.)
-          </p>
-
+          <p>Type some chords and we'll provide a list of potential keys.</p>
           <p>
             <input
               type="text"
               value={value}
-              placeholder="Type chords here"
+              placeholder="Enter chords here"
               className="form-control"
               onChange={e => setValue(e.target.value)}
             />
+          </p>
+          <p>
+            <strong>Caveats:</strong> This algorithm doesn't understand
+            progressions and only considers order by nudging the score based on
+            aspects of the first chord. It's mostly scoring based on Steve's
+            intuition around how commonly certain chords are used, encoded in
+            these{" "}
+            <a href="https://github.com/mrclay/piano-record/blob/main/src/music-theory/Chord.ts#L98-L160">
+              major and minor key lookup tables
+            </a>
+            . Not any <em>real</em> data. If you have a chord with a "bluesy"
+            (non-functional) b7, try leaving it off; it undervalues the
+            likelihood that E7 A7 E7 is in E major.
           </p>
 
           {Boolean(
@@ -165,33 +174,6 @@ export default function GuessKeyPage() {
               ))}
             </tbody>
           </table>
-
-          {foundChords.length !== 0 && (
-            <>
-              <h2 className="h4">Scoring notes</h2>
-              <p>
-                Scoring is subjectively based on{" "}
-                <a href="https://github.com/mrclay/piano-record/blob/main/src/music-theory/Chord.ts#L98-L160">
-                  major and minor key lookup tables
-                </a>{" "}
-                containing numbers based on how often the chord is used in the
-                key.{" "}
-                <em>
-                  These are based on my study of songs for 25+ years, not any
-                  real data.
-                </em>
-              </p>
-              <p>
-                It gives each user-provided chord the best score it can find in
-                the tables (and an extra point if the user has given a 7th chord
-                and it matches) and naively adds them together. It does not
-                (yet) consider the order of chords at all. A better algorithm
-                might identify common changes and award additional points, or
-                remove them for "strange" changes. The next step here is to set
-                up a test suite where contributors can add songs.
-              </p>
-            </>
-          )}
         </div>
 
         <BottomRightAd />
