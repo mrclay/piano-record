@@ -137,7 +137,6 @@ const minorScores = {
   "V 7": 10,
   "V +": 6,
   "iv m7": 10,
-  "vii dim7": 9,
   "bIII maj7": 9,
   "v m7": 9,
   "bVI maj7": 9,

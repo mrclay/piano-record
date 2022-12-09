@@ -6,7 +6,7 @@ import React, {
   useState,
 } from "react";
 import { useParams } from "react-router";
-// import { useLocation, useSearchParams } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 import { debounce } from "throttle-debounce";
 
 import Template from "./Template";
@@ -22,12 +22,10 @@ interface MatchItems {
 const DEFAULT_VALUE = "";
 
 export default function GuessKeyPage() {
-  // const navigate = useNavigate();
   const params: MatchItems = useParams();
-  // const { pathname } = useLocation();
-  // const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
 
-  const [value, setValue] = useState(DEFAULT_VALUE);
+  const [value, setValue] = useState(searchParams.get("c") || DEFAULT_VALUE);
 
   // Debounced value
   const [dValue, setDValue] = useState(DEFAULT_VALUE);
@@ -43,6 +41,10 @@ export default function GuessKeyPage() {
     () => chords.filter((el): el is Chord => typeof el === "object"),
     [chords]
   );
+  // Savable representation
+  const normalized = foundChords
+    .map(el => el.root.toString(false) + el.typeStr)
+    .join(" ");
 
   const updateDValue = useCallback(
     debounce(250, v => setDValue(v)),
@@ -83,6 +85,23 @@ export default function GuessKeyPage() {
               onChange={e => setValue(e.target.value)}
             />
           </p>
+
+          <div className="GTK__actions">
+            <div>
+              <button
+                type="button"
+                id="save"
+                disabled={Boolean((searchParams.get("c") || "") === normalized)}
+                className="btn btn-primary med-btn"
+                onClick={() =>
+                  setSearchParams(new URLSearchParams({ c: normalized }))
+                }
+              >
+                <i className="fa fa-floppy-o" aria-hidden="true"></i>{" "}
+                <span>Save</span>
+              </button>
+            </div>
+          </div>
           <p>
             <strong>Caveats:</strong> This algorithm doesn't understand
             progressions and only considers order by nudging the score based on

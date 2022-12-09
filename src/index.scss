@@ -207,6 +207,21 @@ button .progress {
   }
 }
 
+.GTK__actions {
+  max-width: 700px;
+
+  div {
+    height: 7rem;
+    float: right;
+    text-align: right;
+    width: 12rem;
+  }
+
+  .btn {
+    margin-right: 0;
+  }
+}
+
 .BottomRightAd {
   background: #eeeeee;
   display: flex;
