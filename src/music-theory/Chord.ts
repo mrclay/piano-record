@@ -95,6 +95,8 @@ export const chordTypes: Record<string, ChordType> = {
   },
 };
 
+const dimTypes = [chordTypes.dim, chordTypes.dim7, chordTypes.m7b5];
+
 const majorScores = {
   // Bump for tonic
   "I maj7": 15,
@@ -104,6 +106,8 @@ const majorScores = {
   "vi m7": 9,
   "ii m7": 9,
   "iii m7": 9,
+  "V/vi +": 5,
+  "ii m7b5": 5,
   "bIII maj7": 5,
   "iv m7": 5,
   "v m7": 5,
@@ -123,9 +127,15 @@ const majorScores = {
   "iv maj7": 5,
   "bII 7": 2,
   "bV 7": 2,
-  "iii m7b5": 1,
-  "v m7b5": 1,
+  "ii/ii m7b5": 1,
+  "ii/IV m7b5": 1,
   "vii m7": 1,
+
+  // Try to guess function in output but don't affect score
+  "vii/ii dim7": 0,
+  "vii/V dim7": 0,
+  "vii/vi dim7": 0,
+  "vii dim7": 0,
 
   // Very unusual ones
   "V maj7": -10,
@@ -146,6 +156,7 @@ const minorScores = {
   "ii m7": 5,
   "IV 7": 5,
   "bII maj7": 5,
+  "ii/V m7b5": 5,
   "ii/bVI m7": 3,
 
   "V/iv 7": 4,
@@ -157,6 +168,14 @@ const minorScores = {
   "bVI 7": 2,
   "subV 7": 2,
   "bI ": 1,
+
+  // Try to guess function in output but don't affect score
+  "vii/V dim7": 0,
+  "vii/iv dim7": 0,
+  "vii dim7": 0,
+
+  // Very unusual ones
+  "VI ": -10,
 };
 
 export const typeMatches: Array<[string, ChordType]> = [];
@@ -222,69 +241,95 @@ export function scoreChord({
       ? key
       : Key.major(key.getTonicNote());
 
-  let ret: ScoredChord = { score: -99, given };
-
-  for (const [name, score] of Object.entries(scoreList)) {
-    const [func, type] = name.split(" ");
-    const root = majKey.getNoteFromRoman(func).toString();
-    const chordInKey = parseChord(`${root}${type}`);
-    if (!chordInKey) {
-      throw new Error(`Cannot parse chord type: ${type}`);
-    }
-
-    const compareCDegrees = getChromaticDegrees(chordInKey);
-
-    if (givenCDegrees.triad !== compareCDegrees.triad) {
-      // Not same triad
-      continue;
-    }
-
-    if (
-      givenCDegrees.seventh &&
-      compareCDegrees.seventh &&
-      givenCDegrees.seventh !== compareCDegrees.seventh
-    ) {
-      // Has a 7th that doesn't match.
-      continue;
-    }
-
-    let boost = 0;
-    if (givenCDegrees.seventh) {
-      // Full seventh matched
-      boost += 1;
-    }
-    if (!prev) {
-      // First chord...
-      if (score === 15) {
-        // ...is the tonic
-        boost += 2;
-      } else if (score < 4) {
-        // ...is unusual
-        boost -= 2;
+  const possibleScores: ScoredChord[] = Object.entries(scoreList)
+    .map(([name, score]) => {
+      let [func, type] = name.split(" ");
+      const root = majKey.getNoteFromRoman(func).toString();
+      const chordInKey = parseChord(`${root}${type}`);
+      if (!chordInKey) {
+        throw new Error(`Cannot parse chord type: ${type}`);
       }
-    }
 
-    if (!ret.chordInKey) {
-      ret.chordInKey = chordInKey;
-    }
-    if (!ret.func) {
-      ret.func = func;
-    }
-    if (score + boost > ret.score) {
-      ret.score = score + boost;
-    }
-  }
+      const compareCDegrees = getChromaticDegrees(chordInKey);
 
-  return { ...ret, score: Math.max(ret.score, -5) };
+      if (
+        chordInKey.type === chordTypes.dim7 &&
+        given.type === chordTypes.dim7
+      ) {
+        // Special case: Since these are symmetrical, assume that user may
+        // have given an incorrect root, so let's just bypass the triad check.
+      } else {
+        if (givenCDegrees.triad !== compareCDegrees.triad) {
+          // Not same triad
+          return null;
+        }
+      }
+
+      if (
+        givenCDegrees.seventh &&
+        compareCDegrees.seventh &&
+        givenCDegrees.seventh !== compareCDegrees.seventh
+      ) {
+        // Has a 7th that doesn't match.
+        return null;
+      }
+
+      let boost = 0;
+      if (givenCDegrees.seventh) {
+        // Full seventh matched
+        boost += 1;
+      }
+      if (!prev) {
+        // First chord...
+        if (score === 15) {
+          // ...is the tonic
+          boost += 2;
+        } else if (score < 4 && score !== 0) {
+          // ...is unusual
+          boost -= 2;
+        }
+      }
+
+      const chordScore = score + boost;
+
+      if (dimTypes.includes(given.type) && !func.includes(Char.DIM)) {
+        if (func === "#iv") {
+          // Special case. This was probably a dim triad
+          func = "vii/V";
+        }
+        const parts = func.split("/");
+        parts[0] += Char.DIM;
+        func = parts.join("/");
+      }
+
+      const ret: ScoredChord = { chordInKey, given, score: chordScore, func };
+      return ret;
+    })
+    .filter((el): el is ScoredChord => el !== null);
+
+  // return top score
+  possibleScores.sort((a, b) => {
+    if (a.score === b.score) {
+      return 0;
+    }
+    return a.score < b.score ? 1 : -1;
+  });
+
+  return possibleScores[0] || { score: -5, given };
 }
 
-export const scoreProgression = (chords: Chord[]) => {
-  const keys: Key[] = [
-    ...majorKeys.map(name => Key.major(name)),
-    ...minorKeys.map(name => Key.minor(name)),
-  ];
+// Set a Key here to limit scoring
+const DEBUG_KEY: Key | null = null;
 
-  return keys
+const allKeys: Key[] = DEBUG_KEY
+  ? [DEBUG_KEY]
+  : [
+      ...majorKeys.map(name => Key.major(name)),
+      ...minorKeys.map(name => Key.minor(name)),
+    ];
+
+export const scoreProgression = (chords: Chord[]) => {
+  return allKeys
     .map(key => {
       const scores = chords.map((el, idx) =>
         scoreChord({
