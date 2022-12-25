@@ -10,8 +10,7 @@ export interface ScoreBoost {
 export const Boosts = {
   tonicFirst: {
     boost: 1,
-    rationale: "Ends with tonic chord",
-    disabled: true,
+    rationale: "Starts with tonic chord",
   },
   tonicLast: {
     boost: 1,
