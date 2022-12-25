@@ -52,6 +52,7 @@ interface PianoPageState {
   stream: string;
   title: string;
   undoStream: string;
+  shepardMode: boolean;
 }
 
 export default function Wrapper() {
@@ -133,6 +134,7 @@ class PianoPage extends React.Component<PianoPageProps, PianoPageState> {
       mode,
       progress: 0,
       undoStream: "",
+      shepardMode: false,
     };
   }
 
@@ -169,6 +171,14 @@ class PianoPage extends React.Component<PianoPageProps, PianoPageState> {
   componentWillUnmount() {
     document.removeEventListener("keydown", this.oneKeyPlay);
     document.removeEventListener("keyup", this.oneKeyPlay);
+  }
+
+  componentDidUpdate(
+    prevProps: Readonly<PianoPageProps>,
+    prevState: Readonly<PianoPageState>,
+    snapshot?: any
+  ) {
+    this.recorder.piano.shepardMode = this.state.shepardMode;
   }
 
   onRecorderProgress: RecorderProgressListener = progress => {
@@ -424,6 +434,19 @@ class PianoPage extends React.Component<PianoPageProps, PianoPageState> {
           onKeyClick={mode === Mode.recording ? this.onKeyClick : undefined}
         />
         <PianoSpeed />
+
+        <div style={{ marginTop: "1rem" }}>
+          <label>
+            <input
+              type="checkbox"
+              checked={this.state.shepardMode}
+              onChange={() =>
+                this.setState(prev => ({ shepardMode: !prev.shepardMode }))
+              }
+            />{" "}
+            Shepard tones mode
+          </label>
+        </div>
 
         <BottomRightAd />
 

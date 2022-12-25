@@ -29,11 +29,15 @@ export default class SimplePiano {
   heldKeys: Record<string, true | undefined> = Object.create(null);
   triggeredNotes: Record<string, true | undefined> = Object.create(null);
 
-  keyDown({ midi }: { midi: number }) {
+  keyDown({ midi, velocity = 1 }: { midi: number; velocity: number }) {
     if (!loaded) {
       return;
     }
-    sampler.triggerAttack(Tone.Frequency(midi, "midi").toFrequency());
+    sampler.triggerAttack(
+      Tone.Frequency(midi, "midi").toFrequency(),
+      undefined,
+      velocity
+    );
     this.triggeredNotes[midi] = true;
     this.heldKeys[midi] = true;
   }

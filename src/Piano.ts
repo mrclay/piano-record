@@ -30,6 +30,7 @@ for (let note = C.RANGE[0]; note <= C.RANGE[1]; note++) {
  */
 export default class Piano extends EventTarget {
   monitorMidi = true;
+  shepardMode = true;
 
   constructor() {
     super();
@@ -41,6 +42,38 @@ export default class Piano extends EventTarget {
     return {
       ...activeKeys,
     };
+  }
+
+  static isShepardToneActive(midi: number) {
+    let check = midi % 12;
+    while (check < C.RANGE[1]) {
+      if (activeKeys[check]) {
+        return true;
+      }
+      check += 12;
+    }
+    return false;
+  }
+
+  static getShepardTones(midi: number) {
+    const zeroToEleven = midi % 12;
+    const reduce = 3;
+    const divisor = 12 + 6 + reduce;
+
+    return [
+      {
+        midi: 48 + zeroToEleven,
+        velocity: zeroToEleven / divisor,
+      },
+      {
+        midi: 60 + zeroToEleven,
+        velocity: (12 + 6 - Math.abs(zeroToEleven - 6)) / divisor,
+      },
+      {
+        midi: 72 + zeroToEleven,
+        velocity: (12 - zeroToEleven) / divisor,
+      },
+    ];
   }
 
   startNote(note: number) {
@@ -64,13 +97,14 @@ export default class Piano extends EventTarget {
   }
 
   stopAll() {
-    Object.keys(activeKeys).forEach((note) => this.stopNote(Number(note)));
+    Object.keys(activeKeys).forEach(note => this.stopNote(Number(note)));
   }
 
   performOperation(op: Op, sendOp = true) {
     sendOp && this.send(PianoEvents.operation, op);
+    const [operation, midi] = op;
 
-    switch (op[0]) {
+    switch (operation) {
       case C.OP_PEDAL_DOWN:
         return tonePiano.pedalDown();
 
@@ -78,14 +112,24 @@ export default class Piano extends EventTarget {
         return tonePiano.pedalUp();
 
       case C.OP_NOTE_DOWN:
-        tonePiano.keyDown({ midi: op[1] });
-        activeKeys[op[1]] = true;
+        if (this.shepardMode) {
+          Piano.getShepardTones(midi).forEach(obj => tonePiano.keyDown(obj));
+        } else {
+          tonePiano.keyDown({ midi, velocity: 1 });
+        }
+        activeKeys[midi] = true;
         this.send(PianoEvents.activeKeysChange, { ...activeKeys });
         return;
 
       case C.OP_NOTE_UP:
-        tonePiano.keyUp({ midi: op[1] });
-        activeKeys[op[1]] = false;
+        if (this.shepardMode) {
+          if (!Piano.isShepardToneActive(midi)) {
+            Piano.getShepardTones(midi).forEach(obj => tonePiano.keyUp(obj));
+          }
+        } else {
+          tonePiano.keyUp({ midi });
+        }
+        activeKeys[midi] = false;
         this.send(PianoEvents.activeKeysChange, { ...activeKeys });
         return;
 
@@ -100,9 +144,9 @@ export default class Piano extends EventTarget {
       return;
     }
 
-    navigator.requestMIDIAccess().then((midiAccess) => {
-      midiAccess.inputs.forEach((input) => {
-        input.addEventListener("midimessage", (e) => {
+    navigator.requestMIDIAccess().then(midiAccess => {
+      midiAccess.inputs.forEach(input => {
+        input.addEventListener("midimessage", e => {
           if (!this.monitorMidi) {
             return;
           }
