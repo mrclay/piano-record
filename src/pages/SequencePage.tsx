@@ -145,6 +145,7 @@ export default function SequencePage(): JSX.Element {
   const offset = parseInt(searchParams.get("transpose") || "0");
 
   const piano = useMemo(() => new Piano(), []);
+  const [shepardMode, setShepardMode] = useState(false);
 
   const [playing, setPlaying] = useState(false);
   const [internalStep, setStep] = useState(0);
@@ -261,6 +262,10 @@ export default function SequencePage(): JSX.Element {
       }
     }
   }, [params.stream, offset]);
+
+  useEffect(() => {
+    piano.shepardMode = shepardMode;
+  }, [shepardMode]);
 
   // Play each step
   useEffect(() => {
@@ -400,6 +405,17 @@ export default function SequencePage(): JSX.Element {
         }}
       />
       <Keyboard activeKeys={activeKeys} />
+
+      <div style={{ marginTop: "1rem" }}>
+        <label>
+          <input
+            type="checkbox"
+            checked={shepardMode}
+            onChange={() => setShepardMode(v => !v)}
+          />{" "}
+          Shepard tones mode
+        </label>
+      </div>
 
       <BottomRightAd />
 
