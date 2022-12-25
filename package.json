@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "deploy": "scripts/deploy.sh"
   },
   "dependencies": {
     "@types/throttle-debounce": "^5.0.0",

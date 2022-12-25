@@ -2,8 +2,9 @@
 
 set -euo pipefail
 
+# SRC and DEST must have trailing slashes
 SRC=dist/
-DEST=/home/mrclayor/public_html/piano/
+DEST=/home1/mrclayor/public_html/piano/
 
 if [[ ${MC_USERNAME} == "" ]]; then
   echo 'MC_USERNAME must be defined:'
