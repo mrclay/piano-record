@@ -8,6 +8,16 @@ const majorCache = new Map<Note, Key>();
 const minorCache = new Map<Note, Key>();
 
 export default class Key extends CircularSet<Note> {
+  readonly quality: ThirdQuality;
+
+  constructor(notes: readonly Note[]) {
+    super(notes);
+
+    const third = getInterval(notes[0], notes[2]);
+    this.quality =
+      third.deltaSemitones === 4 ? ThirdQuality.MAJOR : ThirdQuality.MINOR;
+  }
+
   static create(tonic: FlexNote, degree: FlexDegree): Key {
     const rawTonic = Note.fromName(tonic);
     const degreeIdx = degreeFromRoman(degree).idx;
@@ -98,9 +108,7 @@ export default class Key extends CircularSet<Note> {
   }
 
   getQuality(): ThirdQuality {
-    const third = getInterval(this.items[0], this.items[2]);
-
-    return third.deltaSemitones === 4 ? ThirdQuality.MAJOR : ThirdQuality.MINOR;
+    return this.quality;
   }
 
   getNoteNames(): string[] {
@@ -108,6 +116,6 @@ export default class Key extends CircularSet<Note> {
   }
 
   toString(unicode = false) {
-    return `${this.getTonicNote().toString(unicode)} ${this.getQuality()}`;
+    return `${this.getTonicNote().toString(unicode)} ${this.quality}`;
   }
 }

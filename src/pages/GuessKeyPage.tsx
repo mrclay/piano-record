@@ -12,8 +12,10 @@ import { debounce } from "throttle-debounce";
 import Template from "./Template";
 import { BottomRightAd } from "../ui/Ads";
 import Saver from "../ui/Saver";
-import { Chord, parseChord, scoreProgression } from "../music-theory/Chord";
 import Paths from "../Paths";
+import { parseChord, ParsedChord } from "../music-theory/Chord";
+import { scoreProgression } from "../music-theory/opinion/scoring";
+import { displayDelta } from "../music-theory/opinion/score-boosts";
 
 interface MatchItems {
   data?: string;
@@ -38,12 +40,12 @@ export default function GuessKeyPage() {
       .map(str => parseChord(str) || str);
   }, [dValue]);
   const foundChords = useMemo(
-    () => chords.filter((el): el is Chord => typeof el === "object"),
+    () => chords.filter((el): el is ParsedChord => typeof el === "object"),
     [chords]
   );
   // Savable representation
   const normalized = foundChords
-    .map(el => el.root.toString(false) + el.typeStr)
+    .map(el => el.root.toString(false) + el.givenSymbol)
     .join(" ");
 
   const updateDValue = useCallback(
@@ -58,10 +60,7 @@ export default function GuessKeyPage() {
   const scores = useMemo(() => {
     const rows = scoreProgression(foundChords)
       .filter(s => s.total > 0)
-      .map(row => ({
-        ...row,
-        hasTopScore: false,
-      }));
+      .map(row => ({ ...row, hasTopScore: false }));
     if (rows.length) {
       const top = rows[0].total;
       rows.forEach(row => (row.hasTopScore = row.total === top));
@@ -146,7 +145,7 @@ export default function GuessKeyPage() {
                 <th scope="column">Key</th>
                 <th scope="column">Functions</th>
                 <th scope="column">Score</th>
-                <th scope="column">Score breakdown</th>
+                <th scope="column">Scoring breakdown</th>
               </tr>
             </thead>
             <tbody>
@@ -169,26 +168,51 @@ export default function GuessKeyPage() {
                     </a>
                   </td>
                   <td>
-                    {el.scores.map((el2, idx) => (
-                      <Fragment key={idx}>
-                        {idx !== 0 && " - "}
-                        {el2.func && el2.chordInKey ? (
-                          <span className="chord">
-                            {el2.func + " "}
-                            {el.hasTopScore && (
-                              <span className="fixedName">
-                                {el2.chordInKey.root + el2.given.typeStr}
-                              </span>
-                            )}
-                          </span>
-                        ) : (
-                          <span className="text-muted">N/A</span>
-                        )}
-                      </Fragment>
-                    ))}
+                    <div className="GTK__functions">
+                      {el.progression.map((el2, idx) => (
+                        <Fragment key={idx}>
+                          {idx !== 0 && <span className="chord--sep"> - </span>}
+                          {el2.type === "match" ? (
+                            <span className="chord">
+                              {el2.roman + " "}
+                              {el.hasTopScore && (
+                                <span className="fixedName">
+                                  {el2.chordInKey.root + el2.given.type.symbol}
+                                </span>
+                              )}
+                            </span>
+                          ) : (
+                            <span className="text-muted">N/A</span>
+                          )}
+                        </Fragment>
+                      ))}
+                    </div>
                   </td>
                   <td>{el.total}</td>
-                  <td>{el.breakdown}</td>
+                  <td>
+                    {el.breakdown}
+
+                    {el.hasTopScore && (
+                      <div style={{ marginTop: "0.5rem" }}>
+                        {el.boosts.byChord.map((el, idx) => (
+                          <div key={idx}>
+                            {el.chord}:{" "}
+                            {el.boosts
+                              .map(sb => `${sb.rationale} ${displayDelta(sb)}`)
+                              .join(", ")}
+                          </div>
+                        ))}
+                        {el.boosts.overall.length > 0 && (
+                          <div>
+                            Overall:{" "}
+                            {el.boosts.overall
+                              .map(sb => `${sb.rationale} ${displayDelta(sb)}`)
+                              .join(", ")}
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </td>
                 </tr>
               ))}
             </tbody>

@@ -192,13 +192,20 @@ button .progress {
 
   table {
     max-width: 60rem;
+
+    @media (min-width: 56rem) {
+      min-width: 54rem;
+    }
   }
 
   .chord {
-    align-items: center;
     display: inline-flex;
     flex-direction: column;
+    text-align: center;
     vertical-align: bottom;
+  }
+  .chord--sep {
+    padding: 0 0.5rem;
   }
 
   .BottomRightAd {
@@ -209,6 +216,13 @@ button .progress {
   tr.text-muted {
     opacity: 0.7;
   }
+}
+
+.GTK__functions {
+  align-items: flex-end;
+  display: flex;
+  flex-wrap: wrap;
+  row-gap: 1rem;
 }
 
 .GTK__actions {
