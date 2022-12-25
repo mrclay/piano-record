@@ -4,6 +4,9 @@ import { degreeFromRoman, FlexDegree } from "./Degree";
 import { diatonicOffsets, readAccidentalsMap, ThirdQuality } from "./constants";
 import { getInterval } from "./Interval";
 
+const majorCache = new Map<Note, Key>();
+const minorCache = new Map<Note, Key>();
+
 export default class Key extends CircularSet<Note> {
   static create(tonic: FlexNote, degree: FlexDegree): Key {
     const rawTonic = Note.fromName(tonic);
@@ -23,11 +26,29 @@ export default class Key extends CircularSet<Note> {
   }
 
   static major(tonic: FlexNote): Key {
-    return Key.create(tonic, "I");
+    const degree = "I";
+    const keyCache = majorCache;
+
+    const rawTonic = Note.fromName(tonic);
+    let cached = keyCache.get(rawTonic);
+    if (!cached) {
+      cached = Key.create(tonic, degree);
+      keyCache.set(rawTonic, cached);
+    }
+    return cached;
   }
 
   static minor(tonic: FlexNote): Key {
-    return Key.create(tonic, "VI");
+    const degree = "VI";
+    const keyCache = minorCache;
+
+    const rawTonic = Note.fromName(tonic);
+    let cached = keyCache.get(rawTonic);
+    if (!cached) {
+      cached = Key.create(tonic, degree);
+      keyCache.set(rawTonic, cached);
+    }
+    return cached;
   }
 
   getTonicNote(): Note {

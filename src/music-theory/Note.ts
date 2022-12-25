@@ -9,6 +9,8 @@ import { boundModulo } from "./CircularSet";
 
 export type FlexNote = Note | string;
 
+const noteCache = new Map<string, Note>();
+
 export default class Note {
   static unicodeAccidentals = false;
 
@@ -31,13 +33,24 @@ export default class Note {
       return name;
     }
 
+    const cached = noteCache.get(name);
+    if (cached) {
+      return cached;
+    }
+
     const m = name.match(readNotePattern);
     if (!m) {
       throw new Error(`Could not parse note "${name}"`);
     }
     const [, letter, accidental] = m;
 
-    return new Note(getPitchClass(letter), readAccidentalsMap[accidental]);
+    const note = new Note(
+      getPitchClass(letter),
+      readAccidentalsMap[accidental]
+    );
+
+    noteCache.set(name, note);
+    return note;
   }
 
   getNextNote(semitones: number) {
