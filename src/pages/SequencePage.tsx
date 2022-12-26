@@ -291,7 +291,10 @@ export default function SequencePage(): JSX.Element {
           handleStop={handleStop}
           isPlaying={playing}
           isWaiting={false}
-          progress={step / (numSteps - 1)}
+          progress={{
+            ratio: step / (numSteps - 1),
+            steps: [step, numSteps],
+          }}
         />
         <div>
           <label>

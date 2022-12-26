@@ -1,11 +1,11 @@
 import React from "react";
 
-import Progress from "./Progress";
+import Progress, { ProgressProps } from "./Progress";
 
 interface PreviewProps {
   handlePlay(): void;
   handleStop(): void;
-  progress: number;
+  progress: ProgressProps;
   isPlaying: boolean;
   isWaiting: boolean;
 }
@@ -26,7 +26,7 @@ export default function Preview({
         className="btn btn-default med-btn"
       >
         <i className="fa fa-stop" aria-hidden="true" />{" "}
-        <Progress ratio={progress} />
+        <Progress {...progress} />
       </button>
     );
   }

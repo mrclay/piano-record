@@ -1,11 +1,18 @@
 import React from "react";
 
-export default function Progress(props: { ratio: number }) {
-  let style = {
+export interface ProgressProps {
+  ratio: number;
+  steps?: [active: number, total: number];
+}
+
+export default function Progress({ ratio, steps }: ProgressProps) {
+  const percentage = Math.round(
+    (steps ? (steps[0] + 1) / steps[1] : ratio) * 100
+  );
+  const style = {
     transition: "width 250ms",
-    width: 100 * props.ratio + "%",
+    width: percentage + "%",
   };
-  let percentage = Math.round(100 * props.ratio);
 
   return (
     <div className="progress">

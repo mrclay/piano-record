@@ -336,7 +336,7 @@ class PianoPage extends React.Component<PianoPageProps, PianoPageState> {
                 handleStop={this.stop}
                 isPlaying={progress !== 0}
                 isWaiting={false}
-                progress={progress}
+                progress={{ ratio: progress }}
               />
             )}
 
