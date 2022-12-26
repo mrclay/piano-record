@@ -139,6 +139,8 @@ const initial = {
   joinData: [1, 2, 3, 4, 5, 6, 7, 8].map(() => []),
 };
 
+let stepTimeout = 0;
+
 export default function SequencePage(): JSX.Element {
   const navigate = useNavigate();
   const params = useParams();
@@ -175,12 +177,12 @@ export default function SequencePage(): JSX.Element {
     sine.stop();
 
     setPlaying(true);
-    setStep(0);
   }
 
   function handleStop() {
     piano.stopAll();
     setPlaying(false);
+    setStep(0);
   }
 
   function reset() {
@@ -260,11 +262,18 @@ export default function SequencePage(): JSX.Element {
       play(currentNotes, currentJoins);
 
       const delay = (60 / bpm) * bps * 1000;
-      window.setTimeout(() => {
+      stepTimeout = window.setTimeout(() => {
         setStep(currentStep => (currentStep + 1) % numSteps);
       }, delay);
     }
   }, [step]);
+
+  useEffect(() => {
+    if (!playing && stepTimeout) {
+      window.clearTimeout(stepTimeout);
+      stepTimeout = 0;
+    }
+  }, [playing]);
 
   return (
     <Template title="Sequence" intro={null}>
@@ -388,6 +397,7 @@ export default function SequencePage(): JSX.Element {
           setnumStepsInput(String(newStepData.length));
           setPlaying(false);
           piano.stopAll();
+          setStep(changedStep);
           play(newStepData[changedStep], newJoinData[changedStep]);
         }}
       />
