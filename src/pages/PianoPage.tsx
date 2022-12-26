@@ -29,6 +29,7 @@ import Status from "../ui/Status";
 import PianoSpeed from "../ui/PianoSpeed";
 import { useStore } from "../store";
 import { BottomRightAd } from "../ui/Ads";
+import PianoShepardMode from "../ui/PianoShepardMode";
 
 enum Mode {
   recording = "recording",
@@ -52,7 +53,6 @@ interface PianoPageState {
   stream: string;
   title: string;
   undoStream: string;
-  shepardMode: boolean;
 }
 
 export default function Wrapper() {
@@ -94,7 +94,6 @@ class PianoPage extends React.Component<PianoPageProps, PianoPageState> {
 
     this.recorder = new Recorder();
     this.state = PianoPage.stateFromProps(props, this.recorder);
-    this.recorder.piano.shepardMode = this.state.shepardMode;
     this.notes = PianoPage.notesFromOps(this.recorder.getOperations());
     this.notesIndex = 0;
     this.notesByKey = Object.create(null);
@@ -135,7 +134,6 @@ class PianoPage extends React.Component<PianoPageProps, PianoPageState> {
       mode,
       progress: 0,
       undoStream: "",
-      shepardMode: false,
     };
   }
 
@@ -172,14 +170,6 @@ class PianoPage extends React.Component<PianoPageProps, PianoPageState> {
   componentWillUnmount() {
     document.removeEventListener("keydown", this.oneKeyPlay);
     document.removeEventListener("keyup", this.oneKeyPlay);
-  }
-
-  componentDidUpdate(
-    prevProps: Readonly<PianoPageProps>,
-    prevState: Readonly<PianoPageState>,
-    snapshot?: any
-  ) {
-    this.recorder.piano.shepardMode = this.state.shepardMode;
   }
 
   onRecorderProgress: RecorderProgressListener = progress => {
@@ -436,18 +426,7 @@ class PianoPage extends React.Component<PianoPageProps, PianoPageState> {
         />
         <PianoSpeed />
 
-        <div style={{ marginTop: "1rem" }}>
-          <label>
-            <input
-              type="checkbox"
-              checked={this.state.shepardMode}
-              onChange={() =>
-                this.setState(prev => ({ shepardMode: !prev.shepardMode }))
-              }
-            />{" "}
-            Shepard tones mode
-          </label>
-        </div>
+        <PianoShepardMode piano={this.recorder.piano} />
 
         <BottomRightAd />
 

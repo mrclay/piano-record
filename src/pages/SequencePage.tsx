@@ -10,6 +10,7 @@ import Preview from "../ui/Preview";
 import Saver from "../ui/Saver";
 import { useSearchParams } from "react-router-dom";
 import { BottomRightAd } from "../ui/Ads";
+import PianoShepardMode from "../ui/PianoShepardMode";
 
 function streamFromSong(
   bpm: number,
@@ -145,7 +146,6 @@ export default function SequencePage(): JSX.Element {
   const offset = parseInt(searchParams.get("transpose") || "0");
 
   const piano = useMemo(() => new Piano(), []);
-  const [shepardMode, setShepardMode] = useState(false);
 
   const [playing, setPlaying] = useState(false);
   const [internalStep, setStep] = useState(0);
@@ -164,13 +164,7 @@ export default function SequencePage(): JSX.Element {
 
   const currentNotes = playing ? stepData[step] || [] : [];
   const currentJoins = joinData[step];
-  const activeKeys = currentNotes.reduce(
-    (prev, curr) => ({
-      ...prev,
-      [curr]: true,
-    }),
-    {}
-  );
+  const activeKeys: ActiveKeys = new Set(currentNotes);
 
   function handleStart() {
     // Hack to directly tie a keypress to sound generation so the WebAudio API
@@ -202,31 +196,28 @@ export default function SequencePage(): JSX.Element {
   const play = useCallback(
     (currentNotes: number[], currentJoins: number[]) => {
       // Keep track of which are started
-      const bannedNotes: ActiveKeys = {};
+      const bannedNotes: ActiveKeys = new Set();
       // Handle notes already playing
-      Object.entries(Piano.getActiveKeys())
-        .filter(([k, v]) => v === true)
-        .forEach(([noteStr]) => {
-          const note = Number(noteStr);
-          const willJoin = currentJoins.includes(note);
-          const willPlay = currentNotes.includes(note);
+      Piano.getActiveKeys().forEach(note => {
+        const willJoin = currentJoins.includes(note);
+        const willPlay = currentNotes.includes(note);
 
-          if (willPlay) {
-            bannedNotes[note] = true;
-            if (willJoin) {
-              // Let it ring
-            } else {
-              piano.stopNote(note);
-              piano.startNote(note);
-            }
+        if (willPlay) {
+          bannedNotes.add(note);
+          if (willJoin) {
+            // Let it ring
           } else {
             piano.stopNote(note);
+            piano.startNote(note);
           }
-        });
+        } else {
+          piano.stopNote(note);
+        }
+      });
 
       // Start notes that still need starting
       currentNotes.forEach(note => {
-        if (!bannedNotes[note]) {
+        if (!bannedNotes.has(note)) {
           piano.startNote(note);
         }
       });
@@ -262,10 +253,6 @@ export default function SequencePage(): JSX.Element {
       }
     }
   }, [params.stream, offset]);
-
-  useEffect(() => {
-    piano.shepardMode = shepardMode;
-  }, [shepardMode]);
 
   // Play each step
   useEffect(() => {
@@ -406,16 +393,7 @@ export default function SequencePage(): JSX.Element {
       />
       <Keyboard activeKeys={activeKeys} />
 
-      <div style={{ marginTop: "1rem" }}>
-        <label>
-          <input
-            type="checkbox"
-            checked={shepardMode}
-            onChange={() => setShepardMode(v => !v)}
-          />{" "}
-          Shepard tones mode
-        </label>
-      </div>
+      <PianoShepardMode piano={piano} />
 
       <BottomRightAd />
 

@@ -42,11 +42,11 @@ export default function Keyboard({ activeKeys, onKeyClick }: KeyboardProps) {
     <div className="Keyboard" onMouseDown={handleKey}>
       <div className={onKeyClick ? "piano" : "piano noinput"}>
         <div className="white">
-          {whites.map(({ note }) => renderKey(!!activeKeys[note], note))}
+          {whites.map(({ note }) => renderKey(activeKeys.has(note), note))}
         </div>
         <div className="black">
           {blacks.map(({ note, left }) =>
-            renderKey(!!activeKeys[note], note, left)
+            renderKey(activeKeys.has(note), note, left)
           )}
         </div>
       </div>

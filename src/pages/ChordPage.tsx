@@ -24,6 +24,7 @@ import Template from "./Template";
 import Title from "../ui/Title";
 import Saver from "../ui/Saver";
 import { BottomRightAd } from "../ui/Ads";
+import PianoShepardMode from "../ui/PianoShepardMode";
 
 interface MatchItems {
   notes?: string;
@@ -71,10 +72,11 @@ export default function ChordPage() {
 
   const onKeyClick = useCallback((note: number) => {
     setAction("play");
-    setActiveKeys(activeKeys => ({
-      ...activeKeys,
-      [note]: !activeKeys[note],
-    }));
+    setActiveKeys(set => {
+      const ret = new Set(set);
+      ret[ret.has(note) ? "delete" : "add"](note);
+      return ret;
+    });
   }, []);
 
   function handlePlay() {
@@ -91,11 +93,7 @@ export default function ChordPage() {
   const save = useCallback(
     (e: MouseEvent<HTMLButtonElement> | null, replaceUrl = false) => {
       let notes: number[] = [];
-      Object.entries(activeKeys).forEach(([note, value]) => {
-        if (value) {
-          notes.push(Number(note));
-        }
-      });
+      notes.push(...activeKeys.values());
 
       if (!notes.length) {
         return;
@@ -129,7 +127,7 @@ export default function ChordPage() {
 
     const notesArr = notes ? notes.split(",") : [];
     notesArr.forEach(note => {
-      initActiveKeys[parseInt(note) + offset] = true;
+      initActiveKeys.add(parseInt(note) + offset);
     });
 
     setActiveKeys(initActiveKeys);
@@ -151,11 +149,7 @@ export default function ChordPage() {
     }
 
     if (action === "play") {
-      Object.entries(activeKeys).forEach(([note, value]) => {
-        if (value) {
-          piano.startNote(Number(note));
-        }
-      });
+      activeKeys.forEach(note => piano.startNote(note));
 
       timeout.current = window.setTimeout(() => {
         setAction("stop");
@@ -221,6 +215,7 @@ export default function ChordPage() {
         activeKeys={activeKeys}
         onKeyClick={onKeyClick}
       />
+      <PianoShepardMode piano={piano} />
 
       <BottomRightAd />
 
