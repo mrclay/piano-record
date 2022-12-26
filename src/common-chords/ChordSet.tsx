@@ -19,6 +19,7 @@ import Keyboard from "../ui/Keyboard";
 import PianoSpeed from "../ui/PianoSpeed";
 import SongChords from "../ui/SongChords";
 import { useCommonChordsQuery } from "./useCommonChordsQuery";
+import PianoShepardMode from "../ui/PianoShepardMode";
 
 export interface Chord {
   func: string;
@@ -46,10 +47,11 @@ const fancyMap: Record<string, string | undefined> = {
 function Keys(): JSX.Element {
   const [recorder] = useStore.recorder();
   const piano = recorder.piano;
-  const [activeKeys, setActiveKeys] = useState<ActiveKeys>({});
+  const [activeKeys, setActiveKeys] = useState<ActiveKeys>(new Set());
   const [style, setStyle] = useState<CSSProperties>({});
 
   useEffect(() => {
+    piano.shepardMode = false;
     const keysListener: PianoActiveKeysListener = activeKeys => {
       setActiveKeys(activeKeys);
     };
