@@ -46,7 +46,7 @@ export default class Piano extends EventTarget {
 
   static isShepardToneActive(midi: number) {
     let check = midi % 12;
-    while (check < C.RANGE[1]) {
+    while (check <= C.RANGE[1]) {
       if (activeKeys[check]) {
         return true;
       }
@@ -123,13 +123,15 @@ export default class Piano extends EventTarget {
 
       case C.OP_NOTE_UP:
         if (this.shepardMode) {
+          activeKeys[midi] = false;
           if (!Piano.isShepardToneActive(midi)) {
             Piano.getShepardTones(midi).forEach(obj => tonePiano.keyUp(obj));
           }
         } else {
+          activeKeys[midi] = false;
           tonePiano.keyUp({ midi });
         }
-        activeKeys[midi] = false;
+
         this.send(PianoEvents.activeKeysChange, { ...activeKeys });
         return;
 

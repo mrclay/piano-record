@@ -94,6 +94,7 @@ class PianoPage extends React.Component<PianoPageProps, PianoPageState> {
 
     this.recorder = new Recorder();
     this.state = PianoPage.stateFromProps(props, this.recorder);
+    this.recorder.piano.shepardMode = this.state.shepardMode;
     this.notes = PianoPage.notesFromOps(this.recorder.getOperations());
     this.notesIndex = 0;
     this.notesByKey = Object.create(null);
