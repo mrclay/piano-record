@@ -26,8 +26,8 @@ const sampler = new Tone.Sampler({
 
 export default class SimplePiano {
   isPedalled = false;
-  heldKeys: Record<string, true | undefined> = Object.create(null);
-  triggeredNotes: Record<string, true | undefined> = Object.create(null);
+  heldKeys: Set<number> = new Set();
+  triggeredNotes: Set<number> = new Set();
 
   keyDown({ midi, velocity = 1 }: { midi: number; velocity: number }) {
     if (!loaded) {
@@ -38,8 +38,8 @@ export default class SimplePiano {
       undefined,
       velocity
     );
-    this.triggeredNotes[midi] = true;
-    this.heldKeys[midi] = true;
+    this.triggeredNotes.add(midi);
+    this.heldKeys.add(midi);
   }
 
   keyUp({ midi }: { midi: number }) {
@@ -47,9 +47,9 @@ export default class SimplePiano {
       return;
     }
     sampler.triggerRelease(Tone.Frequency(midi, "midi").toFrequency());
-    delete this.heldKeys[midi];
+    this.heldKeys.delete(midi);
     if (!this.isPedalled) {
-      delete this.triggeredNotes[midi];
+      this.triggeredNotes.delete(midi);
     }
   }
 
@@ -62,11 +62,11 @@ export default class SimplePiano {
     if (!loaded) {
       return;
     }
-    Object.keys(this.triggeredNotes)
-      .filter(midi => !this.heldKeys[midi])
+    [...this.triggeredNotes.values()]
+      .filter(midi => !this.heldKeys.has(midi))
       .forEach(midi => {
         sampler.triggerRelease(Tone.Frequency(midi, "midi").toFrequency());
-        delete this.triggeredNotes[midi];
+        this.triggeredNotes.delete(midi);
       });
   }
 
@@ -76,7 +76,7 @@ export default class SimplePiano {
     }
     sampler.releaseAll();
     this.isPedalled = false;
-    this.triggeredNotes = Object.create(null);
-    this.heldKeys = Object.create(null);
+    this.triggeredNotes = new Set();
+    this.heldKeys = new Set();
   }
 }
