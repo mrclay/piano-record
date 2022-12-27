@@ -44,6 +44,7 @@ interface MatchItems {
 
 interface PianoPageProps extends C.RouteComponentProps<MatchItems> {
   pianoSpeed: number;
+  piano: Piano;
 }
 
 interface PianoPageState {
@@ -59,6 +60,7 @@ export default function Wrapper() {
   const navigate = useNavigate();
   const params: MatchItems = useParams();
   const { pathname } = useLocation();
+  const [piano] = useStore.piano();
 
   const [searchParams] = useSearchParams();
   const [pianoSpeed] = useStore.pianoSpeed();
@@ -66,6 +68,7 @@ export default function Wrapper() {
     <PianoPage
       key={pathname}
       pathname={pathname}
+      piano={piano}
       navigate={navigate}
       params={params}
       pianoSpeed={pianoSpeed}
@@ -92,7 +95,7 @@ class PianoPage extends React.Component<PianoPageProps, PianoPageState> {
   constructor(props: PianoPageProps) {
     super(props);
 
-    this.recorder = new Recorder();
+    this.recorder = new Recorder({ piano: props.piano });
     this.state = PianoPage.stateFromProps(props, this.recorder);
     this.notes = PianoPage.notesFromOps(this.recorder.getOperations());
     this.notesIndex = 0;
@@ -106,7 +109,7 @@ class PianoPage extends React.Component<PianoPageProps, PianoPageState> {
   }
 
   static stateFromProps(
-    { params, pathname, transpose }: PianoPageProps,
+    { params, pathname, piano, transpose }: PianoPageProps,
     recorder: Recorder
   ): PianoPageState {
     const stream = params.stream || "";
@@ -130,7 +133,7 @@ class PianoPage extends React.Component<PianoPageProps, PianoPageState> {
     return {
       stream,
       title,
-      activeKeys: Piano.getActiveKeys(),
+      activeKeys: new Set(piano.activeKeys),
       mode,
       progress: 0,
       undoStream: "",

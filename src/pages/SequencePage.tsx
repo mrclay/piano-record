@@ -1,6 +1,8 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router";
+import { useSearchParams } from "react-router-dom";
 import * as Tone from "tone";
+
 import Paths from "../Paths";
 import Piano, { ActiveKeys } from "../Piano";
 import Keyboard from "../ui/Keyboard";
@@ -8,9 +10,9 @@ import Sequencer from "../ui/Sequencer";
 import Template from "./Template";
 import Preview from "../ui/Preview";
 import Saver from "../ui/Saver";
-import { useSearchParams } from "react-router-dom";
 import { BottomRightAd } from "../ui/Ads";
 import PianoShepardMode from "../ui/PianoShepardMode";
+import { useStore } from "../store";
 
 function streamFromSong(
   bpm: number,
@@ -147,7 +149,7 @@ export default function SequencePage(): JSX.Element {
   const [searchParams] = useSearchParams();
   const offset = parseInt(searchParams.get("transpose") || "0");
 
-  const piano = useMemo(() => new Piano(), []);
+  const [piano] = useStore.piano();
 
   const [playing, setPlaying] = useState(false);
   const [internalStep, setStep] = useState(0);
@@ -200,7 +202,7 @@ export default function SequencePage(): JSX.Element {
       // Keep track of which are started
       const bannedNotes: ActiveKeys = new Set();
       // Handle notes already playing
-      Piano.getActiveKeys().forEach(note => {
+      piano.activeKeys.forEach(note => {
         const willJoin = currentJoins.includes(note);
         const willPlay = currentNotes.includes(note);
 

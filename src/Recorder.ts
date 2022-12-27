@@ -33,13 +33,14 @@ export default class Recorder extends EventTarget {
   startedRecording: boolean;
   state: RecorderState;
 
-  constructor(spec = Object.create(null)) {
+  constructor(
+    spec: {
+      progressPeriod?: number;
+      piano: Piano;
+      operations?: TimedOp[];
+    } = Object.create(null)
+  ) {
     super();
-
-    if (!(spec.piano instanceof Piano)) {
-      spec.piano = new Piano();
-    }
-
     this.progressPeriod = spec.progressPeriod || 40;
     this.piano = spec.piano;
     this.operations = spec.operations || [];
@@ -161,7 +162,7 @@ export default class Recorder extends EventTarget {
       this.send(RecorderEvent.progress, (now - startTime) / lastTime);
     }, this.progressPeriod);
 
-    this.operations.forEach((el) => {
+    this.operations.forEach(el => {
       // relying on the timer is awful, but tone-piano's "time" arguments just don't work.
       this.playAllIntervals.push(
         window.setTimeout(() => {
@@ -189,7 +190,7 @@ export default class Recorder extends EventTarget {
       clearInterval(interval);
     }
 
-    Object.keys(this.keyTimeouts).forEach((note) => {
+    Object.keys(this.keyTimeouts).forEach(note => {
       clearTimeout(this.keyTimeouts[note]);
     });
     this.keyTimeouts = Object.create(null);

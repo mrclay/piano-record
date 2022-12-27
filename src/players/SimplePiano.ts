@@ -1,5 +1,6 @@
 import * as Tone from "tone";
-import * as C from "./constants";
+import * as C from "../constants";
+import { Playable } from "./index";
 
 const urls = Object.entries({
   A: [2, 3, 4, 5, 6],
@@ -24,7 +25,7 @@ const sampler = new Tone.Sampler({
   },
 }).toDestination();
 
-export default class SimplePiano {
+export default class SimplePiano implements Playable {
   isPedalled = false;
   heldKeys: Set<number> = new Set();
   triggeredNotes: Set<number> = new Set();

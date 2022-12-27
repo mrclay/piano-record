@@ -19,12 +19,13 @@ import BigPlay from "../ui/BigPlay";
 import Keyboard from "../ui/Keyboard";
 import Ops from "../Ops";
 import Paths from "../Paths";
-import Piano from "../Piano";
+import Piano, { ActiveKeys } from "../Piano";
 import Template from "./Template";
 import Title from "../ui/Title";
 import Saver from "../ui/Saver";
 import { BottomRightAd } from "../ui/Ads";
 import PianoShepardMode from "../ui/PianoShepardMode";
+import { useStore } from "../store";
 
 interface MatchItems {
   notes?: string;
@@ -36,11 +37,7 @@ type Action = "stop" | "play" | "setTitle";
 const example = Paths.chordPrefix("/43,56,60,62,65/G7b9sus");
 
 export default function ChordPage() {
-  const pianoRef = useRef<Piano | null>(null);
-  if (!pianoRef.current) {
-    pianoRef.current = new Piano();
-  }
-  const piano = pianoRef.current;
+  const [piano] = useStore.piano();
 
   const timeout = useRef<number | null>(null);
 
@@ -50,7 +47,7 @@ export default function ChordPage() {
   const [searchParams] = useSearchParams();
   const transpose = searchParams.get("transpose") || "0";
 
-  const [activeKeys, setActiveKeys] = useState(Piano.getActiveKeys());
+  const [activeKeys, setActiveKeys] = useState<ActiveKeys>(new Set());
   const [title, setTitle] = useState("");
   const [action, setAction] = useState<Action>("stop");
 
@@ -60,7 +57,7 @@ export default function ChordPage() {
   const reset = useCallback(() => {
     setAction("stop");
     piano.stopAll();
-    setActiveKeys(Piano.getActiveKeys());
+    setActiveKeys(new Set());
     setTitle("");
     navigate(Paths.chordPrefix("/"));
   }, [navigate, piano]);
@@ -122,7 +119,7 @@ export default function ChordPage() {
 
   useEffect(() => {
     const { notes, title } = params;
-    const initActiveKeys = Piano.getActiveKeys();
+    const initActiveKeys = new Set(piano.activeKeys);
     const offset = parseInt(transpose || "0");
 
     const notesArr = notes ? notes.split(",") : [];
