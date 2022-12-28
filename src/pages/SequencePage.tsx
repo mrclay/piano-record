@@ -202,7 +202,11 @@ export default function SequencePage(): JSX.Element {
       // Keep track of which are started
       const bannedNotes: ActiveKeys = new Set();
       // Handle notes already playing
-      piano.activeKeys.forEach(note => {
+
+      // Why the new Set()? Because we need to play new notes in the
+      // callback. But if we do so, activeKeys.forEach will get called
+      // again for the new note, resulting in an infinite loop.
+      new Set(piano.activeKeys).forEach(note => {
         const willJoin = currentJoins.includes(note);
         const willPlay = currentNotes.includes(note);
 
