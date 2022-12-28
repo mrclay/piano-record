@@ -1,7 +1,12 @@
 import React, { useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import Key from "../music-theory/Key";
-import { majorKeys, minorKeys, ThirdQuality } from "../music-theory/constants";
+import {
+  Char,
+  majorKeys,
+  minorKeys,
+  ThirdQuality,
+} from "../music-theory/constants";
 import Note from "../music-theory/Note";
 import Paths from "../Paths";
 import { useStore } from "../store";
@@ -33,7 +38,10 @@ function CommonChordsPage() {
   const [offset, setOffset] = useStore.offset();
   const navigate = useNavigate();
   const { urlKey = "" }: ParamsMatch = useParams();
-  const musicKey = keys.find(el => el.toString().replace(" ", "-") === urlKey);
+  const musicKey = keys.find(el => {
+    const name = el.toString(true).replace(" ", "-");
+    return name === urlKey;
+  });
 
   useEffect(() => {
     if (musicKey) {
@@ -46,11 +54,28 @@ function CommonChordsPage() {
       const quality = uCase(musicKey.getQuality());
       const keyName = musicKey.toString();
       document.title = `The Common Chords of ${quality} Keys: ${keyName}`;
+    } else {
+      let m = location.hash.match(/^#-(major|minor)/);
+      if (m) {
+        const newPath = `/${urlKey}${Char.SHARP}-${m[1]}`;
+
+        // navigate() fails due to the hash. (shrugs)
+        location.href = Paths.commonChordsPrefix(newPath);
+        return;
+      }
+
+      if (/^[A-G]b/.test(urlKey)) {
+        navigate(
+          Paths.commonChordsPrefix(`/${urlKey.replace("b", Char.FLAT)}`)
+        );
+        return;
+      }
+
+      navigate(Paths.commonChordsPrefix("/C-major"));
     }
   }, [musicKey, setOffset]);
 
   if (!musicKey) {
-    navigate(Paths.commonChordsPrefix("/C-major"));
     return null;
   }
 
@@ -67,7 +92,7 @@ function CommonChordsPage() {
               if (newKey) {
                 navigate(
                   Paths.commonChordsPrefix(
-                    `/${newKey!.toString().replace(" ", "-")}${qs}`
+                    `/${newKey.toString(true).replace(" ", "-")}${qs}`
                   )
                 );
               }
