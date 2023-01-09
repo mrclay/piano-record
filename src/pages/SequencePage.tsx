@@ -13,6 +13,7 @@ import Saver from "../ui/Saver";
 import { BottomRightAd } from "../ui/Ads";
 import PianoShepardMode from "../ui/PianoShepardMode";
 import { useStore } from "../store";
+import SoundSelector from "../ui/SoundSelector";
 
 function streamFromSong(
   bpm: number,
@@ -413,6 +414,7 @@ export default function SequencePage(): JSX.Element {
       <Keyboard activeKeys={activeKeys} />
 
       <PianoShepardMode piano={piano} />
+      <SoundSelector />
 
       <BottomRightAd />
 

@@ -26,6 +26,7 @@ import Saver from "../ui/Saver";
 import { BottomRightAd } from "../ui/Ads";
 import PianoShepardMode from "../ui/PianoShepardMode";
 import { useStore } from "../store";
+import SoundSelector from "../ui/SoundSelector";
 
 interface MatchItems {
   notes?: string;
@@ -212,7 +213,9 @@ export default function ChordPage() {
         activeKeys={activeKeys}
         onKeyClick={onKeyClick}
       />
+
       <PianoShepardMode piano={piano} />
+      <SoundSelector />
 
       <BottomRightAd />
 

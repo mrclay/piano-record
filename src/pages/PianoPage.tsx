@@ -30,6 +30,7 @@ import PianoSpeed from "../ui/PianoSpeed";
 import { useStore } from "../store";
 import { BottomRightAd } from "../ui/Ads";
 import PianoShepardMode from "../ui/PianoShepardMode";
+import SoundSelector from "../ui/SoundSelector";
 
 enum Mode {
   recording = "recording",
@@ -430,6 +431,7 @@ class PianoPage extends React.Component<PianoPageProps, PianoPageState> {
         <PianoSpeed />
 
         <PianoShepardMode piano={this.recorder.piano} />
+        <SoundSelector />
 
         <BottomRightAd />
 

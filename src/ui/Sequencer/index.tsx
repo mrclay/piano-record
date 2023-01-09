@@ -1,7 +1,7 @@
 import React, { MouseEventHandler } from "react";
 
 import "./index.scss";
-import { getPianoKeyLayout } from "../../Piano";
+import { getPianoKeyLayout } from "../Keyboard";
 
 interface SequencerProps {
   currentStepIndex: number;

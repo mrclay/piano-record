@@ -73,6 +73,7 @@ export function getShepardTones(midi: number) {
   const zeroToEleven = midi % 12;
   // Added 1 to reduce volume a bit.
   let divisor = 24 + 3;
+  let midiOffset = -12;
 
   return [
     {
@@ -94,7 +95,7 @@ export function getShepardTones(midi: number) {
   ]
     .filter(el => el.velocityNumerator > 0)
     .map(({ midi, velocityNumerator }) => ({
-      midi,
+      midi: midi + midiOffset,
       velocity: velocityNumerator / divisor,
     }));
 }

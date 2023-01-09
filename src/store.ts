@@ -5,6 +5,7 @@ import Recorder from "./Recorder";
 import Piano from "./Piano";
 import NullPlayer from "./players/NullPlayer";
 import { availableInstruments, Playable, SoundFont } from "./players";
+import { InstrumentName } from "soundfont-player";
 
 const SPEED_KEY = "CC-speed";
 const INSTR_KEY = "CC-instr";
@@ -22,6 +23,11 @@ type HookSet<T = {}> = {
 const nullPlayer: Playable = new NullPlayer();
 const defaultPiano = new Piano(nullPlayer);
 
+export interface PlayerSpec {
+  sf: SoundFont;
+  name: InstrumentName;
+}
+
 export const atoms = {
   player: atom(nullPlayer),
   piano: atom(defaultPiano),
@@ -30,10 +36,9 @@ export const atoms = {
   song: atom(""),
   songChords: atom(undefined as ReactNode | undefined),
   offset: atom(0),
-  playerSpec: atomWithStorage(INSTR_KEY, {
+  playerSpec: atomWithStorage<PlayerSpec>(INSTR_KEY, {
     sf: SoundFont.TonePiano,
     name: availableInstruments[SoundFont.TonePiano][0],
-    loading: false,
   }),
   pianoSpeed: atomWithStorage(SPEED_KEY, 100),
 };
