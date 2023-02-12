@@ -2,39 +2,31 @@ import * as Tone from "tone";
 import * as C from "../constants";
 import { Playable } from "./index";
 
-const urls = Object.entries({
-  A: [2, 3, 4, 5, 6],
-  C: [2, 3, 4, 5, 6, 7],
-  "D#": [2, 3, 4, 5, 6],
-  "F#": [2, 3, 4, 5, 6],
-}).reduce<Record<string, string>>((prev, [note, nums]) => {
-  nums.forEach(num => {
-    prev[`${note}${num}`] = `${note.replace("#", "s")}${num}v8.mp3`;
+async function urlMapFromMidijs(instrument: string, url: string) {
+  return new Promise<Record<string, string>>(res => {
+    const script = document.createElement("script");
+    script.src = url;
+    script.onload = () => {
+      script.remove();
+      // @ts-ignore
+      res(window.MIDI.Soundfont[instrument]);
+    };
+    document.head.appendChild(script);
   });
-  return prev;
-}, {});
-
-let loaded = false;
-
-const sampler = new Tone.Sampler({
-  urls,
-  release: 1,
-  baseUrl: C.SAMPLES_URL,
-  onload() {
-    loaded = true;
-  },
-}).toDestination();
+}
 
 export default class SimplePiano implements Playable {
+  sampler;
   isPedalled = false;
   heldKeys: Set<number> = new Set();
   triggeredNotes: Set<number> = new Set();
 
+  constructor(loadedSampler: Tone.Sampler) {
+    this.sampler = loadedSampler;
+  }
+
   keyDown({ midi, velocity = 1 }: { midi: number; velocity: number }) {
-    if (!loaded) {
-      return;
-    }
-    sampler.triggerAttack(
+    this.sampler.triggerAttack(
       Tone.Frequency(midi, "midi").toFrequency(),
       undefined,
       velocity
@@ -44,10 +36,7 @@ export default class SimplePiano implements Playable {
   }
 
   keyUp({ midi }: { midi: number }) {
-    if (!loaded) {
-      return;
-    }
-    sampler.triggerRelease(Tone.Frequency(midi, "midi").toFrequency());
+    this.sampler.triggerRelease(Tone.Frequency(midi, "midi").toFrequency());
     this.heldKeys.delete(midi);
     if (!this.isPedalled) {
       this.triggeredNotes.delete(midi);
@@ -60,24 +49,36 @@ export default class SimplePiano implements Playable {
 
   pedalUp() {
     this.isPedalled = false;
-    if (!loaded) {
-      return;
-    }
     [...this.triggeredNotes.values()]
       .filter(midi => !this.heldKeys.has(midi))
       .forEach(midi => {
-        sampler.triggerRelease(Tone.Frequency(midi, "midi").toFrequency());
+        this.sampler.triggerRelease(Tone.Frequency(midi, "midi").toFrequency());
         this.triggeredNotes.delete(midi);
       });
   }
 
   stopAll() {
-    if (!loaded) {
-      return;
-    }
-    sampler.releaseAll();
+    this.sampler.releaseAll();
     this.isPedalled = false;
     this.triggeredNotes = new Set();
     this.heldKeys = new Set();
+  }
+
+  static async factory(instrument: string, url: string) {
+    const urls = await urlMapFromMidijs(instrument, url);
+
+    const sampler = await new Promise<Tone.Sampler>(res => {
+      const sampler = new Tone.Sampler({
+        urls,
+        release: 1,
+        baseUrl: C.SAMPLES_URL,
+        onload: () => {
+          res(sampler);
+        },
+        //volume: -6,
+      }).toDestination();
+    });
+
+    return new SimplePiano(sampler);
   }
 }

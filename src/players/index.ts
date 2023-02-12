@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import { InstrumentName, instrument as getInstrument } from "soundfont-player";
 
 import * as C from "../constants";
@@ -7,7 +6,6 @@ import FluidR3_GM_names from "../sf/FluidR3_GM/names.json";
 import MusyngKite_names from "../sf/MusyngKite/names.json";
 import { ActiveKeys } from "../Piano";
 import NullPlayer from "./NullPlayer";
-import { useStore } from "../store";
 
 export enum SoundFont {
   FatBoy = "FatBoy",
@@ -42,9 +40,11 @@ export async function createPlayer(
   if (soundfont === "Null") {
     return new NullPlayer();
   }
+
   if (soundfont === "TonePiano") {
     const SimplePiano = (await import("./SimplePiano")).default;
-    return new SimplePiano();
+    const inst = "acoustic_grand_piano";
+    return SimplePiano.factory(inst, `/media/${inst}.mp3.js`);
   }
 
   if (!availableInstruments[soundfont].includes(instrument)) {
