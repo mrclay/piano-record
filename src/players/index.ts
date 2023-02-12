@@ -44,7 +44,7 @@ export async function createPlayer(
   if (soundfont === "TonePiano") {
     const SimplePiano = (await import("./SimplePiano")).default;
     const inst = "acoustic_grand_piano";
-    return SimplePiano.factory(inst, `/media/${inst}.mp3.js`);
+    return SimplePiano.fromJsonUrl(`/media/${inst}.json`);
   }
 
   if (!availableInstruments[soundfont].includes(instrument)) {

@@ -2,19 +2,6 @@ import * as Tone from "tone";
 import * as C from "../constants";
 import { Playable } from "./index";
 
-async function urlMapFromMidijs(instrument: string, url: string) {
-  return new Promise<Record<string, string>>(res => {
-    const script = document.createElement("script");
-    script.src = url;
-    script.onload = () => {
-      script.remove();
-      // @ts-ignore
-      res(window.MIDI.Soundfont[instrument]);
-    };
-    document.head.appendChild(script);
-  });
-}
-
 export default class SimplePiano implements Playable {
   sampler;
   isPedalled = false;
@@ -64,10 +51,15 @@ export default class SimplePiano implements Playable {
     this.heldKeys = new Set();
   }
 
-  static async factory(instrument: string, url: string) {
-    const urls = await urlMapFromMidijs(instrument, url);
+  static async fromJsonUrl(url: string) {
+    const urls = await fetch(url).then(res => {
+      if (!res.ok) {
+        throw new Error(res.statusText);
+      }
+      return res.json() as unknown as Record<string, string>;
+    });
 
-    const sampler = await new Promise<Tone.Sampler>(res => {
+    const loadedSampler = await new Promise<Tone.Sampler>(res => {
       const sampler = new Tone.Sampler({
         urls,
         release: 1,
@@ -75,10 +67,10 @@ export default class SimplePiano implements Playable {
         onload: () => {
           res(sampler);
         },
-        //volume: -6,
+        volume: -6,
       }).toDestination();
     });
 
-    return new SimplePiano(sampler);
+    return new SimplePiano(loadedSampler);
   }
 }
