@@ -6,6 +6,7 @@ import FluidR3_GM_names from "../sf/FluidR3_GM/names.json";
 import MusyngKite_names from "../sf/MusyngKite/names.json";
 import { ActiveKeys } from "../Piano";
 import NullPlayer from "./NullPlayer";
+import { SAMPLES_URL } from "../constants";
 
 export enum SoundFont {
   FatBoy = "FatBoy",
@@ -44,7 +45,7 @@ export async function createPlayer(
   if (soundfont === "TonePiano") {
     const SimplePiano = (await import("./SimplePiano")).default;
     const inst = "acoustic_grand_piano";
-    return SimplePiano.fromJsonUrl(`/media/${inst}.json`);
+    return SimplePiano.fromJsonUrl(`${SAMPLES_URL}${inst}.json`);
   }
 
   if (!availableInstruments[soundfont].includes(instrument)) {

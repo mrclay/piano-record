@@ -2,11 +2,10 @@ import { NavigateFunction } from "react-router-dom";
 
 import { Command } from "./Ops";
 
-let samplesUrl = "//mrclay.org/piano/media/";
-if (process.env.NODE_ENV !== "production") {
-  samplesUrl = "/media/";
-}
-export const SAMPLES_URL = samplesUrl;
+export const SAMPLES_URL =
+  process.env.NODE_ENV === "production"
+    ? "//mrclay.org/piano/media/"
+    : "/media/";
 
 export const RANGE = [36, 96];
 export const TIME_RESOLUTION_DIVISOR = 4;
