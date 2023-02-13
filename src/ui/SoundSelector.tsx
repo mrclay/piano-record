@@ -1,4 +1,4 @@
-import { PlayerSpec, useStore } from "../store";
+import { PlayerSpec, playerSpecFromUrl, useStore } from "../store";
 import { availableInstruments, SoundFont } from "../players";
 import { useRef } from "react";
 
@@ -94,25 +94,15 @@ export default function SoundSelector() {
 
 export interface UseSfStorage {
   saveSf(params?: URLSearchParams): URLSearchParams;
-  loadSf(): void;
 }
 
 export function useSfStorage(): UseSfStorage {
-  const [playerSpec, setPlayerSpec] = useStore.playerSpec();
+  const [playerSpec] = useStore.playerSpec();
 
   function saveSf(params = new URLSearchParams()) {
     params.set("sf", `${playerSpec.sf}.${playerSpec.name}`);
     return params;
   }
-  function loadSf() {
-    const params = new URLSearchParams(window.location.search);
-    const [sf, name] = params.get("sf") || ",";
 
-    const available = availableInstruments[sf as SoundFont];
-    if (available && available.includes(name)) {
-      setPlayerSpec({ sf: sf as SoundFont, name });
-    }
-  }
-
-  return { saveSf, loadSf };
+  return { saveSf };
 }

@@ -27,6 +27,21 @@ export interface PlayerSpec {
   name: string;
 }
 
+const pianoSpec: PlayerSpec = {
+  sf: SoundFont.TonePiano,
+  name: availableInstruments[SoundFont.TonePiano]![0],
+};
+
+export function playerSpecFromUrl(): PlayerSpec | undefined {
+  const params = new URLSearchParams(window.location.search);
+  const [sf, name] = (params.get("sf") || ".").split(".");
+
+  const available = availableInstruments[sf as SoundFont];
+  if (available && available.includes(name)) {
+    return { sf: sf as SoundFont, name };
+  }
+}
+
 export const atoms = {
   player: atom(nullPlayer),
   playerLoading: atom(false),
@@ -36,10 +51,7 @@ export const atoms = {
   song: atom(""),
   songChords: atom(undefined as ReactNode | undefined),
   offset: atom(0),
-  playerSpec: atomWithStorage<PlayerSpec>(INSTR_KEY, {
-    sf: SoundFont.TonePiano,
-    name: availableInstruments[SoundFont.TonePiano]![0],
-  }),
+  playerSpec: atom(playerSpecFromUrl() || pianoSpec),
   pianoSpeed: atomWithStorage(SPEED_KEY, 100),
 };
 

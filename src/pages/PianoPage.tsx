@@ -172,7 +172,6 @@ class PianoPage extends React.Component<PianoPageProps, PianoPageState> {
     piano.addEventListener(PianoEvents.reset, this.reset);
     document.addEventListener("keydown", this.oneKeyPlay);
     document.addEventListener("keyup", this.oneKeyPlay);
-    this.props.sfStorage.loadSf();
   }
 
   componentWillUnmount() {

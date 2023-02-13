@@ -39,7 +39,7 @@ const example = Paths.chordPrefix("/43,56,60,62,65/G7b9sus");
 
 export default function ChordPage() {
   const [piano] = useStore.piano();
-  const { loadSf, saveSf } = useSfStorage();
+  const { saveSf } = useSfStorage();
 
   const timeout = useRef<number | null>(null);
 
@@ -133,7 +133,6 @@ export default function ChordPage() {
     setActiveKeys(initActiveKeys);
     setTitle(decodeURIComponent(title || ""));
     setAction("stop");
-    loadSf();
   }, [params, transpose]);
 
   // Handle key/action changes

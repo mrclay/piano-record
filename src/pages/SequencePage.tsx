@@ -145,7 +145,7 @@ const initial = {
 let stepTimeout = 0;
 
 export default function SequencePage(): JSX.Element {
-  const { saveSf, loadSf } = useSfStorage();
+  const { saveSf } = useSfStorage();
   const navigate = useNavigate();
   const params = useParams();
   const [searchParams] = useSearchParams();
@@ -261,7 +261,6 @@ export default function SequencePage(): JSX.Element {
         setNumSteps(newStepData.length);
         setnumStepsInput(String(newStepData.length));
         setPlaying(false);
-        loadSf();
       }
     }
   }, [params.stream, offset]);
