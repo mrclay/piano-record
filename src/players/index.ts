@@ -4,6 +4,8 @@ import * as C from "../constants";
 import FatBoy_names from "../sf/FatBoy/names.json";
 import FluidR3_GM_names from "../sf/FluidR3_GM/names.json";
 import MusyngKite_names from "../sf/MusyngKite/names.json";
+import Mellotron_names from "../sf/Mellotron/names.json";
+import TonePiano_names from "../sf/TonePiano/names.json";
 import { ActiveKeys } from "../Piano";
 import NullPlayer from "./NullPlayer";
 import { SAMPLES_URL } from "../constants";
@@ -13,6 +15,7 @@ export enum SoundFont {
   FluidR3_GM = "FluidR3_GM",
   MusyngKite = "MusyngKite",
   TonePiano = "TonePiano",
+  Mellotron = "Mellotron",
   Null = "Null",
 }
 
@@ -24,37 +27,57 @@ export interface Playable {
   stopAll(): void;
 }
 
-export const availableInstruments = {
-  [SoundFont.FatBoy]: FatBoy_names as InstrumentName[],
-  [SoundFont.FluidR3_GM]: FluidR3_GM_names as InstrumentName[],
-  [SoundFont.MusyngKite]: MusyngKite_names as InstrumentName[],
-  [SoundFont.TonePiano]: ["acoustic_grand_piano"],
+export const availableInstruments: Record<
+  SoundFont,
+  ReadonlyArray<string> | undefined
+> = {
+  [SoundFont.FatBoy]: FatBoy_names,
+  [SoundFont.FluidR3_GM]: FluidR3_GM_names,
+  [SoundFont.MusyngKite]: MusyngKite_names,
+  [SoundFont.TonePiano]: TonePiano_names,
+  [SoundFont.Mellotron]: Mellotron_names,
   [SoundFont.Null]: [],
-} satisfies Record<SoundFont, ReadonlyArray<InstrumentName>>;
+};
 
 const ctx = new AudioContext();
 
+const simpleUrls: Record<
+  string,
+  undefined | { url(inst: string): string; volume: number }
+> = {
+  TonePiano: {
+    url: (inst: string) => `${SAMPLES_URL}tone-piano/${inst}.json`,
+    volume: -6,
+  },
+  Mellotron: {
+    url: (inst: string) => `${SAMPLES_URL}mellotron/${inst}.mp3.json`,
+    volume: -12,
+  },
+};
+
 export async function createPlayer(
   soundfont: SoundFont,
-  instrument: InstrumentName
+  instrument: string
 ): Promise<Playable | null> {
   if (soundfont === "Null") {
     return new NullPlayer();
   }
 
-  if (soundfont === "TonePiano") {
-    const SimplePiano = (await import("./SimplePiano")).default;
-    const inst = "acoustic_grand_piano";
-    return SimplePiano.fromJsonUrl(`${SAMPLES_URL}${inst}.json`);
+  const available = availableInstruments[soundfont];
+  if (!available || !available.includes(instrument)) {
+    return null;
   }
 
-  if (!availableInstruments[soundfont].includes(instrument)) {
-    return null;
+  const simple = simpleUrls[soundfont];
+  if (simple) {
+    const SimplePiano = (await import("./SimplePiano")).default;
+    const url = simple.url(instrument);
+    return SimplePiano.fromJsonUrl(url, simple.volume);
   }
 
   const [SFPlayer, sound] = await Promise.all([
     import("./SFPlayer").then(module => module.default),
-    getInstrument(ctx, instrument, { soundfont }),
+    getInstrument(ctx, instrument as InstrumentName, { soundfont }),
   ]);
   return new SFPlayer(sound);
 }

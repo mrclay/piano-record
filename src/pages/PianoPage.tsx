@@ -30,7 +30,7 @@ import PianoSpeed from "../ui/PianoSpeed";
 import { useStore } from "../store";
 import { BottomRightAd } from "../ui/Ads";
 import PianoShepardMode from "../ui/PianoShepardMode";
-import SoundSelector from "../ui/SoundSelector";
+import SoundSelector, { UseSfStorage, useSfStorage } from "../ui/SoundSelector";
 
 enum Mode {
   recording = "recording",
@@ -46,6 +46,7 @@ interface MatchItems {
 interface PianoPageProps extends C.RouteComponentProps<MatchItems> {
   pianoSpeed: number;
   piano: Piano;
+  sfStorage: UseSfStorage;
 }
 
 interface PianoPageState {
@@ -65,6 +66,7 @@ export default function Wrapper() {
 
   const [searchParams] = useSearchParams();
   const [pianoSpeed] = useStore.pianoSpeed();
+  const sfStorage = useSfStorage();
   return (
     <PianoPage
       key={pathname}
@@ -74,6 +76,7 @@ export default function Wrapper() {
       params={params}
       pianoSpeed={pianoSpeed}
       transpose={searchParams.get("transpose") || "0"}
+      sfStorage={sfStorage}
     />
   );
 }
@@ -169,6 +172,7 @@ class PianoPage extends React.Component<PianoPageProps, PianoPageState> {
     piano.addEventListener(PianoEvents.reset, this.reset);
     document.addEventListener("keydown", this.oneKeyPlay);
     document.addEventListener("keyup", this.oneKeyPlay);
+    this.props.sfStorage.loadSf();
   }
 
   componentWillUnmount() {
@@ -205,7 +209,8 @@ class PianoPage extends React.Component<PianoPageProps, PianoPageState> {
   share = () => {
     this.recorder.stop();
     const stream = Ops.streamFromOperations(this.recorder.getOperations());
-    this.props.navigate(Paths.pianoPrefix(`/songs/${stream}`));
+    const params = this.props.sfStorage.saveSf();
+    this.props.navigate(Paths.pianoPrefix(`/songs/${stream}?${params}`));
   };
 
   reset = () => {

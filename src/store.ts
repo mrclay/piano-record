@@ -5,7 +5,6 @@ import Recorder from "./Recorder";
 import Piano from "./Piano";
 import NullPlayer from "./players/NullPlayer";
 import { availableInstruments, Playable, SoundFont } from "./players";
-import { InstrumentName } from "soundfont-player";
 
 const SPEED_KEY = "CC-speed";
 const INSTR_KEY = "CC-instr";
@@ -25,11 +24,12 @@ const defaultPiano = new Piano(nullPlayer);
 
 export interface PlayerSpec {
   sf: SoundFont;
-  name: InstrumentName;
+  name: string;
 }
 
 export const atoms = {
   player: atom(nullPlayer),
+  playerLoading: atom(false),
   piano: atom(defaultPiano),
   recorder: atom(new Recorder({ piano: defaultPiano })),
   chordSet: atom({} as object),
@@ -38,7 +38,7 @@ export const atoms = {
   offset: atom(0),
   playerSpec: atomWithStorage<PlayerSpec>(INSTR_KEY, {
     sf: SoundFont.TonePiano,
-    name: availableInstruments[SoundFont.TonePiano][0],
+    name: availableInstruments[SoundFont.TonePiano]![0],
   }),
   pianoSpeed: atomWithStorage(SPEED_KEY, 100),
 };

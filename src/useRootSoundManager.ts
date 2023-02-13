@@ -7,6 +7,7 @@ export function useRootSoundManager() {
   const [piano] = useStore.piano();
   const loadingRef = useRef(false);
   const [player, setPlayer] = useStore.player();
+  const [, setPlayerLoading] = useStore.playerLoading();
   const [playerSpec] = useStore.playerSpec();
 
   // When playerSpec changes, load new player.
@@ -17,11 +18,14 @@ export function useRootSoundManager() {
 
     console.info("Loading", playerSpec);
     loadingRef.current = true;
+    setPlayerLoading(true);
+
     // Load the desired player
     createPlayer(playerSpec.sf, playerSpec.name).then(loaded => {
       console.info("Loaded", loaded);
       if (loaded) {
         setPlayer(loaded);
+        setPlayerLoading(false);
       }
       loadingRef.current = false;
     });

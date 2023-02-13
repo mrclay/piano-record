@@ -51,7 +51,7 @@ export default class SimplePiano implements Playable {
     this.heldKeys = new Set();
   }
 
-  static async fromJsonUrl(url: string) {
+  static async fromJsonUrl(url: string, volume = -6) {
     const urls = await fetch(url).then(res => {
       if (!res.ok) {
         throw new Error(res.statusText);
@@ -64,10 +64,8 @@ export default class SimplePiano implements Playable {
         urls,
         release: 1,
         baseUrl: C.SAMPLES_URL,
-        onload: () => {
-          res(sampler);
-        },
-        volume: -6,
+        onload: () => res(sampler),
+        volume,
       }).toDestination();
     });
 

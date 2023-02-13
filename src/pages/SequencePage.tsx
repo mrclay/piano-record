@@ -13,7 +13,7 @@ import Saver from "../ui/Saver";
 import { BottomRightAd } from "../ui/Ads";
 import PianoShepardMode from "../ui/PianoShepardMode";
 import { useStore } from "../store";
-import SoundSelector from "../ui/SoundSelector";
+import SoundSelector, { useSfStorage } from "../ui/SoundSelector";
 
 function streamFromSong(
   bpm: number,
@@ -145,6 +145,7 @@ const initial = {
 let stepTimeout = 0;
 
 export default function SequencePage(): JSX.Element {
+  const { saveSf, loadSf } = useSfStorage();
   const navigate = useNavigate();
   const params = useParams();
   const [searchParams] = useSearchParams();
@@ -235,9 +236,10 @@ export default function SequencePage(): JSX.Element {
   );
 
   function share() {
+    const params = saveSf();
     navigate(
       Paths.sequencePrefix(
-        `/songs/${streamFromSong(bpm, bps, stepData, joinData)}`
+        `/songs/${streamFromSong(bpm, bps, stepData, joinData)}?${params}`
       )
     );
   }
@@ -259,6 +261,7 @@ export default function SequencePage(): JSX.Element {
         setNumSteps(newStepData.length);
         setnumStepsInput(String(newStepData.length));
         setPlaying(false);
+        loadSf();
       }
     }
   }, [params.stream, offset]);

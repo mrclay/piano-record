@@ -26,7 +26,7 @@ import Saver from "../ui/Saver";
 import { BottomRightAd } from "../ui/Ads";
 import PianoShepardMode from "../ui/PianoShepardMode";
 import { useStore } from "../store";
-import SoundSelector from "../ui/SoundSelector";
+import SoundSelector, { useSfStorage } from "../ui/SoundSelector";
 
 interface MatchItems {
   notes?: string;
@@ -39,6 +39,7 @@ const example = Paths.chordPrefix("/43,56,60,62,65/G7b9sus");
 
 export default function ChordPage() {
   const [piano] = useStore.piano();
+  const { loadSf, saveSf } = useSfStorage();
 
   const timeout = useRef<number | null>(null);
 
@@ -102,7 +103,8 @@ export default function ChordPage() {
         path += "/" + Ops.fixedEncodeURIComponent(title);
       }
 
-      navigate(Paths.chordPrefix(path), {
+      const url = Paths.chordPrefix(path) + `?${saveSf()}`;
+      navigate(url, {
         replace: replaceUrl,
       });
     },
@@ -131,6 +133,7 @@ export default function ChordPage() {
     setActiveKeys(initActiveKeys);
     setTitle(decodeURIComponent(title || ""));
     setAction("stop");
+    loadSf();
   }, [params, transpose]);
 
   // Handle key/action changes
