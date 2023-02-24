@@ -303,6 +303,22 @@ export default function SequencePage(): JSX.Element {
             <i className="fa fa-trash" aria-label="Start over" /> New
           </button>
         </div>
+
+        <p>
+          Some examples:{" "}
+          <a href="/sequence/songs/v4,80,2,p2fp3ep47p52-j2fj52p3cp45-p2fp52p3bp43-j2fj52p3cp42-p2fp52p41p3d-j2fj52p42p3e-p2fp52p36p34-j2fj52j36p32?sf=Mellotron.mk2_flute">
+            70's horror
+          </a>
+          ,{" "}
+          <a href="/sequence/songs/v4,50,1,p3ep40p43p47p28-p34j3ej40j43j47-p46p3ap3cp41p32-p45j3aj3cj41p26-p39p3ap3fp45p24-p30j39j3aj3fp43-p2fp36p37p39p3e-j2fj36j37j39j3e-p2ep35p3ap3ep39-j2ej3aj35p3fj39-p2dp37p3bp3cp40-j2dj37j3bj3cp41-p2cp3cp43p35p38p3f-j2cj3cp41j35j38j3f-p2bp35p39p3cp3e-j2bj35j39j3cj3e?sf=MusyngKite.synth_brass_1">
+            Sad synths
+          </a>
+          ,{" "}
+          <a href="/sequence/songs/v4,170,1,p26p3dp39p36-j26j3d-p2dj3d-p32p36p40-p26j36j40-j36j40p28-p39p3ep2bp34-j3ej39j2bj34p2d">
+            Piano groove
+          </a>
+          .
+        </p>
       </Content900>
 
       <Content900>
