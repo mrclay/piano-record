@@ -1,61 +1,44 @@
 #root {
   margin: 0 auto;
   max-width: 1246px;
-  padding: 20px;
-}
-body {
-  margin: 0;
-}
-p {
-  max-width: 700px;
+  padding: 0 20px;
 }
 
-.TemplateNav {
-  display: flex;
-  flex-wrap: wrap;
-
-  > li {
-    display: flex;
-    flex-direction: column;
-  }
-
-  > li > a {
-    flex: 1;
-    padding: 10px;
-  }
-
-  @media (max-width: 829px) {
-    background: #eee;
-
-    > li > a {
-      border-radius: 0;
-    }
-  }
-  @media (min-width: 830px) {
-    li:last-child {
-      margin-left: auto;
-    }
-  }
-}
-
-.head-flex {
-  margin: 0 auto 2rem;
+.max-width-900 {
   max-width: 900px;
-  align-items: center;
-  display: flex;
-
-  > :first-child {
-    margin-right: 3rem;
-  }
-
-  > :last-child {
-    margin-top: 1rem;
-  }
 }
 
-.Template-intro {
-  margin: 0 auto;
-  max-width: 900px;
+h1 {
+  color: var(--bs-info) !important;
+}
+
+hr {
+  border-top: 20px solid var(--bs-info);
+  opacity: 1;
+}
+.hr-thin {
+  border-top-width: 1px;
+}
+.HrFinal {
+  margin-top: 5rem;
+  margin-bottom: 0;
+}
+
+.HeadingNav {
+  background: var(--bs-secondary-bg);
+  border-top: 20px solid var(--bs-info);
+  margin: 0 -20px 2rem;
+
+  @media (max-width: 700px) {
+    margin: 0 -20px 2rem -20px;
+  }
+
+  a {
+    padding: 0.5rem 1rem;
+  }
+  a[href*="common-chords"] {
+    margin-right: auto;
+  }
 }
 
 h2.Title {
@@ -98,11 +81,6 @@ section {
   }
 }
 
-.fakeReset {
-  display: inline-block;
-  width: 45px;
-}
-
 #status.recording i {
   animation: record-pulse 1s infinite;
 }
@@ -135,42 +113,36 @@ section {
 }
 
 button .progress {
-  display: inline-block;
-  vertical-align: text-bottom;
-  margin: 0;
+  background: var(--bs-btn-bg);
+  display: inline-flex;
+  font-size: inherit !important;
   border-radius: 0;
   box-shadow: none;
   position: relative;
-  top: -1px;
+  top: 2px;
+
+  .progress-bar {
+    background: #fff !important;
+  }
+}
+
+#preview {
+  width: 4.1em;
 }
 
 #preview .progress {
   width: 1.8em;
-  height: 1em;
+  height: 21px;
 }
 
 #big-play .progress {
+  background: #fff;
   width: 0.8em;
-  height: 1em;
+  height: 21px;
 }
 
-.piano-2col {
-  display: flex;
-  flex-direction: column;
-  margin: 2rem 0 0;
-  min-width: 600px;
-
-  > div {
-    min-height: 6rem;
-  }
-
-  @media (min-width: 800px) {
-    flex-direction: row;
-
-    > div:first-child {
-      flex: 1;
-    }
-  }
+.piano-2col .btn {
+  margin-bottom: 10px;
 }
 
 .med-btn {
@@ -181,7 +153,6 @@ button .progress {
 
 #big-play {
   vertical-align: baseline;
-  font-size: 3rem;
   margin-right: 20px;
 }
 
@@ -213,6 +184,11 @@ button .progress {
     margin: 0 2rem 2rem 4rem;
   }
 
+  tr.success {
+    background-color: var(--bs-success-border-subtle);
+    color: var(--bs-success-text);
+  }
+
   tr.text-muted {
     opacity: 0.7;
   }
@@ -241,7 +217,6 @@ button .progress {
 }
 
 .BottomRightAd {
-  background: #eeeeee;
   display: flex;
   flex-direction: column;
   float: right;
@@ -252,15 +227,12 @@ button .progress {
 }
 
 .BottomCenterAd {
-  background: #eeeeee;
   display: flex;
   flex-direction: column;
   height: 15rem;
-  margin: 2rem 0;
 }
 
 .HorizontalAd {
-  background: #eeeeee;
   display: flex;
   flex-direction: column;
   height: 12rem;

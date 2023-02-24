@@ -1,4 +1,10 @@
-import { PlayerSpec, playerSpecFromUrl, useStore } from "../store";
+import {
+  atoms,
+  pianoSpec,
+  PlayerSpec,
+  playerSpecFromUrl,
+  useStore,
+} from "../store";
 import { availableInstruments, SoundFont } from "../players";
 import { useRef } from "react";
 
@@ -26,7 +32,7 @@ export default function SoundSelector() {
         <label>
           Instrument{" "}
           <select
-            className="form-control"
+            className="form-select"
             value={name}
             onChange={e => {
               const name = e.target.value;
@@ -34,14 +40,20 @@ export default function SoundSelector() {
             }}
           >
             {availableInstruments[sf]!.map(name => (
-              <option key={name}>{name}</option>
+              <option
+                key={name}
+                value={name}
+                style={{ textTransform: "capitalize" }}
+              >
+                {name.replace(/_/g, " ")}
+              </option>
             ))}
           </select>
         </label>{" "}
         <label>
           Soundfont{" "}
           <select
-            className="form-control"
+            className="form-select"
             value={sf}
             onChange={e => {
               const newSf = e.target.value as SoundFont;
@@ -100,7 +112,11 @@ export function useSfStorage(): UseSfStorage {
   const [playerSpec] = useStore.playerSpec();
 
   function saveSf(params = new URLSearchParams()) {
-    params.set("sf", `${playerSpec.sf}.${playerSpec.name}`);
+    if (playerSpec === pianoSpec) {
+      params.delete("sf");
+    } else {
+      params.set("sf", `${playerSpec.sf}.${playerSpec.name}`);
+    }
     return params;
   }
 

@@ -12,7 +12,7 @@ export default function PianoSpeed() {
           key={perc + ""}
           title={`Set speed to ${perc}%`}
           type="button"
-          className={`btn btn-default ${perc === speed ? "active" : ""}`}
+          className={`btn btn-dark ${perc === speed ? "active" : ""}`}
           onClick={() => setSpeed(perc)}
         >
           {perc}%

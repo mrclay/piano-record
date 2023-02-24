@@ -19,14 +19,20 @@ import BigPlay from "../ui/BigPlay";
 import Keyboard from "../ui/Keyboard";
 import Ops from "../Ops";
 import Paths from "../Paths";
-import Piano, { ActiveKeys } from "../Piano";
-import Template from "./Template";
+import { ActiveKeys } from "../Piano";
 import Title from "../ui/Title";
 import Saver from "../ui/Saver";
-import { BottomRightAd } from "../ui/Ads";
 import PianoShepardMode from "../ui/PianoShepardMode";
 import { useStore } from "../store";
 import SoundSelector, { useSfStorage } from "../ui/SoundSelector";
+import {
+  Container900,
+  Content900,
+  H1,
+  HeadingNav,
+  HrFinal,
+} from "../ui/Common";
+import { BottomCenterAd } from "../ui/Ads";
 
 interface MatchItems {
   notes?: string;
@@ -36,6 +42,7 @@ interface MatchItems {
 type Action = "stop" | "play" | "setTitle";
 
 const example = Paths.chordPrefix("/43,56,60,62,65/G7b9sus");
+// http://localhost:5173/chord/69,47,82,60?sf=Mellotron.mk2_flute
 
 export default function ChordPage() {
   const [piano] = useStore.piano();
@@ -168,68 +175,80 @@ export default function ChordPage() {
   }
 
   return (
-    <Template
-      title="Chord"
-      intro={
+    <div>
+      <HeadingNav />
+
+      <Content900>
+        <div className="d-flex justify-content-between">
+          <H1>Chord</H1>
+
+          <button
+            type="button"
+            onClick={reset}
+            id="reset"
+            className="btn btn-lg btn-link text-danger text-decoration-none"
+          >
+            <i className="fa fa-trash" aria-label="Reset" /> New
+          </button>
+        </div>
+
         <p>
           Wanna capture a <Link to={example}>chord</Link> or share it with
           others? Tap some notes or play your MIDI keyboard (Chrome only), and
           click <i>Save</i>. You can share the resulting page URL or bookmark
           it.
         </p>
-      }
-    >
-      <section>
-        <div>
-          <BigPlay
-            isPlaying={action === "play"}
-            handlePlay={handlePlay}
-            handleStop={() => setAction("stop")}
-            progress={0}
-            isWaiting={false}
-          />
-          <Title title={title} onChange={handleTitleSet} />
-          {!title && "(click to rename)"}
-          <button
-            type="button"
-            onClick={save}
-            id="save"
-            className="btn btn-primary med-btn"
-            style={{ marginLeft: "1em" }}
-          >
-            <i className="fa fa-floppy-o" aria-hidden="true" />{" "}
-            <span>Save</span>
-          </button>
-          <button
-            type="button"
-            onClick={reset}
-            id="reset"
-            className="btn btn-danger med-btn"
-          >
-            <i className="fa fa-trash" aria-label="Reset" />
-          </button>
-        </div>
-      </section>
+      </Content900>
+
       <Keyboard
         key={pathname}
         activeKeys={activeKeys}
         onKeyClick={onKeyClick}
       />
 
-      <PianoShepardMode piano={piano} />
-      <SoundSelector />
+      <Container900 className="mt-3">
+        <BigPlay
+          isPlaying={action === "play"}
+          handlePlay={handlePlay}
+          handleStop={() => setAction("stop")}
+          progress={0}
+          isWaiting={false}
+        />
 
-      <BottomRightAd />
+        <Title title={title} onChange={handleTitleSet} />
+        {!title && "(click to rename)"}
 
-      {params.notes && (
-        <section>
-          <h3>Share it</h3>
-          <p>
-            Copy to clipboard:{" "}
-            <Saver href={window.location.href} title={title} />
-          </p>
-        </section>
-      )}
-    </Template>
+        <button
+          type="button"
+          onClick={save}
+          id="save"
+          className="btn btn-primary med-btn"
+          style={{ marginLeft: "1em" }}
+        >
+          <i className="fa fa-floppy-o" aria-hidden="true" /> <span>Save</span>
+        </button>
+      </Container900>
+
+      <Content900>
+        <SoundSelector />
+        <PianoShepardMode piano={piano} />
+      </Content900>
+
+      <Content900>
+        {params.notes && (
+          <section>
+            <h3>Share it</h3>
+            <p>
+              Copy to clipboard:{" "}
+              <Saver href={window.location.href} title={title} />
+            </p>
+          </section>
+        )}
+      </Content900>
+
+      <HrFinal />
+
+      <BottomCenterAd />
+    </div>
   );
 }

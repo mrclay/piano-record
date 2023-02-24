@@ -13,13 +13,15 @@ export default function PianoShepardMode({ piano }: PianoShepardModeProps) {
   }, [shepardMode]);
 
   return (
-    <div style={{ marginTop: "1rem" }}>
-      <label>
-        <input
-          type="checkbox"
-          checked={shepardMode}
-          onChange={() => setShepardMode(val => !val)}
-        />{" "}
+    <div className="form-check" style={{ marginTop: "1rem" }}>
+      <input
+        type="checkbox"
+        className="form-check-input"
+        checked={shepardMode}
+        onChange={() => setShepardMode(val => !val)}
+        id="PianoShepardMode"
+      />
+      <label className="form-check-label" htmlFor="PianoShepardMode">
         Shepard tones mode
       </label>
     </div>

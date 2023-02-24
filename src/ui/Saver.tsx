@@ -25,14 +25,14 @@ export default function Saver({ href, title = "" }: SaverProps) {
   return (
     <span key={url}>
       <Clipboard
-        className="btn btn-default"
+        className="btn btn-dark"
         data-clipboard-text={url}
         onSuccess={() => setSaved(url)}
       >
         URL {saved === url && "copied!"}
       </Clipboard>
       <Clipboard
-        className="btn btn-default"
+        className="btn btn-dark"
         data-clipboard-text={markdownLink}
         onSuccess={() => setSaved(markdownLink)}
       >
@@ -40,7 +40,7 @@ export default function Saver({ href, title = "" }: SaverProps) {
         {saved === markdownLink && "copied!"}
       </Clipboard>
       <Clipboard
-        className="btn btn-default"
+        className="btn btn-dark"
         data-clipboard-text={htmlLink}
         onSuccess={() => setSaved(htmlLink)}
       >

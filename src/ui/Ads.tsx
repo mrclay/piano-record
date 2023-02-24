@@ -37,7 +37,13 @@ export const HorizontalAd = () => {
   useNotifyAdSense();
 
   return (
-    <div className="HorizontalAd">
+    <div className="HorizontalAd bg-body-secondary">
+      <p className="text-center">
+        <small>
+          <i>Advertisement</i>
+        </small>
+      </p>
+
       {/* Hori-display */}
       <ins
         className="adsbygoogle"
@@ -52,16 +58,16 @@ export const HorizontalAd = () => {
 };
 
 export const BottomCenterAd = () => {
-  const spaceAvailable = useMediaQuery("(max-width: 599px)");
-
-  useNotifyAdSense(spaceAvailable);
-
-  if (!spaceAvailable) {
-    return null;
-  }
+  useNotifyAdSense();
 
   return (
-    <div className="BottomCenterAd">
+    <div className="BottomCenterAd bg-body-secondary">
+      <p className="text-center">
+        <small>
+          <i>Advertisement</i>
+        </small>
+      </p>
+
       {/* Hori-display */}
       <ins
         className="adsbygoogle"
@@ -85,7 +91,7 @@ export const BottomRightAd = () => {
   }
 
   return (
-    <div className="BottomRightAd">
+    <div className="BottomRightAd bg-body-secondary">
       {/* Vert-display */}
       <ins
         className="adsbygoogle"

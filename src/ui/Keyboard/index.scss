@@ -13,8 +13,8 @@
 .piano {
   position: relative;
   background: #444;
-  border-bottom: 1px solid #ccc;
-  border-top: 1px solid #ccc;
+  //border-bottom: 1px solid #ccc;
+  //border-top: 1px solid #ccc;
 
   .Keyboard--scaleDegrees & {
     background: #fff;
@@ -97,7 +97,7 @@
       font-weight: 300;
       line-height: 1;
       cursor: pointer;
-      background: #fff;
+      background: #eee;
       height: 160px;
       padding-top: 100px;
       width: 32px;
@@ -106,7 +106,7 @@
 
   .white, .black {
     > span.active {
-      background: #74c674;
+      background: rgb(var(--bs-info-rgb));
     }
 
     //> span:hover {

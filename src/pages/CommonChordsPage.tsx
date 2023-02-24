@@ -16,7 +16,8 @@ import { useCommonChordsQuery } from "../common-chords/useCommonChordsQuery";
 import { Intro } from "../common-chords/Intro";
 import MajorKeyChords from "../common-chords/MajorKeyChords";
 import MinorKeyChords from "../common-chords/MinorKeyChords";
-import Template from "./Template";
+import { Content900, H1, HeadingNav, HrFinal } from "../ui/Common";
+import { BottomCenterAd } from "../ui/Ads";
 
 Note.unicodeAccidentals = true;
 
@@ -80,86 +81,102 @@ function CommonChordsPage() {
   }
 
   return (
-    <Template
-      showLimitations={false}
-      title={[
-        <>The Common Chords of {uCase(musicKey.getQuality())} Keys</>,
-        <form className="form-inline">
-          <select
-            className="form-control"
-            onChange={e => {
-              const newKey = keys.find(el => el.toString() === e.target.value);
-              if (newKey) {
-                navigate(
-                  Paths.commonChordsPrefix(
-                    `/${newKey.toString(true).replace(" ", "-")}${qs}`
-                  )
+    <>
+      <HeadingNav />
+
+      <Content900>
+        <div className="d-flex align-items-center">
+          <H1>The Common Chords of {uCase(musicKey.getQuality())} Keys</H1>
+
+          <form className="form-inline ms-4">
+            <select
+              className="form-control"
+              onChange={e => {
+                const newKey = keys.find(
+                  el => el.toString() === e.target.value
                 );
-              }
-            }}
-            defaultValue={musicKey.toString()}
-          >
-            <optgroup label="major">
-              {keys
-                .filter(key => key.getQuality() === ThirdQuality.MAJOR)
-                .map(key => key + "")
-                .map(name => (
-                  <option key={name}>{name}</option>
-                ))}
-            </optgroup>
-            <optgroup label="minor">
-              {keys
-                .filter(key => key.getQuality() === ThirdQuality.MINOR)
-                .map(key => key + "")
-                .map(name => (
-                  <option key={name}>{name}</option>
-                ))}
-            </optgroup>
-          </select>
-        </form>,
-      ]}
-      intro={<Intro musicKey={musicKey} offset={offset} />}
-    >
+                if (newKey) {
+                  navigate(
+                    Paths.commonChordsPrefix(
+                      `/${newKey.toString(true).replace(" ", "-")}${qs}`
+                    )
+                  );
+                }
+              }}
+              defaultValue={musicKey.toString()}
+            >
+              <optgroup label="major">
+                {keys
+                  .filter(key => key.getQuality() === ThirdQuality.MAJOR)
+                  .map(key => key + "")
+                  .map(name => (
+                    <option key={name}>{name}</option>
+                  ))}
+              </optgroup>
+              <optgroup label="minor">
+                {keys
+                  .filter(key => key.getQuality() === ThirdQuality.MINOR)
+                  .map(key => key + "")
+                  .map(name => (
+                    <option key={name}>{name}</option>
+                  ))}
+              </optgroup>
+            </select>
+          </form>
+        </div>
+      </Content900>
+      <Content900>
+        <Intro musicKey={musicKey} offset={offset} />
+      </Content900>
+
       <div className="CC">
         <section>
-          <hr />
-          <form style={{ margin: "2rem 4rem" }}>
-            <div className="radio">
-              <label>
-                <input
-                  type="radio"
-                  name="sevenths"
-                  checked={sevenths}
-                  onChange={() => setSevenths(true)}
-                />
+          <hr className="hr-thin" />
+
+          <form className="my-4">
+            <div className="form-check">
+              <input
+                className="form-check-input"
+                type="radio"
+                name="sevenths"
+                checked={sevenths}
+                onChange={() => setSevenths(true)}
+                id="show7ths"
+              />
+              <label className="form-check-label" htmlFor="show7ths">
                 Show 7th chords in case I want to play the sevenths
               </label>
             </div>
-            <div className="radio">
-              <label>
-                <input
-                  type="radio"
-                  name="sevenths"
-                  checked={!sevenths}
-                  onChange={() => setSevenths(false)}
-                />
+            <div className="form-check">
+              <input
+                className="form-check-input"
+                type="radio"
+                name="sevenths"
+                checked={!sevenths}
+                onChange={() => setSevenths(false)}
+                id="hide7ths"
+              />
+              <label className="form-check-label" htmlFor="hide7ths">
                 Keep it simple (mostly) with triads
               </label>
             </div>
-            <div className="checkbox">
-              <label>
-                <input
-                  type="checkbox"
-                  checked={relative}
-                  onChange={e => setRelative(e.target.checked)}
-                />
+
+            <div className="form-check">
+              <input
+                className="form-check-input"
+                type="checkbox"
+                checked={relative}
+                onChange={e => setRelative(e.target.checked)}
+                id="showRomans"
+              />
+              <label className="form-check-label" htmlFor="showRomans">
                 Show Roman numerals
               </label>
             </div>
           </form>
         </section>
 
-        <hr />
+        <hr className="hr-thin" />
 
         {musicKey.getQuality() === ThirdQuality.MAJOR ? (
           <MajorKeyChords musicKey={musicKey} offset={offset} />
@@ -167,7 +184,11 @@ function CommonChordsPage() {
           <MinorKeyChords musicKey={musicKey} offset={offset} />
         )}
       </div>
-    </Template>
+
+      <HrFinal />
+
+      <BottomCenterAd />
+    </>
   );
 }
 

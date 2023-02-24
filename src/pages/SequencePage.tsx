@@ -4,16 +4,16 @@ import { useSearchParams } from "react-router-dom";
 import * as Tone from "tone";
 
 import Paths from "../Paths";
-import Piano, { ActiveKeys } from "../Piano";
+import { ActiveKeys } from "../Piano";
 import Keyboard from "../ui/Keyboard";
 import Sequencer from "../ui/Sequencer";
-import Template from "./Template";
 import Preview from "../ui/Preview";
 import Saver from "../ui/Saver";
-import { BottomRightAd } from "../ui/Ads";
 import PianoShepardMode from "../ui/PianoShepardMode";
 import { useStore } from "../store";
 import SoundSelector, { useSfStorage } from "../ui/SoundSelector";
+import { Content900, H1, HeadingNav, HrFinal } from "../ui/Common";
+import { BottomCenterAd } from "../ui/Ads";
 
 function streamFromSong(
   bpm: number,
@@ -285,116 +285,124 @@ export default function SequencePage(): JSX.Element {
   }, [playing]);
 
   return (
-    <Template title="Sequence" intro={null}>
-      <div
-        style={{
-          alignItems: "center",
-          margin: "20px 0",
-          maxWidth: "750px",
-          display: "flex",
-          justifyContent: "space-between",
-        }}
-      >
-        <Preview
-          handlePlay={handleStart}
-          handleStop={handleStop}
-          isPlaying={playing}
-          isWaiting={false}
-          progress={{
-            ratio: step / (numSteps - 1),
-            steps: [step, numSteps],
-          }}
-        />
-        <div>
-          <label>
-            BPM{" "}
-            <input
-              style={{ width: "4em" }}
-              type="text"
-              value={bpmInput}
-              onFocus={e => e.target.select()}
-              onChange={e => setBpmInput(e.target.value)}
-              onBlur={e => {
-                const num = parseInt(e.target.value);
-                if (isNaN(num) || num < 1 || num > 400) {
-                  // Invalid
-                  setBpmInput(String(bpm));
-                  return;
-                }
+    <>
+      <HeadingNav />
 
-                setBpm(num);
-                setBpmInput(String(num));
-              }}
-            />
-          </label>
-          <div>
-            <label>
-              Beats/step{" "}
-              <span style={{ display: "flex" }}>
-                <input
-                  type="range"
-                  min="1"
-                  max="4"
-                  value={bps}
-                  onChange={e => setBps(Number(e.target.value))}
-                />
-                <span style={{ marginLeft: "0.5em" }}>{bps}</span>
-              </span>
-            </label>
-          </div>
+      <Content900>
+        <div className="d-flex justify-content-between">
+          <H1>Sequence</H1>
+
+          <button
+            type="button"
+            className="btn btn-lg btn-link text-danger text-decoration-none"
+            onClick={() => {
+              reset();
+              navigate(Paths.sequencePrefix("/"));
+            }}
+          >
+            <i className="fa fa-trash" aria-label="Start over" /> New
+          </button>
         </div>
+      </Content900>
 
-        <label>
-          Num steps{" "}
-          <input
-            style={{ width: "4em" }}
-            type="text"
-            value={numStepsInput}
-            onFocus={e => e.target.select()}
-            onChange={e => setnumStepsInput(e.target.value)}
-            onBlur={e => {
-              const num = parseInt(e.target.value);
-              if (isNaN(num) || num < 2) {
-                // Invalid
-                setnumStepsInput(String(numSteps));
-                return;
-              }
-
-              const newSteps = stepData.slice();
-              const newJoinData = joinData.slice();
-              while (newSteps.length < num) {
-                newSteps.push([]);
-                newJoinData.push([]);
-              }
-              while (newSteps.length > num) {
-                newSteps.pop();
-                newJoinData.pop();
-              }
-              setStepData(newSteps);
-              setJoinData(newJoinData);
-              setNumSteps(num);
+      <Content900>
+        <div className="d-flex align-items-center">
+          <Preview
+            handlePlay={handleStart}
+            handleStop={handleStop}
+            isPlaying={playing}
+            isWaiting={false}
+            progress={{
+              ratio: step / (numSteps - 1),
+              steps: [step, numSteps],
             }}
           />
-        </label>
-        <button
-          type="button"
-          className="btn btn-primary med-btn"
-          onClick={share}
-        >
-          <i className="fa fa-floppy-o" aria-hidden="true" /> <span>Save</span>
-        </button>
-        <button
-          type="button"
-          title="Start over"
-          className="btn btn-danger med-btn"
-          onClick={() => {
-            reset();
-            navigate(Paths.sequencePrefix("/"));
-          }}
-        >
-          <i className="fa fa-trash" aria-label="Start over" />
-        </button>
-      </div>
+
+          <button
+            type="button"
+            className="btn btn-primary med-btn text-nowrap mx-3"
+            onClick={share}
+          >
+            <i className="fa fa-floppy-o" aria-hidden="true" />{" "}
+            <span>Save</span>
+          </button>
+
+          <div>
+            <div>
+              <label className="me-3">
+                BPM{" "}
+                <input
+                  style={{ width: "4em" }}
+                  type="text"
+                  value={bpmInput}
+                  onFocus={e => e.target.select()}
+                  onChange={e => setBpmInput(e.target.value)}
+                  onBlur={e => {
+                    const num = parseInt(e.target.value);
+                    if (isNaN(num) || num < 1 || num > 400) {
+                      // Invalid
+                      setBpmInput(String(bpm));
+                      return;
+                    }
+
+                    setBpm(num);
+                    setBpmInput(String(num));
+                  }}
+                />
+              </label>
+
+              <label>
+                Steps{" "}
+                <input
+                  style={{ width: "4em" }}
+                  type="text"
+                  value={numStepsInput}
+                  onFocus={e => e.target.select()}
+                  onChange={e => setnumStepsInput(e.target.value)}
+                  onBlur={e => {
+                    const num = parseInt(e.target.value);
+                    if (isNaN(num) || num < 2) {
+                      // Invalid
+                      setnumStepsInput(String(numSteps));
+                      return;
+                    }
+
+                    const newSteps = stepData.slice();
+                    const newJoinData = joinData.slice();
+                    while (newSteps.length < num) {
+                      newSteps.push([]);
+                      newJoinData.push([]);
+                    }
+                    while (newSteps.length > num) {
+                      newSteps.pop();
+                      newJoinData.pop();
+                    }
+                    setStepData(newSteps);
+                    setJoinData(newJoinData);
+                    setNumSteps(num);
+                  }}
+                />
+              </label>
+            </div>
+
+            <div className="mt-2 text-center">
+              <label>
+                Beats/step{" "}
+                <span className="d-flex">
+                  <input
+                    type="range"
+                    min="1"
+                    max="4"
+                    value={bps}
+                    onChange={e => setBps(Number(e.target.value))}
+                  />
+                  <span className="ms-1">{bps}</span>
+                </span>
+              </label>
+            </div>
+          </div>
+        </div>
+      </Content900>
 
       <Sequencer
         currentStepIndex={step}
@@ -415,19 +423,25 @@ export default function SequencePage(): JSX.Element {
       />
       <Keyboard activeKeys={activeKeys} />
 
-      <PianoShepardMode piano={piano} />
-      <SoundSelector />
+      <Content900>
+        <SoundSelector />
+        <PianoShepardMode piano={piano} />
+      </Content900>
 
-      <BottomRightAd />
+      <Content900>
+        {params.stream && (
+          <section>
+            <h3>Share it</h3>
+            <p>
+              Copy to clipboard: <Saver href={window.location.href} title="" />
+            </p>
+          </section>
+        )}
+      </Content900>
 
-      {params.stream && (
-        <section>
-          <h3>Share it</h3>
-          <p>
-            Copy to clipboard: <Saver href={window.location.href} title="" />
-          </p>
-        </section>
-      )}
-    </Template>
+      <HrFinal />
+
+      <BottomCenterAd />
+    </>
   );
 }

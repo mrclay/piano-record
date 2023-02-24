@@ -7,7 +7,6 @@ import NullPlayer from "./players/NullPlayer";
 import { availableInstruments, Playable, SoundFont } from "./players";
 
 const SPEED_KEY = "CC-speed";
-const INSTR_KEY = "CC-instr";
 
 type AtomSet<T = {}> = {
   [Property in keyof T]: Atom<T[Property]>;
@@ -27,7 +26,7 @@ export interface PlayerSpec {
   name: string;
 }
 
-const pianoSpec: PlayerSpec = {
+export const pianoSpec: PlayerSpec = {
   sf: SoundFont.TonePiano,
   name: availableInstruments[SoundFont.TonePiano]![0],
 };

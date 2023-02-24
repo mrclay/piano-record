@@ -20,6 +20,7 @@ import PianoSpeed from "../ui/PianoSpeed";
 import SongChords from "../ui/SongChords";
 import { useCommonChordsQuery } from "./useCommonChordsQuery";
 import PianoShepardMode from "../ui/PianoShepardMode";
+import { Intro } from "./Intro";
 
 export interface Chord {
   func: string;
@@ -95,8 +96,8 @@ export function ChordSet({ els }: ChordSetProps): JSX.Element {
 
   const [chordSet, setChordSet] = useStore.chordSet();
   const [song, setSong] = useStore.song();
-  const [, setSongChords] = useStore.songChords();
   ref.song = song;
+  const [, setSongChords] = useStore.songChords();
   const [recorder] = useStore.recorder();
   const [pianoSpeed] = useStore.pianoSpeed();
   const [offset] = useStore.offset();
@@ -192,11 +193,13 @@ export function ChordSet({ els }: ChordSetProps): JSX.Element {
           return el.songUrl ? (
             <a
               key={elKey + "but"}
+              className="link-info"
               href={el.songUrl}
               target="_blank"
               rel="noreferrer"
               onClick={e => selectChord(e, el)}
             >
+              {el.songUrl === ref.song ? "Hey" : ""}
               {content}
             </a>
           ) : (

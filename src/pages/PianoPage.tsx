@@ -21,16 +21,22 @@ import Recorder, {
   RecorderProgressListener,
   RecorderState,
 } from "../Recorder";
-import Template from "./Template";
 import Title from "../ui/Title";
 import Preview from "../ui/Preview";
 import Saver from "../ui/Saver";
 import Status from "../ui/Status";
 import PianoSpeed from "../ui/PianoSpeed";
 import { useStore } from "../store";
-import { BottomRightAd } from "../ui/Ads";
+import { BottomCenterAd } from "../ui/Ads";
 import PianoShepardMode from "../ui/PianoShepardMode";
 import SoundSelector, { UseSfStorage, useSfStorage } from "../ui/SoundSelector";
+import {
+  Container900,
+  Content900,
+  H1,
+  HeadingNav,
+  HrFinal,
+} from "../ui/Common";
 
 enum Mode {
   recording = "recording",
@@ -199,8 +205,9 @@ class PianoPage extends React.Component<PianoPageProps, PianoPageState> {
     this.recorder.stop();
     this.setState({ mode: Mode.recording }, () => {
       const stream = Ops.streamFromOperations(this.recorder.getOperations());
+      const params = this.props.sfStorage.saveSf();
       if (stream) {
-        this.props.navigate(Paths.pianoPrefix(`/record/${stream}`));
+        this.props.navigate(Paths.pianoPrefix(`/record/${stream}?${params}`));
       }
     });
   };
@@ -225,8 +232,9 @@ class PianoPage extends React.Component<PianoPageProps, PianoPageState> {
     this.setState({ title }, () => {
       const s = this.state.stream;
       const t = Ops.fixedEncodeURIComponent(title);
+      const params = this.props.sfStorage.saveSf();
 
-      this.props.navigate(Paths.pianoPrefix(`/songs/${s}/${t}`), {
+      this.props.navigate(Paths.pianoPrefix(`/songs/${s}/${t}?${params}`), {
         replace: true,
       });
     });
@@ -235,7 +243,8 @@ class PianoPage extends React.Component<PianoPageProps, PianoPageState> {
   makeChanges = () => {
     this.setState({ mode: Mode.recording });
     const stream = Ops.streamFromOperations(this.recorder.getOperations());
-    this.props.navigate(Paths.pianoPrefix(`/record/${stream}`));
+    const params = this.props.sfStorage.saveSf();
+    this.props.navigate(Paths.pianoPrefix(`/record/${stream}?${params}`));
   };
 
   recordMore = () => {
@@ -318,18 +327,38 @@ class PianoPage extends React.Component<PianoPageProps, PianoPageState> {
     const canReset = mode === Mode.oneKey || hasOperations;
 
     return (
-      <Template
-        title="Melody"
-        intro={
+      <>
+        <HeadingNav />
+
+        <Content900>
+          <div className="d-flex justify-content-between">
+            <H1>Melody</H1>
+
+            <button
+              type="button"
+              onClick={this.reset}
+              id="reset"
+              className="btn btn-lg btn-link text-danger text-decoration-none"
+            >
+              <i className="fa fa-trash" aria-label="Start over" /> New
+            </button>
+          </div>
+
           <p>
             Wanna capture a <Link to={example}>short musical idea</Link> or
             share it with others? Tap some notes or play your MIDI keyboard
             (Chrome only), and click <i>Save</i>. You can share the resulting
             page URL or bookmark it.
           </p>
-        }
-      >
-        <section className="piano-2col">
+        </Content900>
+
+        <Keyboard
+          activeKeys={activeKeys}
+          onKeyClick={mode === Mode.recording ? this.onKeyClick : undefined}
+        />
+        <PianoSpeed />
+
+        <Container900 className="mt-3">
           <div>
             {mode === Mode.shared && (
               <span className="title-ui">
@@ -338,7 +367,7 @@ class PianoPage extends React.Component<PianoPageProps, PianoPageState> {
               </span>
             )}
 
-            {hasOperations && (
+            {hasOperations ? (
               <Preview
                 handlePlay={this.play}
                 handleStop={this.stop}
@@ -346,6 +375,8 @@ class PianoPage extends React.Component<PianoPageProps, PianoPageState> {
                 isWaiting={false}
                 progress={{ ratio: progress }}
               />
+            ) : (
+              <div className="pt-5" />
             )}
 
             {canMakeChanges && (
@@ -394,7 +425,7 @@ class PianoPage extends React.Component<PianoPageProps, PianoPageState> {
               </button>
             )}
 
-            {canShare && (
+            {canShare ? (
               <button
                 type="button"
                 onClick={this.share}
@@ -403,52 +434,31 @@ class PianoPage extends React.Component<PianoPageProps, PianoPageState> {
                 <i className="fa fa-save" aria-hidden="true" />{" "}
                 <span>Share</span>
               </button>
-            )}
+            ) : null}
           </div>
+        </Container900>
 
-          <div>
-            <Status
-              isPlaying={recorderState === RecorderState.playing}
-              isRecording={recorderState === RecorderState.recording}
-            />
+        <Content900>
+          <SoundSelector />
+          <PianoShepardMode piano={this.recorder.piano} />
+        </Content900>
 
-            {canReset ? (
-              <button
-                type="button"
-                onClick={this.reset}
-                id="reset"
-                title="Start over"
-                className="btn btn-danger med-btn"
-              >
-                <i className="fa fa-trash" aria-label="Start over" />
-              </button>
-            ) : (
-              <span className="fakeReset" />
-            )}
-          </div>
-        </section>
+        <Content900>
+          {mode === Mode.shared && (
+            <section>
+              <h3>Share it</h3>
+              <p>
+                Copy to clipboard:{" "}
+                <Saver href={window.location.href} title={title} />
+              </p>
+            </section>
+          )}
+        </Content900>
 
-        <Keyboard
-          activeKeys={activeKeys}
-          onKeyClick={mode === Mode.recording ? this.onKeyClick : undefined}
-        />
-        <PianoSpeed />
+        <HrFinal />
 
-        <PianoShepardMode piano={this.recorder.piano} />
-        <SoundSelector />
-
-        <BottomRightAd />
-
-        {mode === Mode.shared && (
-          <section style={{ minHeight: "8rem" }}>
-            <h3>Share it</h3>
-            <p>
-              Copy to clipboard:{" "}
-              <Saver href={window.location.href} title={title} />
-            </p>
-          </section>
-        )}
-      </Template>
+        <BottomCenterAd />
+      </>
     );
   }
 }

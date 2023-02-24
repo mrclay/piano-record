@@ -9,13 +9,13 @@ import { useParams } from "react-router";
 import { useSearchParams } from "react-router-dom";
 import { debounce } from "throttle-debounce";
 
-import Template from "./Template";
-import { BottomRightAd } from "../ui/Ads";
+import { BottomCenterAd } from "../ui/Ads";
 import Saver from "../ui/Saver";
 import Paths from "../Paths";
 import { parseChord, ParsedChord } from "../music-theory/Chord";
 import { scoreProgression } from "../music-theory/opinion/scoring";
 import { displayDelta } from "../music-theory/opinion/score-boosts";
+import { Content900, H1, HeadingNav, HrFinal } from "../ui/Common";
 
 interface MatchItems {
   data?: string;
@@ -69,69 +69,70 @@ export default function GuessKeyPage() {
   }, [foundChords]);
 
   return (
-    <Template
-      showLimitations={false}
-      title="Guess the Key"
-      intro={
-        <>
-          <p>Type some chords and we'll provide a list of potential keys.</p>
-          <p>
-            <input
-              type="text"
-              value={value}
-              placeholder="Enter chords here"
-              className="form-control"
-              onChange={e => setValue(e.target.value)}
-            />
-          </p>
+    <>
+      <HeadingNav />
 
-          <div className="GTK__actions">
-            <div>
-              <button
-                type="button"
-                id="save"
-                disabled={Boolean((searchParams.get("c") || "") === normalized)}
-                className="btn btn-primary med-btn"
-                onClick={() =>
-                  setSearchParams(new URLSearchParams({ c: normalized }))
-                }
-              >
-                <i className="fa fa-floppy-o" aria-hidden="true"></i>{" "}
-                <span>Save</span>
-              </button>
-            </div>
+      <Content900>
+        <H1>Guess the Key</H1>
+
+        <p>Type some chords and we'll provide a list of potential keys.</p>
+        <p>
+          <input
+            type="text"
+            value={value}
+            placeholder="Enter chords here"
+            className="form-control"
+            onChange={e => setValue(e.target.value)}
+          />
+        </p>
+
+        <div className="ps-4 pb-4 float-end">
+          <button
+            type="button"
+            id="save"
+            disabled={Boolean((searchParams.get("c") || "") === normalized)}
+            className="btn btn-primary btn-lg"
+            onClick={() =>
+              setSearchParams(new URLSearchParams({ c: normalized }))
+            }
+          >
+            <i className="fa fa-floppy-o" aria-hidden="true"></i>{" "}
+            <span>Save</span>
+          </button>
+        </div>
+
+        <p>
+          <strong>Tips:</strong> If you have a major triad that sounds basically
+          the same with a maj7, enter it as a maj7. If you have a chord with a
+          "bluesy" (non-functional) b7, try leaving it off. If a chord is used a
+          lot, enter it multiple times.
+        </p>
+        <p>
+          This algorithm doesn't really understand progressions. It scores each
+          chord separately based on Steve's intuition around how commonly
+          they're used (encoded in these{" "}
+          <a href="https://github.com/mrclay/piano-record/blob/main/src/music-theory/Chord.ts#L98-L160">
+            major and minor key lookup tables
+          </a>
+          ). This is not based on any <em>real</em> research data.
+        </p>
+
+        {Boolean(
+          foundChords.length && chords.length !== foundChords.length
+        ) && (
+          <div className="alert alert-danger" role="alert">
+            <strong>These chords could not be parsed:</strong>
+            {chords
+              .filter((el): el is string => typeof el === "string")
+              .map(str => (
+                <code style={{ marginLeft: "10px" }} key={str}>
+                  {str}
+                </code>
+              ))}
           </div>
-          <p>
-            <strong>Caveats:</strong> This algorithm doesn't understand
-            progressions and only considers order by nudging the score based on
-            aspects of the first chord. It's mostly scoring based on Steve's
-            intuition around how commonly certain chords are used, encoded in
-            these{" "}
-            <a href="https://github.com/mrclay/piano-record/blob/main/src/music-theory/Chord.ts#L98-L160">
-              major and minor key lookup tables
-            </a>
-            . Not any <em>real</em> data. If you have a chord with a "bluesy"
-            (non-functional) b7, try leaving it off; it undervalues the
-            likelihood that E7 A7 E7 is in E major.
-          </p>
+        )}
+      </Content900>
 
-          {Boolean(
-            foundChords.length && chords.length !== foundChords.length
-          ) && (
-            <div className="alert alert-danger" role="alert">
-              <strong>These chords could not be parsed:</strong>
-              {chords
-                .filter((el): el is string => typeof el === "string")
-                .map(str => (
-                  <code style={{ marginLeft: "10px" }} key={str}>
-                    {str}
-                  </code>
-                ))}
-            </div>
-          )}
-        </>
-      }
-    >
       <section className="GTK">
         <div>
           <table
@@ -143,7 +144,7 @@ export default function GuessKeyPage() {
             <thead>
               <tr>
                 <th scope="column">Key</th>
-                <th scope="column">Functions</th>
+                <th scope="column">RNA</th>
                 <th scope="column">Score</th>
                 <th scope="column">Scoring breakdown</th>
               </tr>
@@ -218,8 +219,6 @@ export default function GuessKeyPage() {
             </tbody>
           </table>
         </div>
-
-        <BottomRightAd />
       </section>
 
       {Boolean(params.data) && (
@@ -230,6 +229,10 @@ export default function GuessKeyPage() {
           </p>
         </section>
       )}
-    </Template>
+
+      <HrFinal />
+
+      <BottomCenterAd />
+    </>
   );
 }

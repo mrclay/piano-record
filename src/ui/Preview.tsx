@@ -23,7 +23,7 @@ export default function Preview({
         type="button"
         onClick={handleStop}
         id="preview"
-        className="btn btn-default med-btn"
+        className="btn btn-info med-btn"
       >
         <i className="fa fa-stop" aria-hidden="true" />{" "}
         <Progress {...progress} />
@@ -37,7 +37,7 @@ export default function Preview({
       onClick={handlePlay}
       id="preview"
       disabled={isWaiting}
-      className="btn btn-default med-btn"
+      className="btn btn-info med-btn"
     >
       <i className="fa fa-play" aria-hidden="true" /> <span>Play</span>
     </button>

@@ -31,7 +31,7 @@ export default function Play({
         type="button"
         onClick={handleStop}
         id="big-play"
-        className="btn btn-default"
+        className="btn btn-info med-btn"
         disabled={isWaiting}
       >
         {renderIcon()}
@@ -45,7 +45,7 @@ export default function Play({
       onClick={handlePlay}
       id="big-play"
       disabled={isWaiting}
-      className="btn btn-default"
+      className="btn btn-info med-btn"
     >
       <i className="fa fa-play" aria-hidden="true" />
     </button>
