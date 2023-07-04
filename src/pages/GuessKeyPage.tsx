@@ -9,7 +9,6 @@ import { useParams } from "react-router";
 import { useSearchParams } from "react-router-dom";
 import { debounce } from "throttle-debounce";
 
-import { BottomCenterAd } from "../ui/Ads";
 import Saver from "../ui/Saver";
 import Paths from "../Paths";
 import { parseChord, ParsedChord } from "../music-theory/Chord";
@@ -231,8 +230,6 @@ export default function GuessKeyPage() {
       )}
 
       <HrFinal />
-
-      <BottomCenterAd />
     </>
   );
 }

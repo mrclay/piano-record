@@ -32,7 +32,6 @@ import {
   HeadingNav,
   HrFinal,
 } from "../ui/Common";
-import { BottomCenterAd } from "../ui/Ads";
 
 interface MatchItems {
   notes?: string;
@@ -247,8 +246,6 @@ export default function ChordPage() {
       </Content900>
 
       <HrFinal />
-
-      <BottomCenterAd />
     </div>
   );
 }

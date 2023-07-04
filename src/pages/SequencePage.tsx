@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import { useSearchParams } from "react-router-dom";
 import * as Tone from "tone";
@@ -13,7 +13,6 @@ import PianoShepardMode from "../ui/PianoShepardMode";
 import { useStore } from "../store";
 import SoundSelector, { useSfStorage } from "../ui/SoundSelector";
 import { Content900, H1, HeadingNav, HrFinal } from "../ui/Common";
-import { BottomCenterAd } from "../ui/Ads";
 
 function streamFromSong(
   bpm: number,
@@ -456,8 +455,6 @@ export default function SequencePage(): JSX.Element {
       </Content900>
 
       <HrFinal />
-
-      <BottomCenterAd />
     </>
   );
 }

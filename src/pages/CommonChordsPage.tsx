@@ -17,7 +17,6 @@ import { Intro } from "../common-chords/Intro";
 import MajorKeyChords from "../common-chords/MajorKeyChords";
 import MinorKeyChords from "../common-chords/MinorKeyChords";
 import { Content900, H1, HeadingNav, HrFinal } from "../ui/Common";
-import { BottomCenterAd } from "../ui/Ads";
 
 Note.unicodeAccidentals = true;
 
@@ -186,8 +185,6 @@ function CommonChordsPage() {
       </div>
 
       <HrFinal />
-
-      <BottomCenterAd />
     </>
   );
 }

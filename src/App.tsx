@@ -2,7 +2,6 @@ import React, { ComponentType, lazy, Suspense } from "react";
 import { Route, Routes, Navigate, useLocation } from "react-router-dom";
 
 import Paths from "./Paths";
-import { useAds } from "./ui/Ads";
 import { useRootSoundManager } from "./useRootSoundManager";
 
 const AsyncChord = lazy(() => import("./pages/ChordPage"));
@@ -22,7 +21,6 @@ function PathKeyedComponent(C: ComponentType) {
 }
 
 const App = () => {
-  useAds();
   useRootSoundManager();
 
   return (

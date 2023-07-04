@@ -3,7 +3,6 @@ import { ChordSet } from "./ChordSet";
 import { Keyed } from "./Intro";
 import { getRenderers } from "./renderers";
 import { SeventhTeaser } from "./SeventhTeaser";
-import { HorizontalAd } from "../ui/Ads";
 
 function MajorKeyChords({ musicKey, offset }: Keyed) {
   const { f, f7, rom, note } = getRenderers(musicKey, offset);
@@ -123,8 +122,6 @@ function MajorKeyChords({ musicKey, offset }: Keyed) {
         The secondary dominant of {rom("iii")}, {note("V/iii")}7, is pretty
         rarely used.
       </p>
-
-      <HorizontalAd />
 
       <ChordSet
         els={[
@@ -272,8 +269,6 @@ function MajorKeyChords({ musicKey, offset }: Keyed) {
         {note("#iv")}dim7.
       </p>
 
-      <HorizontalAd />
-
       <ChordSet
         els={[
           f(
@@ -414,8 +409,6 @@ function MajorKeyChords({ musicKey, offset }: Keyed) {
           secondary dominants {rom("V/ii")}, {rom("V/IV")}, or {rom("V/vi")} (or
           before their equivalent secondary leading-tone diminished chords).
         </p>
-
-        <HorizontalAd />
 
         <ChordSet
           els={[

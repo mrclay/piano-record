@@ -27,7 +27,6 @@ import Saver from "../ui/Saver";
 import Status from "../ui/Status";
 import PianoSpeed from "../ui/PianoSpeed";
 import { useStore } from "../store";
-import { BottomCenterAd } from "../ui/Ads";
 import PianoShepardMode from "../ui/PianoShepardMode";
 import SoundSelector, { UseSfStorage, useSfStorage } from "../ui/SoundSelector";
 import {
@@ -456,8 +455,6 @@ class PianoPage extends React.Component<PianoPageProps, PianoPageState> {
         </Content900>
 
         <HrFinal />
-
-        <BottomCenterAd />
       </>
     );
   }
