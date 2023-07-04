@@ -45,7 +45,7 @@ const fancyMap: Record<string, string | undefined> = {
   m7b5: "ø⁷",
 };
 
-function Keys(): JSX.Element {
+function ChordSetKeys({ close }: { close(): void }): JSX.Element {
   const [recorder] = useStore.recorder();
   const piano = recorder.piano;
   const [activeKeys, setActiveKeys] = useState<ActiveKeys>(new Set());
@@ -72,9 +72,21 @@ function Keys(): JSX.Element {
   }, [piano]);
 
   return (
-    <div style={style} className="keyWrapper">
+    <div style={style} className="my-5">
       <Keyboard activeKeys={activeKeys} />
-      <div>
+      <div
+        className="d-flex align-items-center my-0 mx-auto mt-2"
+        style={{ width: "1246px" }}
+      >
+        <div>
+          <button
+            type="button"
+            className="btn btn-outline-light"
+            onClick={close}
+          >
+            Close <i className="fa fa-times" aria-hidden="true" />
+          </button>
+        </div>
         <PianoSpeed /> <SongChords />
       </div>
     </div>
@@ -113,6 +125,12 @@ export function ChordSet({ els }: ChordSetProps): JSX.Element {
     };
   }, [recorder, setSong]);
 
+  function closePiano() {
+    recorder.stop();
+    setChordSet({});
+    setSong("");
+  }
+
   const selectChord = useCallback(
     (e: MouseEvent<HTMLAnchorElement>, chord: Chord) => {
       e.preventDefault();
@@ -130,9 +148,7 @@ export function ChordSet({ els }: ChordSetProps): JSX.Element {
         recorder.setOperations(Ops.operationsFromStream(stream, offset));
         recorder.play(pianoSpeed / 100);
       } else {
-        recorder.stop();
-        setChordSet({});
-        setSong("");
+        closePiano();
       }
     },
     [
@@ -156,7 +172,7 @@ export function ChordSet({ els }: ChordSetProps): JSX.Element {
 
   return (
     <>
-      <h2 className="chordSet">
+      <h2 className="chordSet d-flex align-items-center flex-wrap">
         {els.map((el, i) => {
           const [func1, func2 = ""] = el.func.split("/");
 
@@ -203,7 +219,7 @@ export function ChordSet({ els }: ChordSetProps): JSX.Element {
           );
         })}
       </h2>
-      {chordSet === ref && <Keys />}
+      {chordSet === ref && <ChordSetKeys close={closePiano} />}
     </>
   );
 }

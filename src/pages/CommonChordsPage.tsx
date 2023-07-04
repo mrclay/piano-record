@@ -135,27 +135,13 @@ function CommonChordsPage() {
             <div className="form-check">
               <input
                 className="form-check-input"
-                type="radio"
-                name="sevenths"
+                type="checkbox"
                 checked={sevenths}
-                onChange={() => setSevenths(true)}
-                id="show7ths"
+                onChange={e => setSevenths(e.target.checked)}
+                id="showRomans"
               />
-              <label className="form-check-label" htmlFor="show7ths">
-                Show 7th chords in case I want to play the sevenths
-              </label>
-            </div>
-            <div className="form-check">
-              <input
-                className="form-check-input"
-                type="radio"
-                name="sevenths"
-                checked={!sevenths}
-                onChange={() => setSevenths(false)}
-                id="hide7ths"
-              />
-              <label className="form-check-label" htmlFor="hide7ths">
-                Keep it simple (mostly) with triads
+              <label className="form-check-label" htmlFor="showRomans">
+                Show 7ths on chords. (You don't have to play them.)
               </label>
             </div>
           </form>

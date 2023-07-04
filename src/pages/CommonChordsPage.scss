@@ -28,10 +28,6 @@ body {
   }
 
   .chordSet {
-    align-items: center;
-    display: flex;
-    flex-wrap: wrap;
-
     > a:link,
     > a:hover {
       text-decoration: none;
@@ -77,20 +73,6 @@ body {
     }
     .bass {
       font-size: 0.8em;
-    }
-  }
-
-  .keyWrapper {
-    margin: 2rem 0;
-
-    > div + div {
-      display: flex;
-      margin: 0 auto;
-      width: 1246px;
-
-      p {
-        padding: 1rem 1rem 0 2rem;
-      }
     }
   }
 
