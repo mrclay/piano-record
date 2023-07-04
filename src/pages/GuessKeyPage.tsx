@@ -111,7 +111,7 @@ export default function GuessKeyPage() {
           This algorithm doesn't really understand progressions. It scores each
           chord separately based on Steve's intuition around how commonly
           they're used (encoded in these{" "}
-          <a href="https://github.com/mrclay/piano-record/blob/main/src/music-theory/Chord.ts#L98-L160">
+          <a href="https://github.com/mrclay/piano-record/blob/main/src/music-theory/opinion/chord-usage.ts">
             major and minor key lookup tables
           </a>
           ). This is not based on any <em>real</em> research data.

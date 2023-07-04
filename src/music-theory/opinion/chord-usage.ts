@@ -1,9 +1,7 @@
 export const commonChords = {
   inMajor: {
     // See http://mrclay.org/common-chords/C-major
-    // Bump for tonic
-    "I maj7": 15,
-
+    "I maj7": 10,
     "IV maj7": 10,
     "V 7": 10,
     "vi m7": 9,
@@ -42,9 +40,7 @@ export const commonChords = {
   },
   inMinor: {
     // See http://mrclay.org/common-chords/C-minor
-    // Bump for tonic
-    "i m7": 15,
-
+    "i m7": 10,
     "V 7": 10,
     "V +": 6,
     "iv m7": 10,
