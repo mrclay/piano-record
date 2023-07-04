@@ -32,8 +32,7 @@ interface ParamsMatch {
 const uCase = (qual: string) => qual.replace(/^m/, "M");
 
 function CommonChordsPage() {
-  const { relative, sevenths, qs, setRelative, setSevenths } =
-    useCommonChordsQuery();
+  const { sevenths, qs, setSevenths } = useCommonChordsQuery();
 
   const [offset, setOffset] = useStore.offset();
   const navigate = useNavigate();
@@ -157,19 +156,6 @@ function CommonChordsPage() {
               />
               <label className="form-check-label" htmlFor="hide7ths">
                 Keep it simple (mostly) with triads
-              </label>
-            </div>
-
-            <div className="form-check">
-              <input
-                className="form-check-input"
-                type="checkbox"
-                checked={relative}
-                onChange={e => setRelative(e.target.checked)}
-                id="showRomans"
-              />
-              <label className="form-check-label" htmlFor="showRomans">
-                Show Roman numerals
               </label>
             </div>
           </form>

@@ -92,7 +92,7 @@ interface ChordSetRef {
 
 export function ChordSet({ els }: ChordSetProps): JSX.Element {
   const ref = useRef<ChordSetRef>({ song: "" }).current;
-  const { relative, sevenths } = useCommonChordsQuery();
+  const { sevenths } = useCommonChordsQuery();
 
   const [chordSet, setChordSet] = useStore.chordSet();
   const [song, setSong] = useStore.song();
@@ -175,17 +175,13 @@ export function ChordSet({ els }: ChordSetProps): JSX.Element {
                   <span className="bass">/{el.bassNote}</span>
                 )}
               </span>
-              {relative && (
-                <span>
-                  <span className="func">{func1}</span>
-                  {type !== "" && (
-                    <span className="qual">
-                      {type.replace(/^m(7|$)/, "$1")}
-                    </span>
-                  )}
-                  {func2 !== "" && <span className="func">/{func2}</span>}
-                </span>
-              )}
+              <span>
+                <span className="func">{func1}</span>
+                {type !== "" && (
+                  <span className="qual">{type.replace(/^m(7|$)/, "$1")}</span>
+                )}
+                {func2 !== "" && <span className="func">/{func2}</span>}
+              </span>
             </>
           );
 

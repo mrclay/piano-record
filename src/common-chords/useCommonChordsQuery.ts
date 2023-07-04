@@ -28,7 +28,6 @@ export function useCommonChordsQuery() {
   const params = new URLSearchParams(search);
   const qs = params.toString();
 
-  const relative = boolParam("rel", true);
   const sevenths = boolParam("7ths", true);
 
   function setter(par: BoolParam, val: boolean) {
@@ -43,10 +42,8 @@ export function useCommonChordsQuery() {
   }
 
   return {
-    relative: relative.get(params),
     sevenths: sevenths.get(params),
     qs: qs ? `?${qs}` : "",
-    setRelative: (val: boolean) => setter(relative, val),
     setSevenths: (val: boolean) => setter(sevenths, val),
   };
 }
