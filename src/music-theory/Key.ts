@@ -115,6 +115,10 @@ export default class Key extends CircularSet<Note> {
     return this.items.map(note => note + "");
   }
 
+  hasChromatic(chromatic: number): boolean {
+    return this.items.some(note => note.getChromatic() === chromatic);
+  }
+
   toString(unicode = false) {
     return `${this.getTonicNote().toString(unicode)} ${this.quality}`;
   }

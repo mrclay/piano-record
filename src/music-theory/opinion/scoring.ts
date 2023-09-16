@@ -15,7 +15,7 @@ import {
 } from "./score-boosts";
 
 // Notes about the chord that may affect scoring later.
-export type ScoringAttribute = "tonic" | "matches7th";
+export type ScoringAttribute = "tonic" | "matches7th" | "dominant" | "diatonic";
 
 interface MatchedChord {
   type: "match";
@@ -101,6 +101,16 @@ function scoreChord(key: Key, given: Chord): ScoredChord {
       ) {
         attrs.push("tonic");
       }
+
+      if (roman === "V") {
+        attrs.push("dominant");
+      }
+
+      const chromatics = pitches.triad.split(",").map(Number);
+      if (!chromatics.some(val => !key.hasChromatic(val))) {
+        attrs.push("diatonic");
+      }
+
       if (givenPitches.seventh) {
         attrs.push("matches7th");
       }
@@ -154,7 +164,7 @@ const allKeys: Key[] = DEBUG_KEY
 
 const sum = (...args: number[]) => args.reduce((acc, curr) => acc + curr, 0);
 
-interface BoostCollection {
+export interface BoostCollection {
   byChord: Array<{
     chord: string;
     boosts: ScoreBoost[];

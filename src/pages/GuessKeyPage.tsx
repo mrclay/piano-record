@@ -1,23 +1,32 @@
-import React, {
-  Fragment,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router";
 import { useSearchParams } from "react-router-dom";
 import { debounce } from "throttle-debounce";
 
-import Saver from "../ui/Saver";
-import Paths from "../Paths";
-import { parseChord, ParsedChord } from "../music-theory/Chord";
-import { scoreProgression } from "../music-theory/opinion/scoring";
-import { displayDelta } from "../music-theory/opinion/score-boosts";
 import { Content900, H1, HeadingNav, HrFinal } from "../ui/Common";
+import GuessKeyTable from "../ui/GuessKeyTable";
+import Doughnut from "../ui/Doughnut";
+import Saver from "../ui/Saver";
+import { parseChord, ParsedChord } from "../music-theory/Chord";
+import Key from "../music-theory/Key";
+import {
+  BoostCollection,
+  ScoredChord,
+  scoreProgression,
+} from "../music-theory/opinion/scoring";
+import { Boosts } from "../music-theory/opinion/score-boosts";
 
 interface MatchItems {
   data?: string;
+}
+
+export interface GuessKeyScore {
+  hasTopScore: boolean;
+  key: Key;
+  total: number;
+  breakdown: string;
+  progression: ScoredChord[];
+  boosts: BoostCollection;
 }
 
 const DEFAULT_VALUE = "";
@@ -30,6 +39,9 @@ export default function GuessKeyPage() {
 
   // Debounced value
   const [dValue, setDValue] = useState(DEFAULT_VALUE);
+
+  const [highlightedScore, setHighlightedScore] =
+    useState<GuessKeyScore | null>(null);
 
   const chords = useMemo(() => {
     return dValue
@@ -56,14 +68,20 @@ export default function GuessKeyPage() {
     updateDValue(value);
   }, [value]);
 
-  const scores = useMemo(() => {
+  const scores: GuessKeyScore[] = useMemo(() => {
     const rows = scoreProgression(foundChords)
-      .filter(s => s.total > 0)
+      .filter(
+        el =>
+          el.total >= 10 &&
+          el.boosts.overall.includes(Boosts.hasDiatonicOrDominant)
+      )
       .map(row => ({ ...row, hasTopScore: false }));
     if (rows.length) {
       const top = rows[0].total;
       rows.forEach(row => (row.hasTopScore = row.total === top));
     }
+
+    setHighlightedScore(rows[0]);
     return rows;
   }, [foundChords]);
 
@@ -134,91 +152,37 @@ export default function GuessKeyPage() {
 
       <section className="GTK">
         <div>
-          <table
-            className="table table-bordered"
-            style={{
-              opacity: foundChords.length === 0 ? 0 : 1,
-            }}
-          >
-            <thead>
-              <tr>
-                <th scope="column">Key</th>
-                <th scope="column">RNA</th>
-                <th scope="column">Score</th>
-                <th scope="column">Scoring breakdown</th>
-              </tr>
-            </thead>
-            <tbody>
-              {scores.map((el, keyIdx) => (
-                <tr
-                  key={el.key.toString()}
-                  className={[
-                    el.hasTopScore ? "success" : "",
-                    keyIdx > 4 ? "text-muted" : "",
-                  ].join(" ")}
-                >
-                  <td>
-                    <a
-                      href={Paths.commonChordsPrefix(
-                        `/${el.key.toString(true).replace(" ", "-")}`
-                      )}
-                      style={{ fontWeight: el.hasTopScore ? "600" : "inherit" }}
-                    >
-                      {el.key.toString(true)}
-                    </a>
-                  </td>
-                  <td>
-                    <div className="GTK__functions">
-                      {el.progression.map((el2, idx) => (
-                        <Fragment key={idx}>
-                          {idx !== 0 && <span className="chord--sep"> - </span>}
-                          {el2.type === "match" ? (
-                            <span className="chord">
-                              {el2.roman + " "}
-                              {el.hasTopScore && (
-                                <span className="fixedName">
-                                  {el2.chordInKey.root + el2.given.type.symbol}
-                                </span>
-                              )}
-                            </span>
-                          ) : (
-                            <span className="text-muted">N/A</span>
-                          )}
-                        </Fragment>
-                      ))}
-                    </div>
-                  </td>
-                  <td>{el.total}</td>
-                  <td>
-                    {el.breakdown}
+          {scores.length > 0 && (
+            <div className="d-flex">
+              <div style={{ flex: "0 15rem" }}>
+                <Doughnut
+                  scores={scores}
+                  onClick={score => {
+                    if (score) {
+                      setHighlightedScore(score);
+                    }
+                  }}
+                  onHover={score => {
+                    if (score) {
+                      setHighlightedScore(score);
+                    }
+                  }}
+                />
+              </div>
 
-                    {el.hasTopScore && (
-                      <div style={{ marginTop: "0.5rem" }}>
-                        {el.boosts.byChord.map((el, idx) => (
-                          <div key={idx}>
-                            {el.chord}:{" "}
-                            {el.boosts
-                              .map(sb => `${sb.rationale} ${displayDelta(sb)}`)
-                              .join(", ")}
-                          </div>
-                        ))}
-                        {el.boosts.overall.length > 0 && (
-                          <div>
-                            Overall:{" "}
-                            {el.boosts.overall
-                              .map(sb => `${sb.rationale} ${displayDelta(sb)}`)
-                              .join(", ")}
-                          </div>
-                        )}
-                      </div>
-                    )}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+              <GuessKeyTable
+                classes="flex-grow-1"
+                scores={[highlightedScore || scores[0]]}
+              />
+            </div>
+          )}
         </div>
       </section>
+
+      <Content900>
+        <h3 className="mt-4">Full results</h3>
+        <GuessKeyTable scores={scores} />
+      </Content900>
 
       {Boolean(params.data) && (
         <section>

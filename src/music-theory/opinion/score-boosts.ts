@@ -27,7 +27,11 @@ export const Boosts = {
   },
   nonMatch: {
     boost: -5,
-    rationale: "Chord is not common in the key",
+    rationale: "Not common in the key",
+  },
+  hasDiatonicOrDominant: {
+    boost: 1,
+    rationale: "Has a diatonic chord or V",
   },
 } satisfies Record<string, ScoreBoost>;
 
@@ -65,6 +69,19 @@ export function calculateProgressionBoosts(
     )
   ) {
     ret.push(Boosts.noTonic);
+  }
+
+  if (
+    progression.some(chord => {
+      if (chord.type !== "match") {
+        return false;
+      }
+      return (
+        chord.attrs.includes("diatonic") || chord.attrs.includes("dominant")
+      );
+    })
+  ) {
+    ret.push(Boosts.hasDiatonicOrDominant);
   }
 
   return ret.filter(boostIsEnabled);

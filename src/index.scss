@@ -156,17 +156,20 @@ button .progress {
   margin-right: 20px;
 }
 
-.GTK {
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
+.GTK__table {
+  max-width: 60rem;
 
-  table {
-    max-width: 60rem;
+  @media (min-width: 56rem) {
+    min-width: 54rem;
+  }
 
-    @media (min-width: 56rem) {
-      min-width: 54rem;
-    }
+  tr.success {
+    background-color: var(--bs-success-border-subtle);
+    color: var(--bs-success-text);
+  }
+
+  tr.text-muted {
+    opacity: 0.7;
   }
 
   .chord {
@@ -177,20 +180,6 @@ button .progress {
   }
   .chord--sep {
     padding: 0 0.5rem;
-  }
-
-  .BottomRightAd {
-    float: none;
-    margin: 0 2rem 2rem 4rem;
-  }
-
-  tr.success {
-    background-color: var(--bs-success-border-subtle);
-    color: var(--bs-success-text);
-  }
-
-  tr.text-muted {
-    opacity: 0.7;
   }
 }
 
