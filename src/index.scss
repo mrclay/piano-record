@@ -156,6 +156,28 @@ button .progress {
   margin-right: 20px;
 }
 
+.GTK__results {
+  min-height: 10rem;
+  opacity: 0;
+  transition: opacity 1.5s;
+}
+.GTK__results--populated {
+  opacity: 1;
+}
+
+.GTK__pie_line {
+  @media (min-width: 800px) {
+    display: flex;
+
+    > div {
+      flex: 1;
+    }
+    > div:first-child {
+      flex: 0 15rem;
+    }
+  }
+}
+
 .GTK__table {
   max-width: 60rem;
 
@@ -180,6 +202,26 @@ button .progress {
   }
   .chord--sep {
     padding: 0 0.5rem;
+  }
+}
+
+.GTK__table--single {
+  min-width: unset;
+
+  th {
+    border: 0;
+    text-align: right;
+    width: 8rem;
+    vertical-align: middle;
+  }
+  td {
+    border: 0;
+    padding-left: 1rem;
+    vertical-align: middle;
+  }
+  tr:first-child,
+  tr:last-child {
+    border: 0;
   }
 }
 

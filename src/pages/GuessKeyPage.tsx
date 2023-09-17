@@ -1,5 +1,4 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { useParams } from "react-router";
 import { useSearchParams } from "react-router-dom";
 import { debounce } from "throttle-debounce";
 
@@ -16,10 +15,6 @@ import {
 } from "../music-theory/opinion/scoring";
 import { Boosts } from "../music-theory/opinion/score-boosts";
 
-interface MatchItems {
-  data?: string;
-}
-
 export interface GuessKeyScore {
   hasTopScore: boolean;
   key: Key;
@@ -29,19 +24,28 @@ export interface GuessKeyScore {
   boosts: BoostCollection;
 }
 
-const DEFAULT_VALUE = "";
-
 export default function GuessKeyPage() {
-  const params: MatchItems = useParams();
   const [searchParams, setSearchParams] = useSearchParams();
+  const urlValue = searchParams.get("c") || "";
 
-  const [value, setValue] = useState(searchParams.get("c") || DEFAULT_VALUE);
+  const [initMode, setInitMode] = useState(urlValue === "");
 
+  const [value, setValue] = useState(urlValue || "");
   // Debounced value
-  const [dValue, setDValue] = useState(DEFAULT_VALUE);
+  const [dValue, setDValue] = useState("");
 
   const [highlightedScore, setHighlightedScore] =
     useState<GuessKeyScore | null>(null);
+
+  useEffect(() => {
+    if (!initMode && urlValue === "") {
+      // Reset
+      setInitMode(true);
+      setValue("");
+      setDValue("");
+      setHighlightedScore(null);
+    }
+  }, [urlValue]);
 
   const chords = useMemo(() => {
     return dValue
@@ -85,6 +89,14 @@ export default function GuessKeyPage() {
     return rows;
   }, [foundChords]);
 
+  const canSave = initMode ? true : searchParams.get("c") !== normalized;
+  const save = () => {
+    setInitMode(false);
+    setSearchParams({ c: normalized });
+  };
+
+  const hasScores = !initMode && scores.length > 0;
+
   return (
     <>
       <HeadingNav />
@@ -100,6 +112,11 @@ export default function GuessKeyPage() {
             placeholder="Enter chords here"
             className="form-control"
             onChange={e => setValue(e.target.value)}
+            onKeyUp={e => {
+              if (initMode && e.key === "Enter") {
+                save();
+              }
+            }}
           />
         </p>
 
@@ -107,14 +124,12 @@ export default function GuessKeyPage() {
           <button
             type="button"
             id="save"
-            disabled={Boolean((searchParams.get("c") || "") === normalized)}
+            disabled={!canSave}
             className="btn btn-primary btn-lg"
-            onClick={() =>
-              setSearchParams(new URLSearchParams({ c: normalized }))
-            }
+            onClick={save}
           >
             <i className="fa fa-floppy-o" aria-hidden="true"></i>{" "}
-            <span>Save</span>
+            <span>{initMode ? "Score" : "Save"}</span>
           </button>
         </div>
 
@@ -150,16 +165,33 @@ export default function GuessKeyPage() {
         )}
       </Content900>
 
-      <section className="GTK">
-        <div>
-          {scores.length > 0 && (
-            <div className="d-flex">
-              <div style={{ flex: "0 15rem" }}>
+      <Content900
+        className={`GTK__results ${hasScores && "GTK__results--populated"}`}
+      >
+        {hasScores && (
+          <>
+            <div className="GTK__pie_line">
+              <div>
                 <Doughnut
                   scores={scores}
                   onClick={score => {
                     if (score) {
                       setHighlightedScore(score);
+                      const table = document.querySelector(
+                        ".GTK__pie_line > table"
+                      );
+                      if (table) {
+                        const viewportHeight =
+                          window.innerHeight ||
+                          document.documentElement.clientHeight;
+                        if (
+                          table.getBoundingClientRect().bottom -
+                            viewportHeight >
+                          0
+                        ) {
+                          table.scrollIntoView(false);
+                        }
+                      }
                     }
                   }}
                   onHover={score => {
@@ -170,28 +202,23 @@ export default function GuessKeyPage() {
                 />
               </div>
 
-              <GuessKeyTable
-                classes="flex-grow-1"
-                scores={[highlightedScore || scores[0]]}
-              />
+              <GuessKeyTable single scores={[highlightedScore || scores[0]]} />
             </div>
-          )}
-        </div>
-      </section>
 
-      <Content900>
-        <h3 className="mt-4">Full results</h3>
-        <GuessKeyTable scores={scores} />
+            <h3 className="mt-4">Full results</h3>
+            <GuessKeyTable scores={scores} />
+          </>
+        )}
+
+        {Boolean(value) && (
+          <section className="mt-4">
+            <h3>Share it</h3>
+            <p>
+              Copy to clipboard: <Saver href={window.location.href} />
+            </p>
+          </section>
+        )}
       </Content900>
-
-      {Boolean(params.data) && (
-        <section>
-          <h3>Share it</h3>
-          <p>
-            Copy to clipboard: <Saver href={window.location.href} />
-          </p>
-        </section>
-      )}
 
       <HrFinal />
     </>
