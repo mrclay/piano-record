@@ -18,12 +18,16 @@ export const Boosts = {
     disabled: true,
   },
   noTonic: {
-    boost: -1,
+    boost: -5,
     rationale: "Missing tonic chord",
+  },
+  isTonic: {
+    boost: 1,
+    rationale: "Tonic",
   },
   matched7th: {
     boost: 1,
-    rationale: "7th chord match",
+    rationale: "Same 7th quality",
   },
   nonMatch: {
     boost: -5,
@@ -31,7 +35,7 @@ export const Boosts = {
   },
   hasDiatonicOrDominant: {
     boost: 1,
-    rationale: "Has a diatonic chord or V",
+    rationale: "Has diatonic chord or V",
   },
 } satisfies Record<string, ScoreBoost>;
 
@@ -39,6 +43,10 @@ const boostIsEnabled = (boost: ScoreBoost) => !boost.disabled;
 
 export function calculateChordBoosts(attrs: ScoringAttribute[]): ScoreBoost[] {
   const ret: ScoreBoost[] = [];
+
+  if (attrs.includes("tonic")) {
+    ret.push(Boosts.isTonic);
+  }
 
   if (attrs.includes("matches7th")) {
     ret.push(Boosts.matched7th);
@@ -83,6 +91,10 @@ export function calculateProgressionBoosts(
   ) {
     ret.push(Boosts.hasDiatonicOrDominant);
   }
+
+  ret.sort((a, b) => {
+    return b.boost - a.boost;
+  });
 
   return ret.filter(boostIsEnabled);
 }

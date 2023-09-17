@@ -4,7 +4,7 @@ import { debounce } from "throttle-debounce";
 
 import { Content900, H1, HeadingNav, HrFinal } from "../ui/Common";
 import GuessKeyTable from "../ui/GuessKeyTable";
-import Doughnut from "../ui/Doughnut";
+import Pie from "../ui/Pie";
 import Saver from "../ui/Saver";
 import { parseChord, ParsedChord } from "../music-theory/Chord";
 import Key from "../music-theory/Key";
@@ -19,7 +19,6 @@ export interface GuessKeyScore {
   hasTopScore: boolean;
   key: Key;
   total: number;
-  breakdown: string;
   progression: ScoredChord[];
   boosts: BoostCollection;
 }
@@ -90,12 +89,27 @@ export default function GuessKeyPage() {
   }, [foundChords]);
 
   const canSave = initMode ? true : searchParams.get("c") !== normalized;
+  const hasScores = !initMode && scores.length > 0;
+
+  //////// Actions
+
   const save = () => {
     setInitMode(false);
     setSearchParams({ c: normalized });
   };
+  const scrollDataIntoView = async () => {
+    // Wait in case the table isn't rendered yet.
+    await new Promise(res => setTimeout(res, 100));
 
-  const hasScores = !initMode && scores.length > 0;
+    const table = document.querySelector(".GTK__pie_line > table");
+    if (table) {
+      const viewportHeight =
+        window.innerHeight || document.documentElement.clientHeight;
+      if (table.getBoundingClientRect().bottom - viewportHeight > 0) {
+        table.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      }
+    }
+  };
 
   return (
     <>
@@ -115,6 +129,7 @@ export default function GuessKeyPage() {
             onKeyUp={e => {
               if (canSave && e.key === "Enter") {
                 save();
+                scrollDataIntoView();
               }
             }}
           />
@@ -172,26 +187,12 @@ export default function GuessKeyPage() {
           <>
             <div className="GTK__pie_line">
               <div>
-                <Doughnut
-                  scores={scores}
+                <Pie
+                  id="pie"
                   onClick={score => {
                     if (score) {
                       setHighlightedScore(score);
-                      const table = document.querySelector(
-                        ".GTK__pie_line > table"
-                      );
-                      if (table) {
-                        const viewportHeight =
-                          window.innerHeight ||
-                          document.documentElement.clientHeight;
-                        if (
-                          table.getBoundingClientRect().bottom -
-                            viewportHeight >
-                          0
-                        ) {
-                          table.scrollIntoView(false);
-                        }
-                      }
+                      scrollDataIntoView();
                     }
                   }}
                   onHover={score => {
@@ -199,6 +200,7 @@ export default function GuessKeyPage() {
                       setHighlightedScore(score);
                     }
                   }}
+                  scores={scores}
                 />
               </div>
 

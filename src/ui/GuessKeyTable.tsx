@@ -33,7 +33,7 @@ export default function GuessKeyTable({
             </td>
           </tr>
           <tr>
-            <th scope="row">Roman Numeral Analysis</th>
+            <th scope="row">Roman Numerals</th>
             <td>
               <RNAContent el={scores[0]} single />
             </td>
@@ -48,7 +48,7 @@ export default function GuessKeyTable({
       <thead>
         <tr>
           <th scope="column">Key</th>
-          <th scope="column">RNA</th>
+          <th scope="column">Roman Numerals</th>
           <th scope="column">Score</th>
           <th scope="column">Scoring Breakdown</th>
         </tr>
@@ -117,29 +117,55 @@ const RNAContent = ({ el, single }: ContentProps) => (
   </div>
 );
 
-const BreakdownContent = ({ el, single }: ContentProps) => (
-  <>
-    {el.breakdown}
-
-    {(single || el.hasTopScore) && (
-      <div style={{ marginTop: "0.5rem" }}>
-        {el.boosts.byChord.map((el, idx) => (
-          <div key={idx}>
-            {el.chord}:{" "}
-            {el.boosts
-              .map(sb => `${sb.rationale} ${displayDelta(sb)}`)
-              .join(", ")}
-          </div>
-        ))}
-        {el.boosts.overall.length > 0 && (
-          <div>
-            Overall:{" "}
-            {el.boosts.overall
-              .map(sb => `${sb.rationale} ${displayDelta(sb)}`)
-              .join(", ")}
-          </div>
-        )}
-      </div>
-    )}
-  </>
+const BreakdownContent = ({ el }: ContentProps) => (
+  <table className="GTK__breakdown">
+    <tbody>
+      {el.progression.map((chord, idx) => (
+        <tr key={JSON.stringify({ idx, chord })}>
+          <th scope="row" className="ps-3 text-end fw-normal">
+            {chord.type === "match"
+              ? `${chord.given.root}${chord.given.type.symbol}`
+              : `N/A`}
+          </th>
+          <td className="ps-3">
+            {chord.usageScore}
+            {chord.boosts.map(sb => (
+              <Fragment key={sb.rationale}>
+                {" "}
+                {displayDelta(sb)}{" "}
+                <span
+                  className={`badge ${
+                    sb.boost > 0 ? "text-bg-info" : "text-bg-dark"
+                  }`}
+                >
+                  {sb.rationale}
+                </span>
+              </Fragment>
+            ))}
+          </td>
+        </tr>
+      ))}
+      {el.boosts.overall.length > 0 && (
+        <tr>
+          <th scope="row" className="ps-3 text-end align-top fw-normal">
+            Overall
+          </th>
+          <td className="ps-3">
+            {el.boosts.overall.map(sb => (
+              <div key={sb.rationale}>
+                {displayDelta(sb)}{" "}
+                <span
+                  className={`badge ${
+                    sb.boost > 0 ? "text-bg-info" : "text-bg-dark"
+                  }`}
+                >
+                  {sb.rationale}
+                </span>
+              </div>
+            ))}
+          </td>
+        </tr>
+      )}
+    </tbody>
+  </table>
 );

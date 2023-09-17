@@ -15,13 +15,14 @@ import { ThirdQuality } from "../music-theory/constants";
 
 Chart.register([PieController, ArcElement, Legend, Tooltip]);
 
-interface DoughnutProps {
+interface PieProps {
+  id: string;
   onClick?: (score?: GuessKeyScore) => void;
   onHover?: (score?: GuessKeyScore) => void;
   scores: GuessKeyScore[];
 }
 
-export default function Doughnut({ onClick, onHover, scores }: DoughnutProps) {
+export default function Pie({ id, onClick, onHover, scores }: PieProps) {
   const ctxRef = useRef<HTMLCanvasElement>(null);
   const chartRef = useRef<Chart<"pie"> | null>(null);
 
@@ -143,5 +144,5 @@ export default function Doughnut({ onClick, onHover, scores }: DoughnutProps) {
     chartRef.current = chart;
   }, [ctxRef.current, data, options]);
 
-  return <canvas id="pie" ref={ctxRef} />;
+  return <canvas id={id} ref={ctxRef} />;
 }

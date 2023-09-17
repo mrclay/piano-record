@@ -200,18 +200,7 @@ export const scoreProgression = (chords: Chord[]) => {
       const progressionBoost = sum(...boosts.overall.map(el => el.boost));
       const total = sum(progressionBoost, ...chordScores);
 
-      let breakdown = chordScores.join(" + ");
-      if (progressionBoost) {
-        breakdown += ` + ${progressionBoost} boost`;
-      }
-
-      return {
-        key,
-        total,
-        breakdown,
-        progression,
-        boosts,
-      };
+      return { key, total, progression, boosts };
     })
     .sort((a, b) => {
       if (a.total === b.total) {

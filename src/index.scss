@@ -166,15 +166,22 @@ button .progress {
 }
 
 .GTK__pie_line {
-  @media (min-width: 800px) {
-    display: flex;
+  align-items: center;
+  display: flex;
+  flex-direction: column;
 
-    > div {
+  @media (min-width: 800px) {
+    align-items: flex-start;
+    flex-direction: row;
+
+    > table {
       flex: 1;
     }
-    > div:first-child {
-      flex: 0 15rem;
-    }
+  }
+
+  > div:first-child {
+    aspect-ratio: 1;
+    max-width: 300px;
   }
 }
 
@@ -208,21 +215,25 @@ button .progress {
 .GTK__table--single {
   min-width: unset;
 
-  th {
+  > tbody > tr > th {
     border: 0;
     text-align: right;
     width: 8rem;
     vertical-align: middle;
   }
-  td {
+  > tbody > tr > td {
     border: 0;
     padding-left: 1rem;
     vertical-align: middle;
   }
-  tr:first-child,
-  tr:last-child {
+  > tbody > tr:first-child,
+  > tbody > tr:last-child {
     border: 0;
   }
+}
+
+.GTK__breakdown {
+  width: auto;
 }
 
 .GTK__functions {
