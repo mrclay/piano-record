@@ -113,7 +113,7 @@ export default function GuessKeyPage() {
             className="form-control"
             onChange={e => setValue(e.target.value)}
             onKeyUp={e => {
-              if (initMode && e.key === "Enter") {
+              if (canSave && e.key === "Enter") {
                 save();
               }
             }}
