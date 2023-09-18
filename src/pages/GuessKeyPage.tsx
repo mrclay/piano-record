@@ -51,7 +51,8 @@ export default function GuessKeyPage() {
       .trim()
       .replace(/ [-|] /g, " ")
       .split(/\s+/)
-      .map(str => parseChord(str) || str);
+      .map(str => parseChord(str) || str)
+      .filter(Boolean);
   }, [dValue]);
   const foundChords = useMemo(
     () => chords.filter((el): el is ParsedChord => typeof el === "object"),
@@ -88,6 +89,8 @@ export default function GuessKeyPage() {
     return rows;
   }, [foundChords]);
 
+  const allValid = chords.length === foundChords.length;
+  const showInvalid = !initMode && !allValid;
   const canSave = initMode ? true : searchParams.get("c") !== normalized;
   const hasScores = !initMode && scores.length > 0;
 
@@ -128,12 +131,32 @@ export default function GuessKeyPage() {
             onChange={e => setValue(e.target.value)}
             onKeyUp={e => {
               if (canSave && e.key === "Enter") {
-                save();
-                scrollDataIntoView();
+                if (allValid) {
+                  save();
+                  scrollDataIntoView();
+                } else {
+                  setInitMode(false);
+                }
               }
             }}
           />
         </p>
+
+        {showInvalid && (
+          <div className="alert alert-danger" role="alert">
+            <strong>These chords could not be parsed:</strong>
+            {chords
+              .filter((el): el is string => typeof el === "string")
+              .map((str, idx) => (
+                <code style={{ marginLeft: "10px" }} key={idx + str}>
+                  {str}
+                </code>
+              ))}
+            <p className="mt-3 mb-0">
+              Try simplifying complex chords. E.g. C7b5 &rarr; C7
+            </p>
+          </div>
+        )}
 
         <div className="ps-4 pb-4 float-end">
           <button
@@ -141,7 +164,14 @@ export default function GuessKeyPage() {
             id="save"
             disabled={!canSave}
             className="btn btn-primary btn-lg"
-            onClick={save}
+            onClick={() => {
+              if (allValid) {
+                save();
+                scrollDataIntoView();
+              } else {
+                setInitMode(false);
+              }
+            }}
           >
             <i className="fa fa-floppy-o" aria-hidden="true"></i>{" "}
             <span>{initMode ? "Score" : "Save"}</span>
@@ -163,21 +193,6 @@ export default function GuessKeyPage() {
           </a>
           ). This is not based on any <em>real</em> research data.
         </p>
-
-        {Boolean(
-          foundChords.length && chords.length !== foundChords.length
-        ) && (
-          <div className="alert alert-danger" role="alert">
-            <strong>These chords could not be parsed:</strong>
-            {chords
-              .filter((el): el is string => typeof el === "string")
-              .map(str => (
-                <code style={{ marginLeft: "10px" }} key={str}>
-                  {str}
-                </code>
-              ))}
-          </div>
-        )}
       </Content900>
 
       <Content900
@@ -207,18 +222,17 @@ export default function GuessKeyPage() {
               <GuessKeyTable single scores={[highlightedScore || scores[0]]} />
             </div>
 
+            <section className="mt-4">
+              <h3>Share it</h3>
+              <p>
+                Copy to clipboard:{" "}
+                <Saver href={window.location.href} title="Guess the Key" />
+              </p>
+            </section>
+
             <h3 className="mt-4">Full results</h3>
             <GuessKeyTable scores={scores} />
           </>
-        )}
-
-        {Boolean(value) && (
-          <section className="mt-4">
-            <h3>Share it</h3>
-            <p>
-              Copy to clipboard: <Saver href={window.location.href} />
-            </p>
-          </section>
         )}
       </Content900>
 
