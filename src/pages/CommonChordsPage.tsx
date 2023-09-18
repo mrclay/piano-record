@@ -44,10 +44,7 @@ function CommonChordsPage() {
 
   useEffect(() => {
     if (musicKey) {
-      const { deltaSemitones } = getInterval(
-        "C",
-        musicKey.getTonicNote().toString()
-      );
+      const { deltaSemitones } = getInterval("C", musicKey.getTonicNote());
       setOffset(deltaSemitones < 6 ? deltaSemitones : deltaSemitones - 12);
 
       const quality = uCase(musicKey.getQuality());

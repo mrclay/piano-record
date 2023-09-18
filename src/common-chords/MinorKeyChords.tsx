@@ -274,7 +274,15 @@ function MinorKeyChords({ musicKey, offset }: Keyed) {
               - {note("V")}
             </>
           ),
-          f7("subV 7", ""),
+          f7(
+            "subV 7",
+            "http://mrclay.org/piano/songs/C300C3c26C3f53C4357D3093D3ca4D3fa6D43adC32ahC39dmC3cghC42gjD32l3D39ljD3clkD42lxC31mtC38myC3bnkC41nxD31xtD38y8D3byfD41ysC30z8C37zsC3c10aC3f10cD3719gD3c19jD3019kD3f19r",
+            <>
+              {note("i")}m - {note("V/V")}7 - <b>{note("bII")}7</b>
+              {" - "}
+              {note("i")}m
+            </>
+          ),
         ]}
       />
 

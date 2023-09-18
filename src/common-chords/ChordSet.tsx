@@ -93,6 +93,8 @@ function ChordSetKeys({ close }: { close(): void }): JSX.Element {
   );
 }
 
+const isolateSong = (songUrl: string) => songUrl.split("/").pop();
+
 interface ChordSetProps {
   els: Chord[];
 }
@@ -170,11 +172,17 @@ export function ChordSet({ els }: ChordSetProps): JSX.Element {
     }
   }, [pianoSpeed, recorder]);
 
+  const setIsActive = Boolean(
+    song && els.some(el => isolateSong(el.songUrl) === song)
+  );
+
   return (
     <>
       <h2 className="chordSet d-flex align-items-center flex-wrap">
         {els.map((el, i) => {
           const [func1, func2 = ""] = el.func.split("/");
+
+          const dimmed = setIsActive && song !== isolateSong(el.songUrl);
 
           let type = el.type;
           if (!sevenths && !el.require7th) {
@@ -205,17 +213,18 @@ export function ChordSet({ els }: ChordSetProps): JSX.Element {
           return el.songUrl ? (
             <a
               key={elKey + "but"}
-              className="link-info"
+              className={`link-info ${dimmed && "opacity-50"}`}
               href={el.songUrl}
               target="_blank"
               rel="noreferrer"
               onClick={e => selectChord(e, el)}
             >
-              {el.songUrl === ref.song ? "Hey" : ""}
               {content}
             </a>
           ) : (
-            <span key={elKey}>{content}</span>
+            <span key={elKey} className={dimmed ? "opacity-50" : ""}>
+              {content}
+            </span>
           );
         })}
       </h2>
