@@ -245,6 +245,8 @@ export default function SequencePage(): JSX.Element {
 
   // Handle load
   useEffect(() => {
+    document.title = "Sequence";
+
     const stream = params.stream;
     if (typeof stream === "string") {
       const { bpm, bps, newStepData, newJoinData } = songFromStream(

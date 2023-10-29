@@ -37,6 +37,8 @@ export default function GuessKeyPage() {
     useState<GuessKeyScore | null>(null);
 
   useEffect(() => {
+    document.title = "Guess the Key";
+
     if (!initMode && urlValue === "") {
       // Reset
       setInitMode(true);
