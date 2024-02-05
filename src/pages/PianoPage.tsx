@@ -1,6 +1,7 @@
 import React from "react";
 import {
   Link,
+  Navigate,
   useLocation,
   useNavigate,
   useParams,
@@ -72,6 +73,17 @@ export default function Wrapper() {
   const [searchParams] = useSearchParams();
   const [pianoSpeed] = useStore.pianoSpeed();
   const sfStorage = useSfStorage();
+
+  const hash = location.hash;
+  if (hash.startsWith("#s=")) {
+    return <Navigate to={Paths.pianoPrefix(`/songs/${hash.substring(3)}`)} />;
+  } else {
+    const segments = pathname.split("/").filter(el => el.trim() !== "");
+    if (segments.length < 2) {
+      return <Navigate to={Paths.pianoPrefix(`/record`)} />;
+    }
+  }
+
   return (
     <PianoPage
       key={pathname}

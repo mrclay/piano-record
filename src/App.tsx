@@ -44,7 +44,7 @@ const App = () => {
         />
         <Route
           path={Paths.pianoPrefix("/")}
-          element={<Navigate to={Paths.pianoPrefix("/record")} />}
+          element={PathKeyedComponent(AsyncPiano)}
         />
         <Route
           path={Paths.chordPrefix("/:notes/:title")}
