@@ -1,5 +1,5 @@
-import Key from "../Key";
-import { ScoredChord, ScoringAttribute } from "./scoring";
+import type Key from "../Key";
+import type { ScoredChord, ScoringAttribute } from "./scoring";
 
 export interface ScoreBoost {
   readonly boost: number;
@@ -61,12 +61,12 @@ export function calculateProgressionBoosts(
 ): ScoreBoost[] {
   const ret: ScoreBoost[] = [];
 
-  const first = progression[0];
+  const first = progression[0] as ScoredChord | undefined;
   if (first && first.type === "match" && first.attrs.includes("tonic")) {
     ret.push(Boosts.tonicFirst);
   }
 
-  const last = progression[progression.length - 1];
+  const last = progression[progression.length - 1] as ScoredChord | undefined;
   if (last && last.type === "match" && last.attrs.includes("tonic")) {
     ret.push(Boosts.tonicLast);
   }

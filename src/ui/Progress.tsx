@@ -1,11 +1,11 @@
-import React from "react";
+import { component$ } from "@builder.io/qwik";
 
 export interface ProgressProps {
   ratio: number;
   steps?: [active: number, total: number];
 }
 
-export default function Progress({ ratio, steps }: ProgressProps) {
+const Progress = component$(({ ratio, steps }: ProgressProps) => {
   const percentage = Math.round(
     (steps ? (steps[0] + 1) / steps[1] : ratio) * 100
   );
@@ -16,13 +16,15 @@ export default function Progress({ ratio, steps }: ProgressProps) {
 
   return (
     <div
-      className="progress"
+      class="progress"
       role="progressbar"
       aria-valuenow={percentage}
       aria-valuemin={0}
       aria-valuemax={100}
     >
-      <div className="progress-bar" style={style} />
+      <div class="progress-bar" style={style} />
     </div>
   );
-}
+});
+
+export default Progress;

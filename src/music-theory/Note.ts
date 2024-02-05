@@ -1,4 +1,5 @@
-import { PitchClass, getPitchClass, incPitchClass } from "./PitchClass";
+import type { PitchClass } from "./PitchClass";
+import { getPitchClass, incPitchClass } from "./PitchClass";
 import {
   readNotePattern,
   readAccidentalsMap,

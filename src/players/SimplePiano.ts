@@ -1,6 +1,6 @@
 import * as Tone from "tone";
-import * as C from "../constants";
-import { Playable } from "./index";
+import type { Playable } from "./index";
+import Paths from "~/Paths";
 
 export default class SimplePiano implements Playable {
   sampler;
@@ -63,7 +63,7 @@ export default class SimplePiano implements Playable {
       const sampler = new Tone.Sampler({
         urls,
         release: 1,
-        baseUrl: C.SAMPLES_URL,
+        baseUrl: Paths.getSamplesUrl() + "/",
         onload: () => res(sampler),
         volume,
       }).toDestination();

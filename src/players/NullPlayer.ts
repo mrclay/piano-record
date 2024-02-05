@@ -1,4 +1,4 @@
-import { Playable } from "./index";
+import type { Playable } from "./index";
 
 const noop = () => 0;
 

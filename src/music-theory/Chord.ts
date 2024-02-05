@@ -1,7 +1,8 @@
 import Note from "./Note";
 import { readNotePattern } from "./constants";
 import { boundModulo } from "./CircularSet";
-import { ChordType, ChordTypes } from "./ChordType";
+import type { ChordType } from "./ChordType";
+import { ChordTypes } from "./ChordType";
 
 export interface Chord {
   root: Note;

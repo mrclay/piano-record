@@ -1,4 +1,5 @@
-import Note, { FlexNote } from "./Note";
+import type { FlexNote } from "./Note";
+import Note from "./Note";
 import { boundModulo } from "./CircularSet";
 
 interface Interval {

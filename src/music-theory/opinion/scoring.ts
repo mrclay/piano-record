@@ -1,5 +1,6 @@
 import Key from "../Key";
-import { Chord, getChordPitches, parseChord } from "../Chord";
+import type { Chord } from "../Chord";
+import { getChordPitches, parseChord } from "../Chord";
 import { Char, majorKeys, minorKeys, ThirdQuality } from "../constants";
 import {
   chordIsDiminished,
@@ -7,11 +8,11 @@ import {
   getChordTypeQuality,
 } from "../ChordType";
 import { commonChords } from "./chord-usage";
+import type { ScoreBoost } from "./score-boosts";
 import {
   Boosts,
   calculateChordBoosts,
   calculateProgressionBoosts,
-  ScoreBoost,
 } from "./score-boosts";
 
 // Notes about the chord that may affect scoring later.
@@ -62,6 +63,7 @@ function scoreChord(key: Key, given: Chord): ScoredChord {
 
   const candidates: MatchedChord[] = Object.entries(knownChords)
     .map(([name, usageScore]) => {
+      // eslint-disable-next-line prefer-const
       let [roman, type] = name.split(" ");
       const root = rootFinderKey.getNoteFromRoman(roman).toString();
       const chordInKey = parseChord(`${root}${type}`);
@@ -147,7 +149,7 @@ function scoreChord(key: Key, given: Chord): ScoredChord {
     }
     return a.usageScore < b.usageScore ? 1 : -1;
   });
-  const topCandidate = candidates[0];
+  const topCandidate = candidates[0] as MatchedChord | undefined;
 
   return topCandidate || nonMatch;
 }
@@ -155,6 +157,7 @@ function scoreChord(key: Key, given: Chord): ScoredChord {
 // Set a Key here to limit scoring
 const DEBUG_KEY: Key | null = null;
 
+// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
 const allKeys: Key[] = DEBUG_KEY
   ? [DEBUG_KEY]
   : [
@@ -176,7 +179,7 @@ export interface BoostCollection {
 export const scoreProgression = (chords: Chord[]) => {
   return allKeys
     .map(key => {
-      const progression = chords.map((chord, idx) => scoreChord(key, chord));
+      const progression = chords.map(chord => scoreChord(key, chord));
 
       // Scores with chord-specific boosts added in
       const chordScores = progression.map(chord => {

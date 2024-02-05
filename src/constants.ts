@@ -1,11 +1,4 @@
-import { NavigateFunction } from "react-router-dom";
-
-import { Command } from "./Ops";
-
-export const SAMPLES_URL =
-  process.env.NODE_ENV === "production"
-    ? "//mrclay.org/piano/media/"
-    : "/media/";
+import type { Command } from "./Ops";
 
 export const RANGE = [36, 96];
 export const TIME_RESOLUTION_DIVISOR = 4;
@@ -28,13 +21,6 @@ export const MIDI1_PEDAL = 64;
 export const MIDI2_RELEASE_VELOCITY = 0;
 
 export const DEFAULT_TITLE = "Untitled";
-
-export interface RouteComponentProps<T extends object = {}> {
-  navigate: NavigateFunction;
-  params: T;
-  pathname: string;
-  transpose: string;
-}
 
 /**
  * 1. Play us a song!!!

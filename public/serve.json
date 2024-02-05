@@ -1,0 +1,9 @@
+{
+  "rewrites": [
+    { "source": "/chord/**", "destination": "/chord/index.html" },
+    { "source": "/piano/**", "destination": "/piano/index.html" },
+    { "source": "/sequence/**", "destination": "/sequence/index.html" },
+    { "source": "/guess-the-key/**", "destination": "/guess-the-key/index.html" },
+    { "source": "/common-chords/**", "destination": "/common-chords/index.html" }
+  ]
+}

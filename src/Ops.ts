@@ -58,7 +58,7 @@ const Ops = {
 
     const pattern = /[A-Z][a-z0-9]+/g;
     let token;
-    let operations = [];
+    const operations = [];
 
     while ((token = pattern.exec(stream))) {
       operations.push(Ops.decodeOp(token[0], offset));

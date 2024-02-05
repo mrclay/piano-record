@@ -1,6 +1,8 @@
 import CircularSet from "./CircularSet";
-import Note, { FlexNote } from "./Note";
-import { degreeFromRoman, FlexDegree } from "./Degree";
+import type { FlexNote } from "./Note";
+import Note from "./Note";
+import type { FlexDegree } from "./Degree";
+import { degreeFromRoman } from "./Degree";
 import { diatonicOffsets, readAccidentalsMap, ThirdQuality } from "./constants";
 import { getInterval } from "./Interval";
 

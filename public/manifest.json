@@ -1,0 +1,9 @@
+{
+  "$schema": "https://json.schemastore.org/web-manifest-combined.json",
+  "name": "piano-record",
+  "short_name": "mrclay.org",
+  "start_url": "/chord/",
+  "display": "standalone",
+  "background_color": "#fff",
+  "description": "Music apps"
+}
