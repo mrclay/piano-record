@@ -7,13 +7,17 @@ import {
 } from "@builder.io/qwik";
 import { Link, useLocation, useNavigate } from "@builder.io/qwik-city";
 import type { DocumentHead } from "@builder.io/qwik-city";
-import { Container900, Content900, H1, HeadingNav, HrFinal } from "~/ui/Common";
-import Paths from "~/Paths";
+
+import BigPlay from "~/ui/BigPlay";
 import Keyboard from "~/ui/Keyboard";
+import Ops from "~/Ops";
+import Paths from "~/Paths";
 import type { ActiveKeys } from "~/Piano";
 import { getPiano } from "~/Piano";
-import BigPlay from "~/ui/BigPlay";
 import Title from "~/ui/Title";
+import Saver from "~/ui/Saver";
+import SoundSelector, { useSfParams } from "~/ui/SoundSelector";
+import { Container900, Content900, H1, HeadingNav, HrFinal } from "~/ui/Common";
 
 type Action = "stop" | "play" | "setTitle";
 
@@ -21,7 +25,8 @@ const example = Paths.chordPrefix("/43,56,60,62,65/G7b9sus");
 // http://localhost:5173/chord/69,47,82,60?sf=Mellotron.mk2_flute
 
 const ChordPage = component$(() => {
-  const { url } = useLocation();
+  const sfParams = useSfParams();
+  const loc = useLocation();
   const navigate = useNavigate();
 
   const activeKeys = useSignal<ActiveKeys>(new Set());
@@ -29,11 +34,39 @@ const ChordPage = component$(() => {
   const action = useSignal<Action>("stop");
   const timeout = useSignal(null as number | null);
 
+  const notesStr =
+    loc.url.pathname
+      .toString()
+      .split("/")
+      .filter(el => el.trim() !== "")[1] || "";
+
+  useTask$(({ track }) => {
+    track(() => loc.url);
+
+    const { url } = loc;
+    const offset = parseInt(url.searchParams.get("transpose") || "0");
+    const segments = url.pathname
+      .toString()
+      .split("/")
+      .filter(el => el.trim() !== "");
+    const notes = segments[1] || "";
+    const encodedTitle = segments[2] || "";
+
+    const initActiveKeys: ActiveKeys = new Set();
+    const notesArr = notes ? notes.split(",") : [];
+    notesArr.forEach(note => {
+      initActiveKeys.add(parseInt(note) + offset);
+    });
+    activeKeys.value = initActiveKeys;
+    title.value = decodeURIComponent(encodedTitle || "");
+    action.value = "stop";
+  });
+
   const reset = $(() => {
-    //action.value = "stop";
+    action.value = "stop";
     getPiano().stopAll();
-    // activeKeys.value = new Set();
-    // title.value = "";
+    activeKeys.value = new Set();
+    title.value = "";
     navigate(Paths.chordPrefix("/"));
   });
 
@@ -50,10 +83,35 @@ const ChordPage = component$(() => {
     activeKeys.value = ret;
   });
 
-  const save = $(() => {});
+  const save = $((replaceState = false) => {
+    const notes: number[] = [];
+    notes.push(...activeKeys.value.values());
+
+    if (!notes.length) {
+      return;
+    }
+
+    let path = notes.join(",");
+    if (title.value) {
+      path += "/" + Ops.fixedEncodeURIComponent(title.value);
+    }
+
+    const query = sfParams.toString();
+    const url = Paths.chordPrefix(path) + (query ? `?${query}` : ``);
+    navigate(url, { replaceState });
+  });
 
   // eslint-disable-next-line qwik/no-use-visible-task
   useVisibleTask$(async ({ cleanup }) => {
+    if (location.hash) {
+      // legacy URLs
+      const m = location.hash.match(/n=([\d,]+)(?:&c=(.*))?/);
+      if (m) {
+        const path = m[2] ? `/${m[1]}/${m[2]}` : `/${m[1]}`;
+        location.href = Paths.chordPrefix(path);
+      }
+    }
+
     document.title = "Simple Chord";
 
     function localReset() {
@@ -75,22 +133,24 @@ const ChordPage = component$(() => {
 
     const piano = getPiano();
 
-    if (timeout.value) {
-      clearTimeout(timeout.value);
+    if (timeout.value && typeof window !== "undefined") {
+      window.clearTimeout(timeout.value);
     }
     piano.stopAll();
 
     if (action.value === "setTitle") {
-      // save(null, true);
       action.value = "stop";
+      save(true);
       return;
     }
 
     if (action.value === "play") {
       activeKeys.value.forEach(note => piano.startNote(note));
-      timeout.value = window.setTimeout(() => {
-        action.value = "stop";
-      }, 5000);
+      if (typeof window !== "undefined") {
+        timeout.value = window.setTimeout(() => {
+          action.value = "stop";
+        }, 5000);
+      }
     }
   });
 
@@ -124,7 +184,7 @@ const ChordPage = component$(() => {
       </Content900>
 
       <Keyboard
-        key={url.toString()}
+        key={loc.url.toString()}
         activeKeys={activeKeys.value}
         onKeyClick={onKeyClick}
       />
@@ -147,7 +207,7 @@ const ChordPage = component$(() => {
 
         <button
           type="button"
-          onClick$={save}
+          onClick$={() => save()}
           id="save"
           class="btn btn-primary med-btn"
           style={{ marginLeft: "1em" }}
@@ -156,22 +216,22 @@ const ChordPage = component$(() => {
         </button>
       </Container900>
 
-      {/*<Content900>*/}
-      {/*  <SoundSelector />*/}
-      {/*  <PianoShepardMode piano={piano} />*/}
-      {/*</Content900>*/}
+      <Content900>
+        <SoundSelector />
+        {/*<PianoShepardMode piano={piano} />*/}
+      </Content900>
 
-      {/*<Content900>*/}
-      {/*  {params.notes && (*/}
-      {/*    <section>*/}
-      {/*      <h3>Share it</h3>*/}
-      {/*      <p>*/}
-      {/*        Copy to clipboard:{" "}*/}
-      {/*        <Saver href={window.location.href} title={title} />*/}
-      {/*      </p>*/}
-      {/*    </section>*/}
-      {/*  )}*/}
-      {/*</Content900>*/}
+      <Content900>
+        {notesStr !== "" && (
+          <section>
+            <h3>Share it</h3>
+            <p>
+              Copy to clipboard:{" "}
+              <Saver href={loc.url.toString()} title={title.value} />
+            </p>
+          </section>
+        )}
+      </Content900>
 
       <HrFinal />
     </div>

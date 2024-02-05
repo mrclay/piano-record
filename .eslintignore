@@ -58,8 +58,6 @@ src/ui/PianoShepardMode.tsx
 src/ui/PianoSpeed.tsx
 src/ui/Pie.tsx
 src/ui/Preview.tsx
-src/ui/Saver.tsx
 src/ui/Sequencer/index.tsx
 src/ui/SongChords.tsx
-src/ui/SoundSelector.tsx
 src/ui/Status.tsx

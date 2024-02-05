@@ -1,41 +1,36 @@
-import {
-  atoms,
-  pianoSpec,
-  PlayerSpec,
-  playerSpecFromUrl,
-  useStore,
-} from "../store";
-import { availableInstruments, SoundFont } from "../players";
-import { useRef } from "react";
+import { component$, useContext, useSignal, $ } from "@builder.io/qwik";
+import { availableInstruments, SoundFont } from "~/players";
+import { CTX } from "~/root";
+import type { PlayerSpec } from "~/state";
+import { pianoSpec } from "~/state";
 
-export default function SoundSelector() {
-  const [playerSpec, setPlayerSpec] = useStore.playerSpec();
-  const [playerLoading] = useStore.playerLoading();
-  const undosRef = useRef<PlayerSpec[]>([]);
+const SoundSelector = component$(() => {
+  const state = useContext(CTX);
+  const undosRef = useSignal<PlayerSpec[]>([]);
 
-  const update = (spec: PlayerSpec) => {
-    undosRef.current.push(playerSpec);
-    setPlayerSpec(spec);
-  };
-  const undo = () => {
-    const popped = undosRef.current.pop();
+  const update = $((spec: PlayerSpec) => {
+    undosRef.value.push(state.playerSpec);
+    state.playerSpec = spec;
+  });
+  const undo = $(() => {
+    const popped = undosRef.value.pop();
     if (popped) {
-      setPlayerSpec(popped);
+      state.playerSpec = popped;
     }
-  };
+  });
 
-  const { sf, name } = playerSpec;
+  const { sf, name } = state.playerSpec;
 
   return (
     <div style={{ marginTop: "1rem" }}>
-      <span className="sound-selectors">
+      <span class="sound-selectors">
         <label>
           Instrument{" "}
           <select
-            className="form-select"
+            class="form-select"
             value={name}
-            onChange={e => {
-              const name = e.target.value;
+            onChange$={(_, currentTarget) => {
+              const name = currentTarget.value;
               update({ sf, name });
             }}
           >
@@ -53,13 +48,13 @@ export default function SoundSelector() {
         <label>
           Soundfont{" "}
           <select
-            className="form-select"
+            class="form-select"
             value={sf}
-            onChange={e => {
-              const newSf = e.target.value as SoundFont;
+            onChange$={(_, currentTarget) => {
+              const newSf = currentTarget.value as SoundFont;
               const available = availableInstruments[newSf];
               const newName = available!.includes(name)
-                ? playerSpec.name
+                ? state.playerSpec.name
                 : available![0];
               update({ sf: newSf, name: newName });
             }}
@@ -71,54 +66,48 @@ export default function SoundSelector() {
               ))}
           </select>
         </label>
-        {playerLoading && (
-          <span className="sound-selectors--loading">Loading...</span>
+        {state.playerLoading && (
+          <span class="sound-selectors--loading">Loading...</span>
         )}
       </span>
       <button
         type="button"
-        className="btn btn-link"
+        class="btn btn-link"
         disabled={sf === SoundFont.TonePiano && name === "acoustic_grand_piano"}
-        onClick={e => {
-          e.preventDefault();
+        preventdefault:click
+        onClick$={() =>
           update({
             sf: SoundFont.TonePiano,
             name: "acoustic_grand_piano",
-          });
-        }}
+          })
+        }
       >
         Default Piano
       </button>
       <button
         type="button"
-        className="btn btn-link"
-        disabled={undosRef.current.length === 0}
-        onClick={e => {
-          e.preventDefault();
-          undo();
-        }}
+        class="btn btn-link"
+        disabled={undosRef.value.length === 0}
+        preventdefault:click
+        onClick$={() => undo()}
       >
         Undo
       </button>
     </div>
   );
-}
+});
 
-export interface UseSfStorage {
-  saveSf(params?: URLSearchParams): URLSearchParams;
-}
+export default SoundSelector;
 
-export function useSfStorage(): UseSfStorage {
-  const [playerSpec] = useStore.playerSpec();
+export function useSfParams() {
+  const { playerSpec } = useContext(CTX);
 
-  function saveSf(params = new URLSearchParams()) {
-    if (playerSpec === pianoSpec) {
-      params.delete("sf");
-    } else {
-      params.set("sf", `${playerSpec.sf}.${playerSpec.name}`);
-    }
-    return params;
+  const sfparams = new URLSearchParams();
+  if (JSON.stringify(playerSpec) === JSON.stringify(pianoSpec)) {
+    sfparams.delete("sf");
+  } else {
+    sfparams.set("sf", `${playerSpec.sf}.${playerSpec.name}`);
   }
 
-  return { saveSf };
+  return sfparams;
 }

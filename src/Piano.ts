@@ -27,7 +27,7 @@ export default class Piano extends EventTarget {
   activeKeys: ActiveKeys = new Set();
   player: Playable;
   monitorMidi = true;
-  shepardMode = true;
+  shepardMode = false;
 
   constructor(player: Playable) {
     super();
