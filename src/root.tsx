@@ -18,6 +18,7 @@ import { useRootSoundManager } from "~/useRootSoundManager";
 
 import "./index.scss";
 import "./ui/Keyboard/index.scss";
+import { useSpaRoot } from "~/useSpaRouter";
 
 export const CTX = createContextId<State>("all");
 
@@ -45,6 +46,8 @@ export default component$(() => {
       sine.stop();
     });
   });
+
+  useSpaRoot();
 
   useRootSoundManager(state);
 

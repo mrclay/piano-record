@@ -5,9 +5,10 @@ import {
   useTask$,
   useVisibleTask$,
 } from "@builder.io/qwik";
-import { Link, useLocation, useNavigate } from "@builder.io/qwik-city";
+import { useLocation } from "@builder.io/qwik-city";
 import type { DocumentHead } from "@builder.io/qwik-city";
 
+import { useSpaRouter } from "~/useSpaRouter";
 import BigPlay from "~/ui/BigPlay";
 import Keyboard from "~/ui/Keyboard";
 import Ops from "~/Ops";
@@ -27,25 +28,17 @@ const example = Paths.chordPrefix("/43,56,60,62,65/G7b9sus");
 const ChordPage = component$(() => {
   const sfParams = useSfParams();
   const loc = useLocation();
-  const navigate = useNavigate();
 
   const activeKeys = useSignal<ActiveKeys>(new Set());
   const title = useSignal("");
   const action = useSignal<Action>("stop");
   const timeout = useSignal(null as number | null);
 
-  const notesStr =
-    loc.url.pathname
-      .toString()
-      .split("/")
-      .filter(el => el.trim() !== "")[1] || "";
-
-  useTask$(({ track }) => {
-    track(() => loc.url);
-
-    const { url } = loc;
-    const offset = parseInt(url.searchParams.get("transpose") || "0");
-    const segments = url.pathname
+  const urlUpdate = $((url: URL) => {
+    const pathname = url.pathname;
+    const searchParams = url.searchParams;
+    const offset = parseInt(searchParams.get("transpose") || "0");
+    const segments = pathname
       .toString()
       .split("/")
       .filter(el => el.trim() !== "");
@@ -61,6 +54,14 @@ const ChordPage = component$(() => {
     title.value = decodeURIComponent(encodedTitle || "");
     action.value = "stop";
   });
+
+  const { navigate } = useSpaRouter(urlUpdate);
+
+  const notesStr =
+    loc.url.pathname
+      .toString()
+      .split("/")
+      .filter(el => el.trim() !== "")[1] || "";
 
   const reset = $(() => {
     action.value = "stop";
@@ -98,7 +99,7 @@ const ChordPage = component$(() => {
 
     const query = sfParams.toString();
     const url = Paths.chordPrefix(path) + (query ? `?${query}` : ``);
-    navigate(url, { replaceState });
+    navigate(url, replaceState);
   });
 
   // eslint-disable-next-line qwik/no-use-visible-task
@@ -174,9 +175,9 @@ const ChordPage = component$(() => {
 
         <p>
           Wanna capture a{" "}
-          <Link prefetch={false} href={example}>
+          <button type="button" onClick$={() => navigate(example)}>
             chord
-          </Link>{" "}
+          </button>{" "}
           or share it with others? Tap some notes or play your MIDI keyboard
           (Chrome only), and click <i>Save</i>. You can share the resulting page
           URL or bookmark it.
