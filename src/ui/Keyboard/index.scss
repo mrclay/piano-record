@@ -104,7 +104,8 @@
     }
   }
 
-  .white, .black {
+  .white,
+  .black {
     > span.active {
       background: rgb(var(--bs-info-rgb));
     }

@@ -1,40 +1,37 @@
-import React, { MouseEventHandler, useCallback, useMemo } from "react";
-
-import { ActiveKeys } from "../../Piano";
-
-import "./index.scss";
+import type { QRL } from "@builder.io/qwik";
+import { $, component$ } from "@builder.io/qwik";
 import * as C from "../../constants";
+import type { ActiveKeys } from "~/Piano";
+import "./index.scss";
 
 interface KeyboardProps {
   activeKeys: ActiveKeys;
-  onKeyClick?(note: number): void;
+  onKeyClick?: QRL<(note: number) => void>;
 }
 
-export default function Keyboard({ activeKeys, onKeyClick }: KeyboardProps) {
-  const { whites, blacks } = useMemo(() => getPianoKeyLayout(), []);
+const Keyboard = component$(({ activeKeys, onKeyClick }: KeyboardProps) => {
+  const { whites, blacks } = getPianoKeyLayout();
 
-  const handleKey: MouseEventHandler<HTMLDivElement> = useCallback(
-    e => {
-      e.preventDefault();
+  const handleKey = $((e: Event) => {
+    const t = e.target;
+    if (!(t instanceof HTMLSpanElement) || !t.dataset.note || !onKeyClick) {
+      return;
+    }
 
-      const t = e.target;
-      if (!(t instanceof HTMLSpanElement) || !t.dataset.note || !onKeyClick) {
-        return;
-      }
-
-      const note = Number(t.dataset.note);
-      onKeyClick(note);
-    },
-    [onKeyClick]
-  );
+    onKeyClick(Number(t.dataset.note));
+  });
 
   return (
-    <div className={`Keyboard Keyboard--traditional`} onMouseDown={handleKey}>
-      <div className={onKeyClick ? "piano" : "piano noinput"}>
-        <div className="white">
+    <div
+      class={`Keyboard Keyboard--traditional`}
+      preventdefault:mousedown
+      onMouseDown$={handleKey}
+    >
+      <div class={onKeyClick ? "piano" : "piano noinput"}>
+        <div class="white">
           {whites.map(({ note }) => renderKey(activeKeys.has(note), note))}
         </div>
-        <div className="black">
+        <div class="black">
           {blacks.map(({ note, left }) =>
             renderKey(activeKeys.has(note), note, left)
           )}
@@ -42,13 +39,13 @@ export default function Keyboard({ activeKeys, onKeyClick }: KeyboardProps) {
       </div>
     </div>
   );
-}
+});
 
 const renderKey = (active: boolean, note: number, left = 0, isJoin = false) => (
   <span
     key={note}
     data-note={note}
-    className={(active ? "active " : " ") + (isJoin ? "joined " : " ")}
+    class={(active ? "active " : " ") + (isJoin ? "joined " : " ")}
     style={{ left: left + "px" }}
   />
 );
@@ -77,3 +74,5 @@ export function getPianoKeyLayout() {
 
   return { whites, blacks };
 }
+
+export default Keyboard;

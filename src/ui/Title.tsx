@@ -1,51 +1,53 @@
-import React, { useEffect, useRef, useState } from "react";
-
-import { DEFAULT_TITLE } from "../constants";
+import type { QRL } from "@builder.io/qwik";
+import { $, component$, useSignal, useTask$ } from "@builder.io/qwik";
+import { DEFAULT_TITLE } from "~/constants";
 
 interface TitleProps {
-  onChange(title: string): void;
+  onChange: QRL<(title: string) => void>;
   title: string;
 }
 
-export default function Title({ onChange, title }: TitleProps) {
-  const inputRef = useRef<HTMLInputElement>(null);
-  const [value, setValue] = useState(title || "");
-  const [saved, setSaved] = useState(value);
-  const [isEditing, setIsEditing] = useState(false);
+const Title = component$(({ onChange, title }: TitleProps) => {
+  const inputRef = useSignal<Element | undefined>(undefined);
+  const value = useSignal(title || "");
+  const saved = useSignal(value.value);
+  const isEditing = useSignal(false);
 
-  useEffect(() => {
-    if (isEditing && inputRef.current) {
-      inputRef.current.focus();
-      inputRef.current.select();
+  useTask$(({ track }) => {
+    track(() => [isEditing.value, inputRef.value]);
+
+    if (isEditing.value && inputRef.value instanceof HTMLInputElement) {
+      inputRef.value.focus();
+      inputRef.value.select();
     }
-  }, [isEditing]);
+  });
 
-  useEffect(() => {
-    setValue(title || "");
-  }, [title]);
+  useTask$(({ track }) => {
+    track(() => title);
+    value.value = title || "";
+  });
 
-  const save = () => {
-    setIsEditing(false);
-    onChange(value);
-  };
+  const save = $(() => {
+    isEditing.value = false;
+    onChange(value.value);
+  });
 
-  const escape = () => {
-    setValue(saved);
-    setIsEditing(false);
-  };
+  const escape = $(() => {
+    value.value = saved.value;
+    isEditing.value = false;
+  });
 
-  const className = value ? "titled" : "untitled";
+  const className = value.value ? "titled" : "untitled";
   return (
-    <h2 className={`Title ${className}`}>
-      {isEditing ? (
+    <h2 class={`Title ${className}`}>
+      {isEditing.value ? (
         <input
           ref={inputRef}
           type="text"
           tabIndex={0}
-          value={value}
-          onInput={e => setValue(e.currentTarget.value)}
-          onBlur={save}
-          onKeyUp={e => {
+          bind:value={value}
+          onBlur$={save}
+          onKeyUp$={e => {
             if (e.key === "Enter") {
               e.preventDefault();
               save();
@@ -56,19 +58,21 @@ export default function Title({ onChange, title }: TitleProps) {
             }
             e.stopPropagation();
           }}
-          onKeyDown={e => e.stopPropagation()}
+          // onKeyDown$={e => e.stopPropagation()}
         />
       ) : (
         <button
           type="button"
-          onClick={() => {
-            setSaved(value);
-            setIsEditing(true);
+          onClick$={() => {
+            saved.value = value.value;
+            isEditing.value = true;
           }}
         >
-          {value || DEFAULT_TITLE}
+          {value.value || DEFAULT_TITLE}
         </button>
       )}
     </h2>
   );
-}
+});
+
+export default Title;

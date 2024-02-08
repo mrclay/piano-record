@@ -1,39 +1,33 @@
 // Use at root of app to manage sound loading and instance sync.
-import { useStore } from "./store";
-import { useEffect, useRef } from "react";
 import { createPlayer } from "./players";
+import { useSignal, useVisibleTask$ } from "@builder.io/qwik";
+import type { State } from "~/state";
+import { getPiano } from "~/Piano";
 
-export function useRootSoundManager() {
-  const [piano] = useStore.piano();
-  const loadingRef = useRef(false);
-  const [player, setPlayer] = useStore.player();
-  const [, setPlayerLoading] = useStore.playerLoading();
-  const [playerSpec] = useStore.playerSpec();
+export function useRootSoundManager(state: State) {
+  const loading = useSignal(false);
 
   // When playerSpec changes, load new player.
-  useEffect(() => {
-    if (loadingRef.current) {
+  // eslint-disable-next-line qwik/no-use-visible-task
+  useVisibleTask$(({ track }) => {
+    const playerSpec = track(() => state.playerSpec);
+
+    if (loading.value) {
       return;
     }
 
     console.info("Loading", playerSpec);
-    loadingRef.current = true;
-    setPlayerLoading(true);
+    loading.value = true;
+    state.playerLoading = true;
 
     // Load the desired player
     createPlayer(playerSpec.sf, playerSpec.name).then(loaded => {
       console.info("Loaded", loaded);
       if (loaded) {
-        setPlayer(loaded);
-        setPlayerLoading(false);
+        getPiano().setPlayer(loaded);
+        state.playerLoading = false;
       }
-      loadingRef.current = false;
+      loading.value = false;
     });
-  }, [playerSpec]);
-
-  // When player changes, inject into piano.
-  useEffect(() => {
-    console.info("Injecting player in piano");
-    piano.setPlayer(player);
-  }, [player]);
+  });
 }

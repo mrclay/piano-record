@@ -38,7 +38,9 @@ const pitchClasses = makePitchClasses();
 
 const pitchClassSet = new CircularSet<PitchClass>(pitchClasses);
 
-const pitchClassMap = pitchClasses.reduce<Record<string, PitchClass>>(
+const pitchClassMap = pitchClasses.reduce<
+  Record<string, PitchClass | undefined>
+>(
   (prev, curr) => ({
     ...prev,
     [curr.letter]: curr,

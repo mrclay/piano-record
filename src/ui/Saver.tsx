@@ -1,6 +1,6 @@
-import React, { useState } from "react";
-import Clipboard from "react-clipboard.js";
-
+import type { QRL } from "@builder.io/qwik";
+import { $, component$, Slot, useSignal } from "@builder.io/qwik";
+import copy from "copy-to-clipboard";
 import * as C from "../constants";
 import Ops from "../Ops";
 
@@ -9,8 +9,8 @@ interface SaverProps {
   title?: string;
 }
 
-export default function Saver({ href, title = "" }: SaverProps) {
-  const [saved, setSaved] = useState("");
+const Saver = component$(({ href, title = "" }: SaverProps) => {
+  const saved = useSignal("");
 
   const htmlize = Ops.encodeHtml;
   const url = Ops.encodeMoreURIComponents(href);
@@ -23,30 +23,54 @@ export default function Saver({ href, title = "" }: SaverProps) {
   )}</a>`;
 
   return (
-    <span key={url}>
+    <span key={url} data-href={href}>
       <Clipboard
-        className="btn btn-dark"
-        data-clipboard-text={url}
-        onSuccess={() => setSaved(url)}
+        data={url}
+        done={$(() => {
+          saved.value = url;
+        })}
       >
-        URL {saved === url && "copied!"}
+        URL {saved.value === url && "copied!"}
       </Clipboard>
       <Clipboard
-        className="btn btn-dark"
-        data-clipboard-text={markdownLink}
-        onSuccess={() => setSaved(markdownLink)}
+        data={markdownLink}
+        done={$(() => {
+          saved.value = markdownLink;
+        })}
       >
-        <i className="fa fa-code" aria-hidden="true" /> Markdown link{" "}
-        {saved === markdownLink && "copied!"}
+        <i class="fa fa-code" aria-hidden="true" /> Markdown link{" "}
+        {saved.value === markdownLink && "copied!"}
       </Clipboard>
       <Clipboard
-        className="btn btn-dark"
-        data-clipboard-text={htmlLink}
-        onSuccess={() => setSaved(htmlLink)}
+        data={htmlLink}
+        done={$(() => {
+          saved.value = htmlLink;
+        })}
       >
-        <i className="fa fa-code" aria-hidden="true" /> HTML link{" "}
-        {saved === htmlLink && "copied!"}
+        <i class="fa fa-code" aria-hidden="true" /> HTML link{" "}
+        {saved.value === htmlLink && "copied!"}
       </Clipboard>
     </span>
   );
+});
+
+interface ClipboardProps {
+  data: string;
+  done: QRL<() => void>;
 }
+
+const Clipboard = component$(({ data, done }: ClipboardProps) => {
+  return (
+    <button
+      class="btn btn-dark"
+      onClick$={$(() => {
+        copy(data);
+        done();
+      })}
+    >
+      <Slot />
+    </button>
+  );
+});
+
+export default Saver;

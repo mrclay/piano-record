@@ -1,245 +1,234 @@
-import React, {
-  MouseEvent,
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
 import {
-  Link,
-  Navigate,
-  useParams,
-  useNavigate,
-  useLocation,
-  useSearchParams,
-} from "react-router-dom";
-import * as Tone from "tone";
+  $,
+  component$,
+  useSignal,
+  useTask$,
+  useVisibleTask$,
+} from "@builder.io/qwik";
+import { useLocation } from "@builder.io/qwik-city";
+import type { DocumentHead } from "@builder.io/qwik-city";
 
-import BigPlay from "../ui/BigPlay";
-import Keyboard from "../ui/Keyboard";
-import Ops from "../Ops";
-import Paths from "../Paths";
-import { ActiveKeys } from "../Piano";
-import Title from "../ui/Title";
-import Saver from "../ui/Saver";
-import PianoShepardMode from "../ui/PianoShepardMode";
-import { useStore } from "../store";
-import SoundSelector, { useSfStorage } from "../ui/SoundSelector";
-import {
-  Container900,
-  Content900,
-  H1,
-  HeadingNav,
-  HrFinal,
-} from "../ui/Common";
-
-interface MatchItems {
-  notes?: string;
-  title?: string;
-}
+import { useSpaRouter } from "~/useSpaRouter";
+import BigPlay from "~/ui/BigPlay";
+import Keyboard from "~/ui/Keyboard";
+import Ops from "~/Ops";
+import Paths from "~/Paths";
+import type { ActiveKeys } from "~/Piano";
+import { getPiano } from "~/Piano";
+import Title from "~/ui/Title";
+import Saver from "~/ui/Saver";
+import SoundSelector, { useSfParams } from "~/ui/SoundSelector";
+import { Container900, Content900, H1, HeadingNav, HrFinal } from "~/ui/Common";
 
 type Action = "stop" | "play" | "setTitle";
 
 const example = Paths.chordPrefix("/43,56,60,62,65/G7b9sus");
 // http://localhost:5173/chord/69,47,82,60?sf=Mellotron.mk2_flute
 
-export default function ChordPage() {
-  const [piano] = useStore.piano();
-  const { saveSf } = useSfStorage();
+const ChordPage = component$(() => {
+  const sfParams = useSfParams();
+  const loc = useLocation();
 
-  const timeout = useRef<number | null>(null);
+  const activeKeys = useSignal<ActiveKeys>(new Set());
+  const title = useSignal("");
+  const action = useSignal<Action>("stop");
+  const timeout = useSignal(null as number | null);
 
-  const navigate = useNavigate();
-  const params: MatchItems = useParams();
-  const { pathname } = useLocation();
-  const [searchParams] = useSearchParams();
-  const transpose = searchParams.get("transpose") || "0";
+  const urlUpdate = $((url: URL) => {
+    const pathname = url.pathname;
+    const searchParams = url.searchParams;
+    const offset = parseInt(searchParams.get("transpose") || "0");
+    const segments = pathname
+      .toString()
+      .split("/")
+      .filter(el => el.trim() !== "");
+    const notes = segments[1] || "";
+    const encodedTitle = segments[2] || "";
 
-  const [activeKeys, setActiveKeys] = useState<ActiveKeys>(new Set());
-  const [title, setTitle] = useState("");
-  const [action, setAction] = useState<Action>("stop");
-
-  const activeKeysRef = useRef(activeKeys);
-  activeKeysRef.current = activeKeys;
-
-  const reset = useCallback(() => {
-    setAction("stop");
-    piano.stopAll();
-    setActiveKeys(new Set());
-    setTitle("");
-    navigate(Paths.chordPrefix("/"));
-  }, [navigate, piano]);
-
-  const handleTitleSet = (title: string) => {
-    setTitle(title.trim());
-    setAction("setTitle");
-  };
-
-  const onKeyClick = useCallback((note: number) => {
-    setAction("play");
-    setActiveKeys(set => {
-      const ret = new Set(set);
-      ret[ret.has(note) ? "delete" : "add"](note);
-      return ret;
-    });
-  }, []);
-
-  function handlePlay() {
-    // Hack to directly tie a keypress to sound generation so the WebAudio API
-    // will allow sound on the page.
-    const sine = new Tone.Oscillator(60, "sine").toDestination();
-    sine.volume.value = -60;
-    sine.start();
-    sine.stop();
-
-    setAction("play");
-  }
-
-  const save = useCallback(
-    (e: MouseEvent<HTMLButtonElement> | null, replaceUrl = false) => {
-      let notes: number[] = [];
-      notes.push(...activeKeys.values());
-
-      if (!notes.length) {
-        return;
-      }
-
-      let path = notes.join(",");
-      if (title) {
-        path += "/" + Ops.fixedEncodeURIComponent(title);
-      }
-
-      const url = Paths.chordPrefix(path) + `?${saveSf()}`;
-      navigate(url, {
-        replace: replaceUrl,
-      });
-    },
-    [activeKeys, navigate, title]
-  );
-
-  useEffect(() => {
-    document.title = "Simple Chord";
-    piano.addEventListener("reset", reset);
-
-    return () => {
-      piano.removeEventListener("reset", reset);
-    };
-  }, [piano, reset]);
-
-  useEffect(() => {
-    const { notes, title } = params;
-    const initActiveKeys = new Set(piano.activeKeys);
-    const offset = parseInt(transpose || "0");
-
+    const initActiveKeys: ActiveKeys = new Set();
     const notesArr = notes ? notes.split(",") : [];
     notesArr.forEach(note => {
       initActiveKeys.add(parseInt(note) + offset);
     });
+    activeKeys.value = initActiveKeys;
+    title.value = decodeURIComponent(encodedTitle || "");
+    action.value = "stop";
+  });
 
-    setActiveKeys(initActiveKeys);
-    setTitle(decodeURIComponent(title || ""));
-    setAction("stop");
-  }, [params, transpose]);
+  const { navigate } = useSpaRouter(urlUpdate);
 
-  // Handle key/action changes
-  useEffect(() => {
-    if (timeout.current) {
-      clearTimeout(timeout.current);
-    }
-    piano.stopAll();
+  const notesStr =
+    loc.url.pathname
+      .toString()
+      .split("/")
+      .filter(el => el.trim() !== "")[1] || "";
 
-    if (action === "setTitle") {
-      save(null, true);
-      setAction("stop");
+  const reset = $(() => {
+    action.value = "stop";
+    getPiano().stopAll();
+    activeKeys.value = new Set();
+    title.value = "";
+    navigate(Paths.chordPrefix("/"));
+  });
+
+  const handleTitleSet = $((newTitle: string) => {
+    title.value = newTitle.trim();
+    action.value = "setTitle";
+  });
+
+  const onKeyClick = $((note: number) => {
+    action.value = "play";
+
+    const ret = new Set(activeKeys.value);
+    ret[ret.has(note) ? "delete" : "add"](note);
+    activeKeys.value = ret;
+  });
+
+  const save = $((replaceState = false) => {
+    const notes: number[] = [];
+    notes.push(...activeKeys.value.values());
+
+    if (!notes.length) {
       return;
     }
 
-    if (action === "play") {
-      activeKeys.forEach(note => piano.startNote(note));
-
-      timeout.current = window.setTimeout(() => {
-        setAction("stop");
-      }, 5000);
+    let path = notes.join(",");
+    if (title.value) {
+      path += "/" + Ops.fixedEncodeURIComponent(title.value);
     }
-  }, [action, activeKeys, piano, save]);
 
-  if (window.location.hash) {
-    // legacy URLs
-    const m = window.location.hash.match(/n=([\d,]+)(?:&c=(.*))?/);
-    if (m) {
-      const path = m[2] ? `/${m[1]}/${m[2]}` : `/${m[1]}`;
+    const query = sfParams.toString();
+    const url = Paths.chordPrefix(path) + (query ? `?${query}` : ``);
+    navigate(url, replaceState);
+  });
 
-      return <Navigate to={Paths.chordPrefix(path)} />;
+  // eslint-disable-next-line qwik/no-use-visible-task
+  useVisibleTask$(async ({ cleanup }) => {
+    if (location.hash) {
+      // legacy URLs
+      const m = location.hash.match(/n=([\d,]+)(?:&c=(.*))?/);
+      if (m) {
+        const path = m[2] ? `/${m[1]}/${m[2]}` : `/${m[1]}`;
+        location.href = Paths.chordPrefix(path);
+      }
     }
-  }
+
+    document.title = "Simple Chord";
+
+    function localReset() {
+      action.value = "stop";
+      getPiano().stopAll();
+      activeKeys.value = new Set();
+      title.value = "";
+    }
+
+    getPiano().addEventListener("reset", localReset);
+
+    cleanup(() => {
+      getPiano().removeEventListener("reset", localReset);
+    });
+  });
+
+  useTask$(async ({ track }) => {
+    track(() => [action.value, activeKeys.value]);
+
+    const piano = getPiano();
+
+    if (timeout.value && typeof window !== "undefined") {
+      window.clearTimeout(timeout.value);
+    }
+    piano.stopAll();
+
+    if (action.value === "setTitle") {
+      action.value = "stop";
+      save(true);
+      return;
+    }
+
+    if (action.value === "play") {
+      activeKeys.value.forEach(note => piano.startNote(note));
+      if (typeof window !== "undefined") {
+        timeout.value = window.setTimeout(() => {
+          action.value = "stop";
+        }, 5000);
+      }
+    }
+  });
 
   return (
     <div>
       <HeadingNav />
 
       <Content900>
-        <div className="d-flex justify-content-between">
+        <div class="d-flex justify-content-between">
           <H1>Chord</H1>
 
           <button
             type="button"
-            onClick={reset}
+            onClick$={reset}
             id="reset"
-            className="btn btn-lg btn-link text-danger text-decoration-none"
+            class="btn btn-lg btn-link text-danger text-decoration-none"
           >
-            <i className="fa fa-trash" aria-label="Reset" /> New
+            <i class="fa fa-trash" aria-label="Reset" /> New
           </button>
         </div>
 
         <p>
-          Wanna capture a <Link to={example}>chord</Link> or share it with
-          others? Tap some notes or play your MIDI keyboard (Chrome only), and
-          click <i>Save</i>. You can share the resulting page URL or bookmark
-          it.
+          Wanna capture a{" "}
+          <button type="button" onClick$={() => navigate(example)}>
+            chord
+          </button>{" "}
+          or share it with others? Tap some notes or play your MIDI keyboard
+          (Chrome only), and click <i>Save</i>. You can share the resulting page
+          URL or bookmark it.
         </p>
       </Content900>
 
       <Keyboard
-        key={pathname}
-        activeKeys={activeKeys}
+        key={loc.url.toString()}
+        activeKeys={activeKeys.value}
         onKeyClick={onKeyClick}
       />
 
-      <Container900 className="mt-3">
+      <Container900 moreClass="mt-3">
         <BigPlay
-          isPlaying={action === "play"}
-          handlePlay={handlePlay}
-          handleStop={() => setAction("stop")}
+          isPlaying={action.value === "play"}
+          handlePlay={$(() => {
+            action.value = "play";
+          })}
+          handleStop={$(() => {
+            action.value = "stop";
+          })}
           progress={0}
           isWaiting={false}
         />
 
-        <Title title={title} onChange={handleTitleSet} />
-        {!title && "(click to rename)"}
+        <Title title={title.value} onChange={handleTitleSet} />
+        {!title.value && "(click to rename)"}
 
         <button
           type="button"
-          onClick={save}
+          onClick$={() => save()}
           id="save"
-          className="btn btn-primary med-btn"
+          class="btn btn-primary med-btn"
           style={{ marginLeft: "1em" }}
         >
-          <i className="fa fa-floppy-o" aria-hidden="true" /> <span>Save</span>
+          <i class="fa fa-floppy-o" aria-hidden="true" /> <span>Save</span>
         </button>
       </Container900>
 
       <Content900>
         <SoundSelector />
-        <PianoShepardMode piano={piano} />
+        {/*<PianoShepardMode piano={piano} />*/}
       </Content900>
 
       <Content900>
-        {params.notes && (
+        {notesStr !== "" && (
           <section>
             <h3>Share it</h3>
             <p>
               Copy to clipboard:{" "}
-              <Saver href={window.location.href} title={title} />
+              <Saver href={loc.url.toString()} title={title.value} />
             </p>
           </section>
         )}
@@ -248,4 +237,11 @@ export default function ChordPage() {
       <HrFinal />
     </div>
   );
-}
+});
+
+export default ChordPage;
+
+export const head: DocumentHead = {
+  title: "Chord page",
+  meta: [],
+};

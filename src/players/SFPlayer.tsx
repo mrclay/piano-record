@@ -1,5 +1,5 @@
-import { Player } from "soundfont-player";
-import { Playable } from "./index";
+import type { Player } from "soundfont-player";
+import type { Playable } from "./index";
 
 export default class SFPlayer implements Playable {
   instrument: Player;

@@ -5,5 +5,31 @@
     "moduleResolution": "Node",
     "allowSyntheticDefaultImports": true
   },
-  "include": ["vite.config.ts"]
+  "include": ["vite.config.ts"],
+  "exclude": [
+    "src/App.tsx",
+    "src/useLatestVersion.ts",
+    "src/useMediaQuery.ts",
+    "src/common-chords/ChordSet.tsx",
+    "src/common-chords/Intro.tsx",
+    "src/common-chords/MajorKeyChords.tsx",
+    "src/common-chords/MinorKeyChords.tsx",
+    "src/common-chords/renderers.tsx",
+    "src/common-chords/SeventhTeaser.tsx",
+    "src/common-chords/useCommonChordsQuery.ts",
+    "src/pages/CommonChordsPage.tsx",
+    "src/pages/GuessKeyPage.tsx",
+    "src/pages/PianoPage.tsx",
+    "src/pages/SequencePage.tsx",
+    "src/ui/GuessKeyTable.tsx",
+    "src/ui/Keyboard/scale-degrees.tsx",
+    "src/ui/Keyboard/ScaleDegrees.tsx",
+    "src/ui/PianoShepardMode.tsx",
+    "src/ui/PianoSpeed.tsx",
+    "src/ui/Pie.tsx",
+    "src/ui/Preview.tsx",
+    "src/ui/Sequencer/index.tsx",
+    "src/ui/SongChords.tsx",
+    "src/ui/Status.tsx"
+  ]
 }

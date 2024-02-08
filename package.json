@@ -4,35 +4,49 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "tsc && vite build",
-    "build:local": "tsc && LOCAL=1 vite build",
-    "preview": "vite preview",
-    "deploy": "scripts/deploy.sh"
+    "build": "qwik build",
+    "local": "IS_LOCALHOST=1 qwik build && npx serve dist",
+    "build.client": "vite build",
+    "build.preview": "vite build --ssr src/entry.preview.tsx",
+    "build.server": "vite build -c adapters/static/vite.config.ts",
+    "build.types": "tsc --incremental --noEmit",
+    "deploy": "scripts/deploy.sh",
+    "dev": "IS_LOCALHOST=1 vite --mode ssr",
+    "dev.debug": "node --inspect-brk ./node_modules/vite/bin/vite.js --mode ssr --force",
+    "fmt": "prettier --write .",
+    "fmt.check": "prettier --check .",
+    "lint": "eslint \"src/**/*.ts*\"",
+    "preview": "qwik build preview && vite preview --open",
+    "start": "vite --open --mode ssr",
+    "qwik": "qwik"
   },
+  "trustedDependencies": [
+    "sharp"
+  ],
   "dependencies": {
     "@types/throttle-debounce": "^5.0.0",
     "chart.js": "^4.4.0",
+    "copy-to-clipboard": "^3.3.3",
     "jotai": "^1.11.0",
     "patternomaly": "^1.3.2",
-    "react": "^18.2.0",
-    "react-clipboard.js": "^2.0.16",
-    "react-dom": "^18.2.0",
-    "react-router": "^6.4.4",
-    "react-router-dom": "^6.4.4",
     "soundfont-player": "^0.12.0",
     "throttle-debounce": "^5.0.0",
     "tone": "14.8"
   },
   "devDependencies": {
-    "@types/node": "^18.11.10",
-    "@types/react": "^18.0.24",
-    "@types/react-dom": "^18.0.8",
+    "@builder.io/qwik": "^1.4.3",
+    "@builder.io/qwik-city": "^1.4.3",
+    "@types/node": "^20.11.16",
     "@types/webmidi": "^2.0.6",
-    "@vitejs/plugin-react": "^4.0.1",
+    "@typescript-eslint/eslint-plugin": "^6.20.0",
+    "@typescript-eslint/parser": "^6.20.0",
+    "eslint": "^8.56.0",
+    "eslint-plugin-qwik": "^1.4.3",
     "prettier": "^2.8.0",
-    "sass": "^1.56.1",
-    "typescript": "^4.9.4",
-    "vite": "^4.3.9"
+    "sass": "^1.70.0",
+    "typescript": "^5.3.3",
+    "undici": "^6.6.0",
+    "vite": "^5.0.12",
+    "vite-tsconfig-paths": "^4.3.1"
   }
 }

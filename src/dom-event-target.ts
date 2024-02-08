@@ -1,24 +1,26 @@
 export class EventTarget {
-  _events: Record<string, Array<(...args: any[]) => void>> = {};
+  _events: Record<string, Array<(...args: any[]) => void> | undefined> = {};
 
   addEventListener(name: string, callback: (...args: any[]) => void): void {
     if (typeof callback !== "function") {
       return;
     }
 
-    if (!this._events[name]) {
-      this._events[name] = [];
+    let arr = this._events[name];
+    if (!arr) {
+      arr = [];
+      this._events[name] = arr;
     }
-    this._events[name].push(callback);
+    arr.push(callback);
   }
 
   removeEventListener(name: string, callback: (...args: any[]) => void): void {
-    if (!name || !callback) {
+    if (!name) {
       return;
     }
 
     const events = (this._events[name] || []).filter(
-      (listener) => callback !== listener
+      listener => callback !== listener
     );
     if (events.length) {
       this._events[name] = events;
@@ -28,8 +30,6 @@ export class EventTarget {
   }
 
   send(name: string, ...args: any[]): void {
-    (this._events[name] || []).forEach((callback) =>
-      callback.apply(this, args)
-    );
+    (this._events[name] || []).forEach(callback => callback.apply(this, args));
   }
 }

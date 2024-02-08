@@ -1,80 +1,82 @@
-import React, { FC, HTMLAttributes, PropsWithChildren } from "react";
-import { NavLink, useLocation } from "react-router-dom";
+import { component$, Slot } from "@builder.io/qwik";
 import Paths from "../Paths";
+import { Link, useLocation } from "@builder.io/qwik-city";
 
-export const H1 = ({
-  children,
-  className = "",
-}: PropsWithChildren<{ className?: string }>) => (
-  <h1 className={`h2 ${className}`}>{children}</h1>
-);
+interface CNProps {
+  moreClass?: string;
+}
 
-export const Content900 = ({
-  children,
-  className = "",
-}: PropsWithChildren<{ className?: string }>) => (
-  <div className={`mx-auto max-width-900 mt-5 mb-4 ${className}`}>
-    {children}
+export const H1 = component$<CNProps>(({ moreClass = "" }) => (
+  <h1 class={`h2 ${moreClass}`}>
+    <Slot />
+  </h1>
+));
+
+export const Content900 = component$<CNProps>(({ moreClass = "" }) => (
+  <div class={`mx-auto max-width-900 mt-5 mb-4 ${moreClass}`}>
+    <Slot />
   </div>
-);
+));
 
-export const Container900 = ({
-  children,
-  className = "",
-}: PropsWithChildren<{ className?: string }>) => (
-  <div className={`mx-auto max-width-900 ${className}`}>{children}</div>
-);
+export const Container900 = component$<CNProps>(({ moreClass = "" }) => (
+  <div class={`mx-auto max-width-900 ${moreClass}`}>
+    <Slot />
+  </div>
+));
 
-export const HrFinal = () => <hr className="HrFinal" />;
+export const HrFinal = component$(() => <hr class="HrFinal" />);
 
-interface ListItemLinkProps extends PropsWithChildren {
+interface ListItemLinkProps {
   to: string;
 }
 
-const ListItemLink: FC<ListItemLinkProps> = ({ to, ...rest }) => {
-  const { pathname } = useLocation();
+const ListItemLink = component$<ListItemLinkProps>(({ to, ...rest }) => {
+  const { url } = useLocation();
   return (
-    <NavLink
-      to={to}
+    <Link
+      href={to}
       {...rest}
-      className={
+      class={
         "d-inline-block link-light text-decoration-none" +
-        (pathname.indexOf(to) === 0 ? "active" : "")
+        (url.pathname.indexOf(to) === 0 ? "active" : "")
       }
-    />
+      prefetch={false}
+    >
+      <Slot />
+    </Link>
   );
-};
+});
 
-export const HeadingNav: FC = () => {
+export const HeadingNav = component$(() => {
   return (
-    <div className="HeadingNav d-flex flex-wrap">
+    <div class="HeadingNav d-flex flex-wrap">
       <ListItemLink to={Paths.pianoPrefix("/")}>
-        <i className="fa fa-music" aria-hidden="true" /> Melody
+        <i class="fa fa-music" aria-hidden="true" /> Melody
       </ListItemLink>
       <ListItemLink to={Paths.chordPrefix("/")}>
-        <i className="fa fa-flask" aria-hidden="true" /> Chord
+        <i class="fa fa-flask" aria-hidden="true" /> Chord
       </ListItemLink>
       <ListItemLink to={Paths.sequencePrefix("/")}>
-        <i className="fa fa-repeat" aria-hidden="true" /> Sequence
+        <i class="fa fa-repeat" aria-hidden="true" /> Sequence
       </ListItemLink>
       <ListItemLink to={Paths.guessKeyPrefix("/")}>
-        <i className="fa fa-key" aria-hidden="true" /> Guess the Key
+        <i class="fa fa-key" aria-hidden="true" /> Guess the Key
       </ListItemLink>
       <ListItemLink to={Paths.commonChordsPrefix("/C-major")}>
-        <i className="fa fa-book" aria-hidden="true" /> Common Chords
+        <i class="fa fa-book" aria-hidden="true" /> Common Chords
       </ListItemLink>
       <a
-        className="d-inline-block link-light text-decoration-none opacity-50"
+        class="d-inline-block link-light text-decoration-none opacity-50"
         href="https://github.com/mrclay/piano-record"
       >
-        <i className="fa fa-github" aria-hidden="true" /> Source code
+        <i class="fa fa-github" aria-hidden="true" /> Source code
       </a>
       <a
-        className="d-inline-block link-light text-decoration-none opacity-50"
+        class="d-inline-block link-light text-decoration-none opacity-50"
         href="/music/"
       >
         Steve's music
       </a>
     </div>
   );
-};
+});

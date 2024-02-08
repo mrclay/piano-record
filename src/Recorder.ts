@@ -1,6 +1,7 @@
 import * as C from "./constants";
-import { TimedOp, Op } from "./Ops";
-import Piano, { PianoEvents } from "./Piano";
+import type { TimedOp, Op } from "./Ops";
+import type Piano from "./Piano";
+import { PianoEvents } from "./Piano";
 import { EventTarget } from "./dom-event-target";
 
 export type RecorderProgressListener = (progress: number) => void;
@@ -186,7 +187,7 @@ export default class Recorder extends EventTarget {
     }
 
     while (this.playAllIntervals.length) {
-      let interval = this.playAllIntervals.pop();
+      const interval = this.playAllIntervals.pop();
       clearInterval(interval);
     }
 

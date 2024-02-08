@@ -1,7 +1,10 @@
 import { EventTarget } from "./dom-event-target";
 import * as C from "./constants";
-import Ops, { MidiOp, Op } from "./Ops";
-import { getShepardTones, isShepardToneActive, Playable } from "./players";
+import type { MidiOp, Op } from "./Ops";
+import Ops from "./Ops";
+import type { Playable } from "./players";
+import { getShepardTones, isShepardToneActive } from "./players";
+import NullPlayer from "~/players/NullPlayer";
 
 export type ActiveKeys = Set<number>;
 
@@ -24,7 +27,7 @@ export default class Piano extends EventTarget {
   activeKeys: ActiveKeys = new Set();
   player: Playable;
   monitorMidi = true;
-  shepardMode = true;
+  shepardMode = false;
 
   constructor(player: Playable) {
     super();
@@ -105,6 +108,11 @@ export default class Piano extends EventTarget {
   }
 
   setupMidi() {
+    if (typeof navigator === "undefined") {
+      return;
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     if (!navigator.requestMIDIAccess) {
       this.monitorMidi = false;
       return;
@@ -113,7 +121,7 @@ export default class Piano extends EventTarget {
     navigator.requestMIDIAccess().then(midiAccess => {
       midiAccess.inputs.forEach(input => {
         input.addEventListener("midimessage", e => {
-          if (!this.monitorMidi) {
+          if (!this.monitorMidi || !(e instanceof MIDIMessageEvent)) {
             return;
           }
 
@@ -133,4 +141,15 @@ export default class Piano extends EventTarget {
       });
     });
   }
+}
+
+let instance: Piano = new Piano(new NullPlayer());
+
+export function getPiano() {
+  return instance;
+}
+
+export function setPiano(piano: Piano) {
+  instance = piano;
+  return instance;
 }

@@ -7,6 +7,15 @@ const Paths = {
   commonChordsPath: "/common-chords/",
   guessKeyPath: "/guess-the-key/",
 
+  getSamplesUrl() {
+    const origin = location.origin;
+    if (origin.includes("localhost")) {
+      return "/media";
+    }
+
+    return origin + "/piano/media";
+  },
+
   pianoPrefix(path = "") {
     path = path.replace(/^\//, "");
     return Paths.pianoPath + path;
