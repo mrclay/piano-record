@@ -175,9 +175,9 @@ const ChordPage = component$(() => {
 
         <p>
           Wanna capture a{" "}
-          <button type="button" onClick$={() => navigate(example)}>
+          <a href="#" preventdefault:click onClick$={() => navigate(example)}>
             chord
-          </button>{" "}
+          </a>{" "}
           or share it with others? Tap some notes or play your MIDI keyboard
           (Chrome only), and click <i>Save</i>. You can share the resulting page
           URL or bookmark it.
