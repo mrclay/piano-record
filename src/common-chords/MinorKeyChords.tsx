@@ -2,6 +2,7 @@ import React from "react";
 import { ChordSet } from "./ChordSet";
 import { Keyed } from "./Intro";
 import { getRenderers } from "./renderers";
+import { ClickToPlay } from "./ClickToPlay";
 
 function MinorKeyChords({ musicKey, offset }: Keyed) {
   const { f, f7, rom, note } = getRenderers(musicKey, offset);
@@ -23,6 +24,8 @@ function MinorKeyChords({ musicKey, offset }: Keyed) {
         Many minor key songs are made only from the these six{" "}
         <strong>diatonic chords</strong> (built solely with scale tones).
       </p>
+
+      <ClickToPlay />
 
       <ChordSet
         els={[

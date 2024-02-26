@@ -3,6 +3,7 @@ import { ChordSet } from "./ChordSet";
 import { Keyed } from "./Intro";
 import { getRenderers } from "./renderers";
 import { SeventhTeaser } from "./SeventhTeaser";
+import { ClickToPlay } from "./ClickToPlay";
 
 function MajorKeyChords({ musicKey, offset }: Keyed) {
   const { f, f7, rom, note } = getRenderers(musicKey, offset);
@@ -23,6 +24,8 @@ function MajorKeyChords({ musicKey, offset }: Keyed) {
         Many major key songs are made only from the first six{" "}
         <strong>diatonic chords</strong> (built solely with scale tones).
       </p>
+
+      <ClickToPlay />
 
       <ChordSet
         els={[
@@ -85,7 +88,7 @@ function MajorKeyChords({ musicKey, offset }: Keyed) {
         els={[
           f7(
             "V/IV 7",
-            "https://mrclay.org/piano/songs/C300C376C40iC466dD40f5D37f6D30f8D46fkC35gbC3cgfC45gqD45roD35rqD3crs",
+            "https://mrclay.org/piano/songs/C300C349C37oC3czD3c9uC3ab7D34jyD30jzD37k4D3akdC29l0C30l6C35luC39m7D30116D35117D2911dD3911h",
             <>
               {note("I")} - <b>{note("I")}7</b> - {note("IV")}
             </>
@@ -300,6 +303,7 @@ function MajorKeyChords({ musicKey, offset }: Keyed) {
           ),
         ]}
       />
+
       <p>
         Borrowed from phrygian, {rom("bII")} most often appears following{" "}
         {rom("V/V")}, {rom("ii")}, or {rom("bVI")} and often goes to {rom("I")}{" "}
@@ -319,10 +323,12 @@ function MajorKeyChords({ musicKey, offset }: Keyed) {
             ),
           ]}
         />
+
         <p>
           This is borrowed from the mixolydian mode due to the presence of the
           note {note("vi")}.
         </p>
+
         <ChordSet
           els={[
             f7(
@@ -341,9 +347,11 @@ function MajorKeyChords({ musicKey, offset }: Keyed) {
             ),
           ]}
         />
+
         <p>
           These are from the harmonic minor mode, and usually go to {rom("I")}.
         </p>
+
         <ChordSet
           els={[
             f7(
@@ -363,6 +371,7 @@ function MajorKeyChords({ musicKey, offset }: Keyed) {
             ),
           ]}
         />
+
         <p>
           The notes {note("bVI")} and {note("iii")} in these chords help evoke
           the altered mode <em>mixolydian b6</em>, which is basically aeolian
@@ -370,6 +379,7 @@ function MajorKeyChords({ musicKey, offset }: Keyed) {
           sometimes called the <strong>backdoor V</strong>, as it resolves
           nicely to the tonic.
         </p>
+
         <ChordSet
           els={[
             f7(
@@ -395,6 +405,7 @@ function MajorKeyChords({ musicKey, offset }: Keyed) {
             ),
           ]}
         />
+
         <p>
           These are <strong>tritone substitutes</strong> for the chords{" "}
           {rom("V/V")}, {rom("V")}, and {rom("V/IV")} typically resolving a step
@@ -430,6 +441,7 @@ function MajorKeyChords({ musicKey, offset }: Keyed) {
             ),
           ]}
         />
+
         <p>
           These sometimes function as "secondary predominants", appearing before
           secondary dominants {rom("V/ii")}, {rom("V/IV")}, or {rom("V/vi")} (or
@@ -454,6 +466,7 @@ function MajorKeyChords({ musicKey, offset }: Keyed) {
             ),
           ]}
         />
+
         <p>
           Just a couple examples of dominant 7th chords that have been "altered"
           with their 5th and/or 9th chord tones lowered or raised. Commonly done
@@ -475,6 +488,7 @@ function MajorKeyChords({ musicKey, offset }: Keyed) {
             ),
           ]}
         />
+
         <p>
           {note("VII")}7 is often used as a smoother substitute for{" "}
           {note("#iv")}dim7, often inverted as {note("VII")}7/{note("#iv")}.
