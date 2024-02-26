@@ -1,5 +1,5 @@
 const Paths = {
-  home: "http://mrclay.org",
+  home: "https://mrclay.org",
 
   pianoPath: "/piano/",
   chordPath: "/chord/",

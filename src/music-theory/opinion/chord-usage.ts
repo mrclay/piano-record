@@ -1,6 +1,6 @@
 export const commonChords = {
   inMajor: {
-    // See http://mrclay.org/common-chords/C-major
+    // See https://mrclay.org/common-chords/C-major
     "I maj7": 10,
     "IV maj7": 10,
     "V 7": 10,
@@ -39,7 +39,7 @@ export const commonChords = {
     "vii dim7": 1,
   },
   inMinor: {
-    // See http://mrclay.org/common-chords/C-minor
+    // See https://mrclay.org/common-chords/C-minor
     "i m7": 10,
     "V 7": 10,
     "V +": 6,
