@@ -31,21 +31,21 @@ function MajorKeyChords({ musicKey, offset }: Keyed) {
         els={[
           f(
             "ii m7b5",
-            "https://mrclay.org/piano/songs/C340C3caC43yC406gD436sD3ca8D34aaD40b6C32bgC38byC41ccC3chsD32n8D38n8C30o4C37o8D3coaD41oeC40p4D40yiD30yoD37ys",
+            "https://mrclay.org/piano/songs/C340C37mC3c14C431iC407nD34bnD37bsD3cbyC32d4D43dgD40dkC38dqC3ce2C41ezC3elqD32pwD38q4D3cqiC30rnD3erxD41ryC34s0C37shC40t8D4015kD3415mD3715mD3015m",
             <>
               {note("I")}/{note("iii")} - <b>{note("ii")}ø7</b> - {note("I")}
             </>
           ),
           f(
             "bIII maj7",
-            "https://mrclay.org/piano/songs/C300C37aC40pC4153D405kD378iD308kD418qC339iC3a9lC43afC41d0D43dfC3efiD41fzC35iwD33jbD3ajcC39jmC3cjnD3ejqD35z3D39z7D3cze",
+            "https://mrclay.org/piano/songs/C300C377C3cqC401cC4175D407bD30b6D37b7D3cbfD41bpC33c9C37cjC3ad4C43ddC3egkD33o3D37o9D3aogD3eooD43ovC29pjC30ppC39q7C3cq8D29yzD39z1D30z4D3cz4",
             <>
               {note("I")} - <b>{note("bIII")}maj7</b> - {note("IV")}
             </>
           ),
           f(
             "iv m7",
-            "https://mrclay.org/piano/songs/C350C3cqC45wD35atD3cayD45bgC35bvC3ccpC44cyD35nkD3cnxD44o5C30owC37pjC40poC43q3D4011qD3711sD4311xD3011y",
+            "https://mrclay.org/piano/songs/C290C397C3cqC4115D3975D3c7bD417jC3889C3c8nC4191D29kjD38kkD3ckrD41l9C30lzC37mgC3cmrC40n3D37x5D30x7D3cxaD40xb",
             <>
               {note("IV")} - <b>{note("iv")}m</b> - {note("I")}
             </>

@@ -31,9 +31,9 @@ function MinorKeyChords({ musicKey, offset }: Keyed) {
         els={[
           f(
             "V 7",
-            "https://mrclay.org/piano/songs/C300C37eC3cqC3fsD3084D3f8cD378gD3c8wC2c90C339qC3c9rC3f9yD2ciwD33j2D3cjjD3fjnC2bk2C32kkC3bkoC41l1C43qdD2bv6D3bvcD32vkD43voD41vqC30weC37wgC3cwqD37178D3017dD3c17g",
+            "https://mrclay.org/piano/songs/C300C3chC3fzC431fD3075D3c79D3f7eD437pC2b84C3b8kC3e9eC419wD3bhyD2bi3D3ei7D41idC30j6C37jiC3ck2C3fkjD37txD30u3D3cu3D3fu9",
             <>
-              {note("i")}m - {note("bVI")} - <b>{note("V")}7</b> - {note("i")}m
+              {note("i")}m - <b>{note("V")}7</b> - {note("i")}m
             </>
           ),
           f7(
