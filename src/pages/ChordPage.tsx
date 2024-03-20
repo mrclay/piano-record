@@ -43,16 +43,24 @@ type Action = "stop" | "play" | "setTitle";
 const example = Paths.chordPrefix("/43,56,60,62,65/G7b9sus");
 // http://localhost:5173/chord/69,47,82,60?sf=Mellotron.mk2_flute
 
-export default function ChordPage() {
+interface ChordPageProps {
+  embed?: {
+    params: MatchItems;
+    url: URL;
+  };
+}
+
+export default function ChordPage({ embed }: ChordPageProps) {
+  const isEmbed = Boolean(embed);
   const [piano] = useStore.piano();
   const { saveSf } = useSfStorage();
 
   const timeout = useRef<number | null>(null);
 
-  const navigate = useNavigate();
-  const params: MatchItems = useParams();
-  const { pathname } = useLocation();
-  const [searchParams] = useSearchParams();
+  const navigate = embed ? undefined : useNavigate();
+  const params: MatchItems = embed?.params || useParams();
+  const { pathname } = embed ? embed.url : useLocation();
+  const [searchParams] = embed ? [embed.url.searchParams] : useSearchParams();
   const transpose = searchParams.get("transpose") || "0";
 
   const [activeKeys, setActiveKeys] = useState<ActiveKeys>(new Set());
@@ -67,7 +75,7 @@ export default function ChordPage() {
     piano.stopAll();
     setActiveKeys(new Set());
     setTitle("");
-    navigate(Paths.chordPrefix("/"));
+    navigate?.(Paths.chordPrefix("/"));
   }, [navigate, piano]);
 
   const handleTitleSet = (title: string) => {
@@ -110,14 +118,16 @@ export default function ChordPage() {
       }
 
       const url = Paths.chordPrefix(path) + `?${saveSf()}`;
-      navigate(url, {
-        replace: replaceUrl,
-      });
+      navigate?.(url, { replace: replaceUrl });
     },
     [activeKeys, navigate, title]
   );
 
   useEffect(() => {
+    if (embed) {
+      return;
+    }
+
     document.title = "Simple Chord";
     piano.addEventListener("reset", reset);
 
@@ -163,7 +173,7 @@ export default function ChordPage() {
     }
   }, [action, activeKeys, piano, save]);
 
-  if (window.location.hash) {
+  if (!embed && window.location.hash) {
     // legacy URLs
     const m = window.location.hash.match(/n=([\d,]+)(?:&c=(.*))?/);
     if (m) {
@@ -171,6 +181,24 @@ export default function ChordPage() {
 
       return <Navigate to={Paths.chordPrefix(path)} />;
     }
+  }
+
+  if (embed) {
+    return (
+      <>
+        <Keyboard key={pathname} activeKeys={activeKeys} onKeyClick={() => 0} />
+
+        <BigPlay
+          isPlaying={action === "play"}
+          handlePlay={handlePlay}
+          handleStop={() => setAction("stop")}
+          progress={0}
+          isWaiting={false}
+        />
+
+        {title ? <Title title={title} /> : null}
+      </>
+    );
   }
 
   return (

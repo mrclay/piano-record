@@ -3,7 +3,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { DEFAULT_TITLE } from "../constants";
 
 interface TitleProps {
-  onChange(title: string): void;
+  onChange?: (title: string) => void;
   title: string;
 }
 
@@ -26,7 +26,7 @@ export default function Title({ onChange, title }: TitleProps) {
 
   const save = () => {
     setIsEditing(false);
-    onChange(value);
+    onChange && onChange(value);
   };
 
   const escape = () => {
@@ -62,6 +62,10 @@ export default function Title({ onChange, title }: TitleProps) {
         <button
           type="button"
           onClick={() => {
+            if (!onChange) {
+              return;
+            }
+
             setSaved(value);
             setIsEditing(true);
           }}

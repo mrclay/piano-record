@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
+    "build": "tsc && vite build && rm -rf ../mrclay-wp/piano && cp -R dist ../mrclay-wp/piano",
     "build:local": "tsc && LOCAL=1 vite build",
     "preview": "vite preview",
     "deploy": "scripts/deploy.sh"

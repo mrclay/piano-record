@@ -25,7 +25,6 @@ import Recorder, {
 import Title from "../ui/Title";
 import Preview from "../ui/Preview";
 import Saver from "../ui/Saver";
-import Status from "../ui/Status";
 import PianoSpeed from "../ui/PianoSpeed";
 import { useStore } from "../store";
 import PianoShepardMode from "../ui/PianoShepardMode";
@@ -49,10 +48,18 @@ interface MatchItems {
   title?: string;
 }
 
+interface WrapperProps {
+  embed?: {
+    params: MatchItems;
+    url: URL;
+  };
+}
+
 interface PianoPageProps extends C.RouteComponentProps<MatchItems> {
   pianoSpeed: number;
   piano: Piano;
   sfStorage: UseSfStorage;
+  embed?: WrapperProps["embed"];
 }
 
 interface PianoPageState {
@@ -64,28 +71,32 @@ interface PianoPageState {
   undoStream: string;
 }
 
-export default function Wrapper() {
-  const navigate = useNavigate();
-  const params: MatchItems = useParams();
-  const { pathname } = useLocation();
+export default function Wrapper({ embed }: WrapperProps) {
+  const params: MatchItems = embed?.params || useParams();
+  const navigate = embed ? undefined : useNavigate();
+
+  const { pathname } = embed ? embed.url : useLocation();
   const [piano] = useStore.piano();
 
-  const [searchParams] = useSearchParams();
+  const [searchParams] = embed ? [embed.url.searchParams] : useSearchParams();
   const [pianoSpeed] = useStore.pianoSpeed();
   const sfStorage = useSfStorage();
 
-  const hash = location.hash;
-  if (hash.startsWith("#s=")) {
-    return <Navigate to={Paths.pianoPrefix(`/songs/${hash.substring(3)}`)} />;
-  } else {
-    const segments = pathname.split("/").filter(el => el.trim() !== "");
-    if (segments.length < 2) {
-      return <Navigate to={Paths.pianoPrefix(`/record`)} />;
+  if (!embed) {
+    const hash = location.hash;
+    if (hash.startsWith("#s=")) {
+      return <Navigate to={Paths.pianoPrefix(`/songs/${hash.substring(3)}`)} />;
+    } else {
+      const segments = pathname.split("/").filter(el => el.trim() !== "");
+      if (segments.length < 2) {
+        return <Navigate to={Paths.pianoPrefix(`/record`)} />;
+      }
     }
   }
 
   return (
     <PianoPage
+      embed={embed}
       key={pathname}
       pathname={pathname}
       piano={piano}
@@ -162,6 +173,10 @@ class PianoPage extends React.Component<PianoPageProps, PianoPageState> {
   }
 
   componentDidMount() {
+    if (this.props.embed) {
+      return;
+    }
+
     // legacy URLs
     if (window.location.hash) {
       const m = window.location.hash.match(/s=(\w+)(?:&t=(.*))?/);
@@ -169,13 +184,14 @@ class PianoPage extends React.Component<PianoPageProps, PianoPageState> {
         const path = m[2] ? `/songs/${m[1]}/${m[2]}` : `/songs/${m[1]}`;
         setTimeout(() => {
           // React router picky about how soon navigate is called
-          this.props.navigate(Paths.pianoPrefix(path));
+          this.props.navigate?.(Paths.pianoPrefix(path));
         }, 1);
         return;
       }
     }
 
     document.title = "Simple Piano";
+
     //this.recorder.addEventListener(RecorderEvent.state, this.onRecorderState);
     this.recorder.addEventListener(
       RecorderEvent.progress,
@@ -192,6 +208,10 @@ class PianoPage extends React.Component<PianoPageProps, PianoPageState> {
   }
 
   componentWillUnmount() {
+    if (this.props.embed) {
+      return;
+    }
+
     document.removeEventListener("keydown", this.oneKeyPlay);
     document.removeEventListener("keyup", this.oneKeyPlay);
   }
@@ -218,7 +238,7 @@ class PianoPage extends React.Component<PianoPageProps, PianoPageState> {
       const stream = Ops.streamFromOperations(this.recorder.getOperations());
       const params = this.props.sfStorage.saveSf();
       if (stream) {
-        this.props.navigate(Paths.pianoPrefix(`/record/${stream}?${params}`));
+        this.props.navigate?.(Paths.pianoPrefix(`/record/${stream}?${params}`));
       }
     });
   };
@@ -227,13 +247,13 @@ class PianoPage extends React.Component<PianoPageProps, PianoPageState> {
     this.recorder.stop();
     const stream = Ops.streamFromOperations(this.recorder.getOperations());
     const params = this.props.sfStorage.saveSf();
-    this.props.navigate(Paths.pianoPrefix(`/songs/${stream}?${params}`));
+    this.props.navigate?.(Paths.pianoPrefix(`/songs/${stream}?${params}`));
   };
 
   reset = () => {
     this.recorder.startRecording();
     this.setState({ mode: Mode.recording }, () => {
-      this.props.navigate(Paths.pianoPrefix("/record"));
+      this.props.navigate?.(Paths.pianoPrefix("/record"));
     });
   };
 
@@ -245,7 +265,7 @@ class PianoPage extends React.Component<PianoPageProps, PianoPageState> {
       const t = Ops.fixedEncodeURIComponent(title);
       const params = this.props.sfStorage.saveSf();
 
-      this.props.navigate(Paths.pianoPrefix(`/songs/${s}/${t}?${params}`), {
+      this.props.navigate?.(Paths.pianoPrefix(`/songs/${s}/${t}?${params}`), {
         replace: true,
       });
     });
@@ -255,7 +275,7 @@ class PianoPage extends React.Component<PianoPageProps, PianoPageState> {
     this.setState({ mode: Mode.recording });
     const stream = Ops.streamFromOperations(this.recorder.getOperations());
     const params = this.props.sfStorage.saveSf();
-    this.props.navigate(Paths.pianoPrefix(`/record/${stream}?${params}`));
+    this.props.navigate?.(Paths.pianoPrefix(`/record/${stream}?${params}`));
   };
 
   recordMore = () => {
@@ -317,6 +337,7 @@ class PianoPage extends React.Component<PianoPageProps, PianoPageState> {
 
   render() {
     const { title, mode, activeKeys, progress, stream } = this.state;
+    const isEmbed = Boolean(this.props.embed);
 
     const recorderState = this.recorder.getState();
     const hasOperations = Boolean(this.recorder.operations.length);
@@ -335,33 +356,34 @@ class PianoPage extends React.Component<PianoPageProps, PianoPageState> {
       recorderState === RecorderState.stopped &&
       hasOperations;
     const canRecordMore = !canMakeChanges && hasOperations;
-    const canReset = mode === Mode.oneKey || hasOperations;
 
     return (
       <>
-        <HeadingNav />
+        {!isEmbed && <HeadingNav />}
 
-        <Content900>
-          <div className="d-flex justify-content-between">
-            <H1>Melody</H1>
+        {!isEmbed && (
+          <Content900>
+            <div className="d-flex justify-content-between">
+              <H1>Melody</H1>
 
-            <button
-              type="button"
-              onClick={this.reset}
-              id="reset"
-              className="btn btn-lg btn-link text-danger text-decoration-none"
-            >
-              <i className="fa fa-trash" aria-label="Start over" /> New
-            </button>
-          </div>
+              <button
+                type="button"
+                onClick={this.reset}
+                id="reset"
+                className="btn btn-lg btn-link text-danger text-decoration-none"
+              >
+                <i className="fa fa-trash" aria-label="Start over" /> New
+              </button>
+            </div>
 
-          <p>
-            Wanna capture a <Link to={example}>short musical idea</Link> or
-            share it with others? Tap some notes or play your MIDI keyboard
-            (Chrome only), and click <i>Save</i>. You can share the resulting
-            page URL or bookmark it.
-          </p>
-        </Content900>
+            <p>
+              Wanna capture a <Link to={example}>short musical idea</Link> or
+              share it with others? Tap some notes or play your MIDI keyboard
+              (Chrome only), and click <i>Save</i>. You can share the resulting
+              page URL or bookmark it.
+            </p>
+          </Content900>
+        )}
 
         <Keyboard
           activeKeys={activeKeys}
@@ -369,104 +391,120 @@ class PianoPage extends React.Component<PianoPageProps, PianoPageState> {
         />
         <PianoSpeed />
 
-        <Container900 className="mt-3">
+        {isEmbed ? (
           <div>
-            {mode === Mode.shared && (
-              <span className="title-ui">
-                <Title title={title} onChange={this.setTitle} />
-                {!title && " (click to rename)"}
-              </span>
-            )}
-
-            {hasOperations ? (
-              <Preview
-                handlePlay={this.play}
-                handleStop={this.stop}
-                isPlaying={progress !== 0}
-                isWaiting={false}
-                progress={{ ratio: progress }}
-              />
-            ) : (
-              <div className="pt-5" />
-            )}
-
-            {canMakeChanges && (
-              <button
-                type="button"
-                className="btn btn-warning med-btn"
-                onClick={this.makeChanges}
-              >
-                <i className="fa fa-wrench" aria-hidden="true" />{" "}
-                <span>Make changes</span>
-              </button>
-            )}
-
-            {canRecordMore && (
-              <button
-                type="button"
-                className="btn btn-warning med-btn"
-                onClick={this.recordMore}
-              >
-                <i className="fa fa-circle" aria-hidden="true" />{" "}
-                <span>Record more</span>
-              </button>
-            )}
-
-            {canOneKey && (
-              <button
-                type="button"
-                id="oneKeyPlay"
-                className="btn btn-warning med-btn"
-                title="hint: use your keyboard"
-                onClick={this.startOneKey}
-              >
-                <i className="fa fa-clock-o" aria-hidden="true" />{" "}
-                <span>Fix the timing</span>
-              </button>
-            )}
-
-            {canSave && (
-              <button
-                type="button"
-                onClick={this.save}
-                className="btn btn-primary med-btn"
-              >
-                <i className="fa fa-save" aria-hidden="true" />{" "}
-                <span>Save</span>
-              </button>
-            )}
-
-            {canShare ? (
-              <button
-                type="button"
-                onClick={this.share}
-                className="btn btn-primary med-btn"
-              >
-                <i className="fa fa-save" aria-hidden="true" />{" "}
-                <span>Share</span>
-              </button>
-            ) : null}
+            <Preview
+              handlePlay={this.play}
+              handleStop={this.stop}
+              isPlaying={progress !== 0}
+              isWaiting={false}
+              progress={{ ratio: progress }}
+            />
           </div>
-        </Container900>
+        ) : (
+          <Container900 className="mt-3">
+            <div>
+              {mode === Mode.shared && (
+                <span className="title-ui">
+                  <Title title={title} onChange={this.setTitle} />
+                  {!title && " (click to rename)"}
+                </span>
+              )}
 
-        <Content900>
-          <SoundSelector />
-          <PianoShepardMode piano={this.recorder.piano} />
-        </Content900>
+              {hasOperations ? (
+                <Preview
+                  handlePlay={this.play}
+                  handleStop={this.stop}
+                  isPlaying={progress !== 0}
+                  isWaiting={false}
+                  progress={{ ratio: progress }}
+                />
+              ) : (
+                <div className="pt-5" />
+              )}
 
-        <Content900>
-          {mode === Mode.shared && (
-            <section>
-              <h3>Share it</h3>
-              <p>
-                Copy to clipboard:{" "}
-                <Saver href={window.location.href} title={title} />
-              </p>
-            </section>
-          )}
-        </Content900>
+              {canMakeChanges && (
+                <button
+                  type="button"
+                  className="btn btn-warning med-btn"
+                  onClick={this.makeChanges}
+                >
+                  <i className="fa fa-wrench" aria-hidden="true" />{" "}
+                  <span>Make changes</span>
+                </button>
+              )}
 
-        <HrFinal />
+              {canRecordMore && (
+                <button
+                  type="button"
+                  className="btn btn-warning med-btn"
+                  onClick={this.recordMore}
+                >
+                  <i className="fa fa-circle" aria-hidden="true" />{" "}
+                  <span>Record more</span>
+                </button>
+              )}
+
+              {canOneKey && (
+                <button
+                  type="button"
+                  id="oneKeyPlay"
+                  className="btn btn-warning med-btn"
+                  title="hint: use your keyboard"
+                  onClick={this.startOneKey}
+                >
+                  <i className="fa fa-clock-o" aria-hidden="true" />{" "}
+                  <span>Fix the timing</span>
+                </button>
+              )}
+
+              {canSave && (
+                <button
+                  type="button"
+                  onClick={this.save}
+                  className="btn btn-primary med-btn"
+                >
+                  <i className="fa fa-save" aria-hidden="true" />{" "}
+                  <span>Save</span>
+                </button>
+              )}
+
+              {canShare ? (
+                <button
+                  type="button"
+                  onClick={this.share}
+                  className="btn btn-primary med-btn"
+                >
+                  <i className="fa fa-save" aria-hidden="true" />{" "}
+                  <span>Share</span>
+                </button>
+              ) : null}
+            </div>
+          </Container900>
+        )}
+
+        {!isEmbed && (
+          <>
+            <Content900>
+              <SoundSelector />
+              <PianoShepardMode piano={this.recorder.piano} />
+            </Content900>
+
+            <Content900>
+              {mode === Mode.shared && (
+                <section>
+                  <h3>Share it</h3>
+                  <p>
+                    Copy to clipboard:{" "}
+                    <Saver href={window.location.href} title={title} />
+                  </p>
+                </section>
+              )}
+            </Content900>
+
+            <HrFinal />
+          </>
+        )}
       </>
     );
   }

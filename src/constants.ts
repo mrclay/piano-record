@@ -3,9 +3,7 @@ import { NavigateFunction } from "react-router-dom";
 import { Command } from "./Ops";
 
 export const SAMPLES_URL =
-  process.env.NODE_ENV === "production"
-    ? "//mrclay.org/piano/media/"
-    : "/media/";
+  process.env.NODE_ENV === "production" ? "/piano/media/" : "/media/";
 
 export const RANGE = [36, 96];
 export const TIME_RESOLUTION_DIVISOR = 4;
@@ -30,7 +28,7 @@ export const MIDI2_RELEASE_VELOCITY = 0;
 export const DEFAULT_TITLE = "Untitled";
 
 export interface RouteComponentProps<T extends object = {}> {
-  navigate: NavigateFunction;
+  navigate?: NavigateFunction;
   params: T;
   pathname: string;
   transpose: string;
