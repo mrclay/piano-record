@@ -40,7 +40,11 @@ function MinorKeyChords({ musicKey, offset }: Keyed) {
             "vii dim7",
             "https://mrclay.org/piano/songs/C300C37iC3fmC43uC4f3eC5365D4f6eC5492D539cD309yD37a4D3faaD43aiC32b6D54beC38biC41bmC47byC53coC50faD53fmD50i0C4fi0C4akyD4fl6D32n0D38n8D41naD47ncC33o8D4aogC3comC43ouC48p2C4bpwD33zqD3czsD48zuD43zwD4bzy",
             <>
-              {note("i")}m - <b>{note("vii")}°7</b> - {note("i")}m/
+              {note("i")}m -{" "}
+              <b>
+                {note("vii")}°7/{note("ii")}
+              </b>{" "}
+              - {note("i")}m/
               {note("biii")}
             </>
           ),
