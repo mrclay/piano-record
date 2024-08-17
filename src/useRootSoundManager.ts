@@ -9,6 +9,7 @@ export function useRootSoundManager() {
   const [player, setPlayer] = useStore.player();
   const [, setPlayerLoading] = useStore.playerLoading();
   const [playerSpec] = useStore.playerSpec();
+  const [microtone] = useStore.microtone();
 
   // When playerSpec changes, load new player.
   useEffect(() => {
@@ -21,7 +22,7 @@ export function useRootSoundManager() {
     setPlayerLoading(true);
 
     // Load the desired player
-    createPlayer(playerSpec.sf, playerSpec.name).then(loaded => {
+    createPlayer(playerSpec.sf, playerSpec.name, microtone).then(loaded => {
       console.info("Loaded", loaded);
       if (loaded) {
         setPlayer(loaded);
@@ -29,7 +30,7 @@ export function useRootSoundManager() {
       }
       loadingRef.current = false;
     });
-  }, [playerSpec]);
+  }, [playerSpec, microtone]);
 
   // When player changes, inject into piano.
   useEffect(() => {

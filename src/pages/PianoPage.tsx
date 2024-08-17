@@ -37,6 +37,7 @@ import {
   HeadingNav,
   HrFinal,
 } from "../ui/Common";
+import MicroTuning from "../ui/MicroTuning";
 
 enum Mode {
   recording = "recording",
@@ -368,6 +369,7 @@ class PianoPage extends React.Component<PianoPageProps, PianoPageState> {
           onKeyClick={mode === Mode.recording ? this.onKeyClick : undefined}
         />
         <PianoSpeed />
+        <MicroTuning />
 
         <Container900 className="mt-3">
           <div>

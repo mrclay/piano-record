@@ -57,7 +57,8 @@ const simpleUrls: Record<
 
 export async function createPlayer(
   soundfont: SoundFont,
-  instrument: string
+  instrument: string,
+  microtone: number
 ): Promise<Playable | null> {
   if (soundfont === "Null") {
     return new NullPlayer();
@@ -72,7 +73,7 @@ export async function createPlayer(
   if (simple) {
     const SimplePiano = (await import("./SimplePiano")).default;
     const url = simple.url(instrument);
-    return SimplePiano.fromJsonUrl(url, simple.volume);
+    return SimplePiano.fromJsonUrl(url, simple.volume, microtone);
   }
 
   const [SFPlayer, sound] = await Promise.all([

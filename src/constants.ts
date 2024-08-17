@@ -8,6 +8,7 @@ export const SAMPLES_URL =
     : "/media/";
 
 export const RANGE = [36, 96];
+export const PLAYABLE_RANGE = [0, 96];
 export const TIME_RESOLUTION_DIVISOR = 4;
 export const ORD_A_UPPER = "A".charCodeAt(0);
 

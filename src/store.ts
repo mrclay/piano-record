@@ -49,6 +49,7 @@ export const atoms = {
   chordSet: atom({} as object),
   song: atom(""),
   songChords: atom(undefined as ReactNode | undefined),
+  microtone: atom(0),
   offset: atom(0),
   playerSpec: atom(playerSpecFromUrl() || pianoSpec),
   pianoSpeed: atomWithStorage(SPEED_KEY, 100),
