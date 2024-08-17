@@ -18,7 +18,7 @@ export const readAccidentalsMap: Record<string, number> = {
   [Char.FLAT]: -1,
   "": 0,
   [Char.NATURAL]: 0,
-  [Char.NATURAL]: 1,
+  [Char.SHARP]: 1,
   "#": 1,
   [Char.DOUBLESHARP]: 2,
   "##": 2,
