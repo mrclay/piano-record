@@ -7,7 +7,7 @@ export const SAMPLES_URL =
     ? "//mrclay.org/piano/media/"
     : "/media/";
 
-export const RANGE = [36, 96];
+export const RANGE = [29, 89];
 export const TIME_RESOLUTION_DIVISOR = 4;
 export const ORD_A_UPPER = "A".charCodeAt(0);
 
