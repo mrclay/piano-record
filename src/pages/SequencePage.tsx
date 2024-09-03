@@ -171,14 +171,8 @@ export default function SequencePage(): JSX.Element {
   const currentJoins = joinData[step];
   const activeKeys: ActiveKeys = new Set(currentNotes);
 
-  function handleStart() {
-    // Hack to directly tie a keypress to sound generation so the WebAudio API
-    // will allow sound on the page.
-    const sine = new Tone.Oscillator(60, "sine").toDestination();
-    sine.volume.value = -60;
-    sine.start();
-    sine.stop();
-
+  async function handleStart() {
+    await Tone.start();
     setPlaying(true);
   }
 

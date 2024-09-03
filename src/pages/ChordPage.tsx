@@ -84,14 +84,8 @@ export default function ChordPage() {
     });
   }, []);
 
-  function handlePlay() {
-    // Hack to directly tie a keypress to sound generation so the WebAudio API
-    // will allow sound on the page.
-    const sine = new Tone.Oscillator(60, "sine").toDestination();
-    sine.volume.value = -60;
-    sine.start();
-    sine.stop();
-
+  async function handlePlay() {
+    await Tone.start();
     setAction("play");
   }
 
