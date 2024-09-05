@@ -19,8 +19,6 @@ import Keyboard from "../ui/Keyboard";
 import PianoSpeed from "../ui/PianoSpeed";
 import SongChords from "../ui/SongChords";
 import { useCommonChordsQuery } from "./useCommonChordsQuery";
-import PianoShepardMode from "../ui/PianoShepardMode";
-import { Intro } from "./Intro";
 
 export interface Chord {
   func: string;

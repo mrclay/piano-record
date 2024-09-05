@@ -1,24 +1,32 @@
-export class EventTarget {
-  _events: Record<string, Array<(...args: any[]) => void>> = {};
+export class EventTarget<T = Record<string, any>> {
+  _events: Partial<{
+    [K in keyof T]: Array<(arg: T[K]) => void>;
+  }> = {};
 
-  addEventListener(name: string, callback: (...args: any[]) => void): void {
+  addEventListener<K extends keyof T>(
+    name: K,
+    callback: (arg: T[K]) => void
+  ): void {
     if (typeof callback !== "function") {
       return;
     }
 
-    if (!this._events[name]) {
-      this._events[name] = [];
-    }
-    this._events[name].push(callback);
+    const listeners = this._events[name] || [];
+    this._events[name] = listeners;
+
+    listeners.push(callback);
   }
 
-  removeEventListener(name: string, callback: (...args: any[]) => void): void {
+  removeEventListener<K extends keyof T>(
+    name: K,
+    callback: (arg: T[K]) => void
+  ): void {
     if (!name || !callback) {
       return;
     }
 
     const events = (this._events[name] || []).filter(
-      (listener) => callback !== listener
+      listener => callback !== listener
     );
     if (events.length) {
       this._events[name] = events;
@@ -27,9 +35,7 @@ export class EventTarget {
     }
   }
 
-  send(name: string, ...args: any[]): void {
-    (this._events[name] || []).forEach((callback) =>
-      callback.apply(this, args)
-    );
+  send<K extends keyof T>(name: K, arg: T[K]): void {
+    (this._events[name] || []).forEach(callback => callback.apply(this, [arg]));
   }
 }

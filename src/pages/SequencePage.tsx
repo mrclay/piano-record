@@ -4,7 +4,6 @@ import { useSearchParams } from "react-router-dom";
 import * as Tone from "tone";
 
 import Paths from "../Paths";
-import { ActiveKeys } from "../Piano";
 import Keyboard from "../ui/Keyboard";
 import Sequencer from "../ui/Sequencer";
 import Preview from "../ui/Preview";
@@ -13,6 +12,11 @@ import PianoShepardMode from "../ui/PianoShepardMode";
 import { useStore } from "../store";
 import SoundSelector, { useSfStorage } from "../ui/SoundSelector";
 import { Content900, H1, HeadingNav, HrFinal } from "../ui/Common";
+import {
+  initialSequenceConfig,
+  playSequence,
+  sequenceFromStream,
+} from "../Sequencer";
 
 function streamFromSong(
   bpm: number,
@@ -36,112 +40,7 @@ function streamFromSong(
   return out;
 }
 
-function parseStream(stream: string) {
-  let m;
-
-  m = stream.match(/^v4,(\d+),([1-4]),(.+)$/);
-  if (m) {
-    return {
-      bpm: parseInt(m[1]),
-      bps: parseInt(m[2]),
-      version: 4,
-      raw: m[3],
-    };
-  }
-
-  m = stream.match(/^v3,(\d+),(.+)$/);
-  if (m) {
-    return {
-      bpm: parseInt(m[1]),
-      bps: 1,
-      version: 3,
-      raw: m[2],
-    };
-  }
-
-  m = stream.match(/^v2,(\d+),([10]),([10]),(.+)$/);
-  if (m) {
-    return {
-      bpm: parseInt(m[1]),
-      bps: 1,
-      version: 2,
-      raw: m[4],
-    };
-  }
-
-  m = stream.match(/^v1,(\d+),([10]),(.+)$/);
-  if (m) {
-    return {
-      bpm: parseInt(m[1]),
-      bps: 1,
-      version: 1,
-      raw: m[3],
-    };
-  }
-
-  return {
-    bpm: 0,
-    bps: 1,
-    version: 3,
-    raw: null,
-  };
-}
-
-function songFromStream(
-  stream: string,
-  offset = 0
-): {
-  bpm: number;
-  bps: number;
-  newStepData: Array<number[]> | false;
-  newJoinData: Array<number[]> | false;
-} {
-  let { bpm, bps, version, raw } = parseStream(stream);
-
-  if (!raw) {
-    return { bpm, bps, newStepData: false, newJoinData: false };
-  }
-
-  const newJoinData: Array<number[]> = [];
-  const newStepData = raw.split("-").map(str => {
-    const notes: number[] = [];
-    const joins: number[] = [];
-
-    let chunk = "";
-    const chunkLen = version > 2 ? 3 : 2;
-
-    while ((chunk = str.substr(notes.length * chunkLen, chunkLen))) {
-      let isJoin = false;
-      if (version > 2) {
-        isJoin = chunk[0] === "j";
-        chunk = chunk.substr(1);
-      }
-
-      chunk = chunk.replace(/^0/, "");
-      const note = parseInt(chunk, 16) + offset;
-
-      notes.push(note);
-      if (isJoin) {
-        joins.push(note);
-      }
-    }
-
-    newJoinData.push(joins);
-    return notes;
-  });
-
-  return { bpm, bps, newStepData, newJoinData };
-}
-
-const initial = {
-  bpm: 60,
-  bps: 2,
-  numSteps: 8,
-  stepData: [1, 2, 3, 4, 5, 6, 7, 8].map(() => []),
-  joinData: [1, 2, 3, 4, 5, 6, 7, 8].map(() => []),
-};
-
-let stepTimeout = 0;
+const initial = initialSequenceConfig;
 
 export default function SequencePage(): JSX.Element {
   const { saveSf } = useSfStorage();
@@ -152,7 +51,11 @@ export default function SequencePage(): JSX.Element {
 
   const [piano] = useStore.piano();
 
-  const [playing, setPlaying] = useState(false);
+  const [sequencer, setSequencer] = useState<ReturnType<
+    typeof playSequence
+  > | null>(null);
+  const playing = Boolean(sequencer);
+
   const [internalStep, setStep] = useState(0);
   const step = playing ? internalStep : -1;
 
@@ -161,72 +64,54 @@ export default function SequencePage(): JSX.Element {
 
   const [bps, setBps] = useState(initial.bps);
 
-  const [numSteps, setNumSteps] = useState(initial.numSteps);
-  const [numStepsInput, setnumStepsInput] = useState(String(numSteps));
-
   const [stepData, setStepData] = useState<Array<number[]>>(initial.stepData);
   const [joinData, setJoinData] = useState<Array<number[]>>(initial.joinData);
 
-  const currentNotes = playing ? stepData[step] || [] : [];
-  const currentJoins = joinData[step];
-  const activeKeys: ActiveKeys = new Set(currentNotes);
+  const [numSteps, setNumSteps] = useState(initial.stepData.length);
+  const [numStepsInput, setnumStepsInput] = useState(String(numSteps));
+
+  const activeKeys = sequencer?.getActiveKeys() || new Set();
 
   async function handleStart() {
     await Tone.start();
-    setPlaying(true);
+    const sequencer = playSequence({
+      bpm,
+      bps,
+      step: internalStep,
+      stepData,
+      joinData,
+      piano,
+    });
+    sequencer.eventTarget.addEventListener("step", e => {
+      setStep(e.step);
+    });
+    sequencer.eventTarget.addEventListener("stop", () => setStep(-1));
+    sequencer.start();
+    setSequencer(sequencer);
   }
 
   function handleStop() {
     piano.stopAll();
-    setPlaying(false);
-    setStep(0);
+    sequencer?.stop();
+    setSequencer(null);
   }
 
   function reset() {
+    piano.stopAll();
     setBpm(initial.bpm);
     setBps(initial.bps);
-    setNumSteps(initial.numSteps);
+    setNumSteps(initial.stepData.length);
     setStepData(initial.stepData);
     setJoinData(initial.joinData);
-    setStep(internalStep % initial.numSteps);
-    setPlaying(false);
+    setStep(internalStep % initial.stepData.length);
+    setSequencer(null);
   }
 
-  const play = useCallback(
-    (currentNotes: number[], currentJoins: number[]) => {
-      // Keep track of which are started
-      const bannedNotes: ActiveKeys = new Set();
-      // Handle notes already playing
-
-      // Why the new Set()? Because we need to play new notes in the
-      // callback. But if we do so, activeKeys.forEach will get called
-      // again for the new note, resulting in an infinite loop.
-      new Set(piano.activeKeys).forEach(note => {
-        const willJoin = currentJoins.includes(note);
-        const willPlay = currentNotes.includes(note);
-
-        if (willPlay) {
-          bannedNotes.add(note);
-          if (willJoin) {
-            // Let it ring
-          } else {
-            piano.stopNote(note);
-            piano.startNote(note);
-          }
-        } else {
-          piano.stopNote(note);
-        }
-      });
-
-      // Start notes that still need starting
-      currentNotes.forEach(note => {
-        if (!bannedNotes.has(note)) {
-          piano.startNote(note);
-        }
-      });
-    },
-    [piano]
-  );
+  function play(currentNotes: number[]) {
+    currentNotes.forEach(note => {
+      piano.startNote(note);
+    });
+  }
 
   function share() {
     const params = saveSf();
@@ -243,7 +128,7 @@ export default function SequencePage(): JSX.Element {
 
     const stream = params.stream;
     if (typeof stream === "string") {
-      const { bpm, bps, newStepData, newJoinData } = songFromStream(
+      const { bpm, bps, newStepData, newJoinData } = sequenceFromStream(
         stream,
         offset
       );
@@ -255,29 +140,10 @@ export default function SequencePage(): JSX.Element {
         setJoinData(newJoinData);
         setNumSteps(newStepData.length);
         setnumStepsInput(String(newStepData.length));
-        setPlaying(false);
+        setSequencer(null);
       }
     }
   }, [params.stream, offset]);
-
-  // Play each step
-  useEffect(() => {
-    if (playing) {
-      play(currentNotes, currentJoins);
-
-      const delay = (60 / bpm) * bps * 1000;
-      stepTimeout = window.setTimeout(() => {
-        setStep(currentStep => (currentStep + 1) % numSteps);
-      }, delay);
-    }
-  }, [step]);
-
-  useEffect(() => {
-    if (!playing && stepTimeout) {
-      window.clearTimeout(stepTimeout);
-      stepTimeout = 0;
-    }
-  }, [playing]);
 
   return (
     <>
@@ -357,6 +223,7 @@ export default function SequencePage(): JSX.Element {
                     }
 
                     setBpm(num);
+                    sequencer?.setBpm(num);
                     setBpmInput(String(num));
                   }}
                 />
@@ -405,7 +272,10 @@ export default function SequencePage(): JSX.Element {
                     min="1"
                     max="4"
                     value={bps}
-                    onChange={e => setBps(Number(e.target.value))}
+                    onChange={e => {
+                      setBps(Number(e.target.value));
+                      sequencer?.setBps(Number(e.target.value));
+                    }}
                   />
                   <span className="ms-1">{bps}</span>
                 </span>
@@ -426,10 +296,9 @@ export default function SequencePage(): JSX.Element {
           setJoinData(newJoinData);
           setNumSteps(newStepData.length);
           setnumStepsInput(String(newStepData.length));
-          setPlaying(false);
-          piano.stopAll();
+          handleStop();
           setStep(changedStep);
-          play(newStepData[changedStep], newJoinData[changedStep]);
+          play(newStepData[changedStep]);
         }}
       />
       <Keyboard activeKeys={activeKeys} />
