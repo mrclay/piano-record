@@ -120,7 +120,7 @@ export default class Piano extends EventTarget {
           // window.logMidi && console.log(e.data);
 
           if (e.data[0] === C.MIDI0_L1) {
-            this.send(PianoEvents.reset);
+            this.send("reset", null);
             return;
           }
 
