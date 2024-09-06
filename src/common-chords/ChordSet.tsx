@@ -176,7 +176,7 @@ export function ChordSet({ els }: ChordSetProps): JSX.Element {
       });
       setup = () => {
         setSequencer(newSequence);
-        newSequence.start();
+        setTimeout(() => newSequence.start(), 100);
       };
     } else {
       const [, streamAndName] = chord.songUrl.split(
