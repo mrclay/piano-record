@@ -38,4 +38,8 @@ export class EventTarget<T = Record<string, any>> {
   send<K extends keyof T>(name: K, arg: T[K]): void {
     (this._events[name] || []).forEach(callback => callback.apply(this, [arg]));
   }
+
+  reset() {
+    this._events = {};
+  }
 }

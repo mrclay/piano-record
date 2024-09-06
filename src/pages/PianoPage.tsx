@@ -17,11 +17,7 @@ import Piano, {
   PianoActiveKeysListener,
   PianoEvents,
 } from "../Piano";
-import Recorder, {
-  RecorderEvent,
-  RecorderProgressListener,
-  RecorderState,
-} from "../Recorder";
+import Recorder, { RecorderProgressListener, RecorderState } from "../Recorder";
 import Title from "../ui/Title";
 import Preview from "../ui/Preview";
 import Saver from "../ui/Saver";
@@ -176,11 +172,8 @@ class PianoPage extends React.Component<PianoPageProps, PianoPageState> {
     }
 
     document.title = "Simple Piano";
-    //this.recorder.addEventListener(RecorderEvent.state, this.onRecorderState);
-    this.recorder.addEventListener(
-      RecorderEvent.progress,
-      this.onRecorderProgress
-    );
+    //this.recorder.addEventListener('state', this.onRecorderState);
+    this.recorder.addEventListener("progress", this.onRecorderProgress);
     const piano = this.recorder.getPiano();
     piano.addEventListener(
       PianoEvents.activeKeysChange,

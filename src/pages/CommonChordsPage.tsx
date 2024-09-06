@@ -35,12 +35,19 @@ function CommonChordsPage() {
   const { sevenths, qs, setSevenths } = useCommonChordsQuery();
 
   const [offset, setOffset] = useStore.offset();
+  const [sequencer, setSequencer] = useStore.sequencer();
   const navigate = useNavigate();
   const { urlKey = "" }: ParamsMatch = useParams();
   const musicKey = keys.find(el => {
     const name = el.toString(true).replace(" ", "-");
     return name === urlKey;
   });
+
+  useEffect(() => {
+    return () => {
+      sequencer?.stop();
+    };
+  }, [sequencer]);
 
   useEffect(() => {
     if (musicKey) {

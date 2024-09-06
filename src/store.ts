@@ -5,6 +5,7 @@ import Recorder from "./Recorder";
 import Piano from "./Piano";
 import NullPlayer from "./players/NullPlayer";
 import { availableInstruments, Playable, SoundFont } from "./players";
+import { playSequence } from "./Sequencer";
 
 const SPEED_KEY = "CC-speed";
 
@@ -47,6 +48,7 @@ export const atoms = {
   piano: atom(defaultPiano),
   recorder: atom(new Recorder({ piano: defaultPiano })),
   chordSet: atom({} as object),
+  sequencer: atom(null as null | ReturnType<typeof playSequence>),
   song: atom(""),
   songChords: atom(undefined as ReactNode | undefined),
   offset: atom(0),

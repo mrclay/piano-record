@@ -9,16 +9,13 @@ import React, {
 } from "react";
 import Ops from "../Ops";
 import { ActiveKeys, PianoActiveKeysListener, PianoEvents } from "../Piano";
-import {
-  RecorderCompleteListener,
-  RecorderEvent,
-  RecorderState,
-} from "../Recorder";
-import { useStore } from "../store";
+import { RecorderCompleteListener, RecorderState } from "../Recorder";
+import { atoms, useStore } from "../store";
 import Keyboard from "../ui/Keyboard";
 import PianoSpeed from "../ui/PianoSpeed";
 import SongChords from "../ui/SongChords";
 import { useCommonChordsQuery } from "./useCommonChordsQuery";
+import { playSequence, sequenceFromStream } from "../Sequencer";
 
 export interface Chord {
   func: string;
@@ -45,11 +42,23 @@ const fancyMap: Record<string, string | undefined> = {
 
 function ChordSetKeys({ close }: { close(): void }): JSX.Element {
   const [recorder] = useStore.recorder();
+  const [sequencer] = useStore.sequencer();
   const piano = recorder.piano;
   const [activeKeys, setActiveKeys] = useState<ActiveKeys>(new Set());
   const [style, setStyle] = useState<CSSProperties>({});
 
   useEffect(() => {
+    if (sequencer) {
+      sequencer.eventTarget.addEventListener("step", () => {
+        const ak = sequencer?.getActiveKeys();
+        if (ak) {
+          setActiveKeys(ak);
+        }
+      });
+
+      return;
+    }
+
     piano.shepardMode = false;
     const keysListener: PianoActiveKeysListener = activeKeys => {
       setActiveKeys(activeKeys);
@@ -65,9 +74,10 @@ function ChordSetKeys({ close }: { close(): void }): JSX.Element {
       });
     }
 
-    return () =>
+    return () => {
       piano.removeEventListener(PianoEvents.activeKeysChange, keysListener);
-  }, [piano]);
+    };
+  }, [piano, sequencer]);
 
   return (
     <div style={style} className="my-5">
@@ -111,6 +121,8 @@ export function ChordSet({ els }: ChordSetProps): JSX.Element {
   ref.song = song;
   const [, setSongChords] = useStore.songChords();
   const [recorder] = useStore.recorder();
+  const [sequencer, setSequencer] = useStore.sequencer();
+  const [piano] = useStore.piano();
   const [pianoSpeed] = useStore.pianoSpeed();
   const [offset] = useStore.offset();
 
@@ -118,50 +130,78 @@ export function ChordSet({ els }: ChordSetProps): JSX.Element {
     const completeListener: RecorderCompleteListener = () => {
       setSong("");
     };
-    recorder.addEventListener(RecorderEvent.complete, completeListener);
+    recorder.addEventListener("complete", completeListener);
 
     return () => {
-      recorder.removeEventListener(RecorderEvent.complete, completeListener);
+      recorder.removeEventListener("complete", completeListener);
     };
-  }, [recorder, setSong]);
+  }, [recorder, setSong, sequencer]);
 
-  function closePiano() {
-    recorder.stop();
+  const closePiano = useCallback(() => {
+    if (sequencer) {
+      sequencer.stop();
+      setSequencer(null);
+    } else {
+      recorder.stop();
+    }
+
     setChordSet({});
     setSong("");
-  }
+  }, [sequencer, recorder]);
 
-  const selectChord = useCallback(
-    (e: MouseEvent<HTMLAnchorElement>, chord: Chord) => {
-      e.preventDefault();
+  const selectChord = (e: MouseEvent<HTMLAnchorElement>, chord: Chord) => {
+    e.preventDefault();
 
+    let stream = "";
+    let setup;
+
+    if (chord.songUrl.includes("/sequence/songs/")) {
+      stream = isolateSong(chord.songUrl) || "";
+      const { bpm, bps, newStepData, newJoinData } = sequenceFromStream(
+        stream,
+        offset
+      );
+      if (!newJoinData || !newStepData) {
+        return;
+      }
+
+      piano.shepardMode = false;
+      const newSequence = playSequence({
+        bpm,
+        bps,
+        stepData: newStepData,
+        joinData: newJoinData,
+        step: 0,
+        piano,
+      });
+      setup = () => {
+        setSequencer(newSequence);
+        newSequence.start();
+      };
+    } else {
       const [, streamAndName] = chord.songUrl.split(
         /\/piano\/(?:songs|record)\//
       );
-      const stream = streamAndName.replace(/(\/|\?).*/, "");
-
-      if (ref.song !== stream || chordSet !== ref) {
-        ref.song = stream;
-        setSongChords(chord.songChords);
-        setChordSet(ref);
-        setSong(stream);
+      stream = streamAndName.replace(/(\/|\?).*/, "");
+      setup = () => {
         recorder.setOperations(Ops.operationsFromStream(stream, offset));
         recorder.play(pianoSpeed / 100);
-      } else {
-        closePiano();
-      }
-    },
-    [
-      chordSet,
-      offset,
-      pianoSpeed,
-      recorder,
-      ref,
-      setChordSet,
-      setSong,
-      setSongChords,
-    ]
-  );
+      };
+    }
+
+    if (ref.song !== stream || chordSet !== ref) {
+      sequencer?.stop();
+      recorder.stop();
+
+      ref.song = stream;
+      setSongChords(chord.songChords);
+      setChordSet(ref);
+      setSong(stream);
+      setup();
+    } else {
+      closePiano();
+    }
+  };
 
   useEffect(() => {
     if (recorder.getState() === RecorderState.playing) {

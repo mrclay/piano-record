@@ -70,9 +70,7 @@ export function playSequence(config: SequencerConfig) {
       stepTimeout = window.setTimeout(incPlay, delay);
     }
 
-    eventTarget.send("step", {
-      step,
-    });
+    eventTarget.send("step", { step });
   }
 
   function incPlay() {
@@ -91,6 +89,7 @@ export function playSequence(config: SequencerConfig) {
     window.clearTimeout(stepTimeout);
     piano.stopAll();
     eventTarget.send("stop", null);
+    eventTarget.reset();
   }
 
   function setBps(val: number) {
