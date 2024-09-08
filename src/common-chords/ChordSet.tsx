@@ -41,11 +41,12 @@ interface ChordSetRef {
 }
 
 export function ChordSet({ desc = null, els }: ChordSetProps): JSX.Element {
-  const ref = useRef<ChordSetRef>({ song: "" }).current;
+  const wrapperRef = useRef<HTMLDivElement>(null);
+  const songRef = useRef<ChordSetRef>({ song: "" }).current;
   const { sevenths } = useCommonChordsQuery();
   const [chordSet, setChordSet] = useStore.chordSet();
   const [song, setSong] = useStore.song();
-  ref.song = song;
+  songRef.song = song;
   const [, setSongChords] = useStore.songChords();
   const [recorder] = useStore.recorder();
   const [sequencer, setSequencer] = useStore.sequencer();
@@ -102,15 +103,19 @@ export function ChordSet({ desc = null, els }: ChordSetProps): JSX.Element {
       };
     }
 
-    if (ref.song !== stream || chordSet !== ref) {
+    if (songRef.song !== stream || chordSet !== songRef) {
       sequencer.stop();
       recorder.stop();
 
-      ref.song = stream;
+      songRef.song = stream;
       setSongChords(chord.songChords);
-      setChordSet(ref);
+      setChordSet(songRef);
       setSong(stream);
       setup();
+
+      setTimeout(() => {
+        wrapperRef.current?.scrollIntoView({ block: "nearest" });
+      }, 100);
     } else {
       closePiano();
     }
@@ -121,7 +126,7 @@ export function ChordSet({ desc = null, els }: ChordSetProps): JSX.Element {
   );
 
   return (
-    <>
+    <div ref={wrapperRef}>
       <h2 className="chordSet d-flex align-items-center flex-wrap">
         {els.map((el, i) => {
           const [func1, func2 = ""] = el.func.split("/");
@@ -173,7 +178,7 @@ export function ChordSet({ desc = null, els }: ChordSetProps): JSX.Element {
         })}
       </h2>
       {desc}
-      {chordSet === ref && <ChordSetKeyboard close={closePiano} />}
-    </>
+      {chordSet === songRef && <ChordSetKeyboard close={closePiano} />}
+    </div>
   );
 }

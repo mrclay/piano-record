@@ -279,10 +279,10 @@ function MajorKeyChords({ musicKey, offset }: Keyed) {
           ),
           f7(
             "vii/V dim7",
-            "https://mrclay.org/sequence/songs/v4,60,0p5,p29p41p39p3c-j29j41j39j3c-p2ap3fp3cp39-j2aj3fj3cj39-p2bp40p3cp37-j2bj40j3cp32-p2dp3dp37p35-j2dj3dj37p34-j2dj3dj37j34p31-j2dj3dj37j34j31-j2dj3dj37j34j31",
+            "https://mrclay.org/sequence/songs/v4,65,0p5,p29p41p39p3c-j29j41j39j3c-p2ap3fp3cp39-j2aj3fj3cj39-p2bp40p3cp37p34-j2bj3cp3ej37j34-p2dp3dp37p41j34-j2dj3dj37p40j34-p26p36p32p3cp40-j26j36j32j3cj40-p2bp3bp35p40-p24p3cp34-j24j3cj34-j24j3cj34-j24j3cj34",
             <>
               {note("IV")} - <b>{note("#iv")}°7</b> - {note("I")}/{note("V")} -{" "}
-              {note("VI")}7
+              {note("VI")}7 - {note("II")}9 - {note("V")}13 - {note("I")}
             </>
           ),
           f7(

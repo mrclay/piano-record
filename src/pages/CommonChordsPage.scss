@@ -28,6 +28,8 @@ body {
   }
 
   .chordSet {
+    gap: 0.75rem 2.5rem;
+
     > a:link,
     > a:hover {
       text-decoration: none;
@@ -51,17 +53,7 @@ body {
     }
 
     > * + * {
-      margin-left: 4rem;
       position: relative;
-
-      &::before {
-        color: #ccc;
-        content: " \2022 ";
-        font-size: 0.5em;
-        position: absolute;
-        left: -2.5rem;
-        top: 25%;
-      }
     }
 
     .func,
