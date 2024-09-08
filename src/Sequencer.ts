@@ -132,11 +132,11 @@ export class Sequencer extends EventTarget<SequencerEvents> {
 function parseStream(stream: string) {
   let m;
 
-  m = stream.match(/^v4,(\d+),([1-4]),(.+)$/);
+  m = stream.match(/^v4,(\d+),(0p\d+|[1-4]),(.+)$/);
   if (m) {
     return {
       bpm: parseInt(m[1]),
-      bps: parseInt(m[2]),
+      bps: Number(m[2].replace("p", ".")),
       version: 4,
       raw: m[3],
     };

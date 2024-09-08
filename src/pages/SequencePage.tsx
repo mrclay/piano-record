@@ -19,7 +19,7 @@ function streamFromSong(
   stepData: Array<number[]>,
   joinData: Array<number[]>
 ) {
-  let out = `v4,${bpm},${bps},`;
+  let out = `v4,${bpm},${String(bps).replace(".", "p")},`;
 
   out += stepData
     .map((stepNotes, stepIdx) =>
@@ -34,6 +34,15 @@ function streamFromSong(
     .join("-");
   return out;
 }
+
+const bpsOptions = [
+  { value: "0.25", label: "1/16" },
+  { value: "0.5", label: "1/8" },
+  { value: "1", label: "1/4" },
+  { value: "2", label: "1/2" },
+  { value: "3", label: "dotted 1/2" },
+  { value: "4", label: "whole" },
+];
 
 export default function SequencePage(): JSX.Element {
   const { saveSf } = useSfStorage();
@@ -154,11 +163,11 @@ export default function SequencePage(): JSX.Element {
             70's horror
           </a>
           ,{" "}
-          <a href="/sequence/songs/v4,50,1,p3ep40p43p47p28-p34j3ej40j43j47-p46p3ap3cp41p32-p45j3aj3cj41p26-p39p3ap3fp45p24-p30j39j3aj3fp43-p2fp36p37p39p3e-j2fj36j37j39j3e-p2ep35p3ap3ep39-j2ej3aj35p3fj39-p2dp37p3bp3cp40-j2dj37j3bj3cp41-p2cp3cp43p35p38p3f-j2cj3cp41j35j38j3f-p2bp35p39p3cp3e-j2bj35j39j3cj3e?sf=MusyngKite.synth_brass_1">
+          <a href="/sequence/songs/v4,50,1,p3ep40p43p47p28-p34j3ej40j43j47-p46p3ap3cp41p32-p45j3aj3cj41p26-p39p3ap3fp45p24-p30j39j3aj3fp43-p2fp36p37p39p3e-j36j37j39j3ep23-p35p3ap3ep39p22-p2ej3aj35p3fj39-p2dp37p3bp3cp40-j37j3bj3cp41p21-p3cp43p35p38p3fp20-p2cj3cp41j35j38j3f-p2bp35p39p3cp3e-j2bj35j39j3cj3e?sf=MusyngKite.synth_brass_1">
             Sad synths
           </a>
           ,{" "}
-          <a href="/sequence/songs/v4,170,1,p26p3dp39p36-j26j3d-p2dj3d-p32p36p40-p26j36j40-j36j40p28-p39p3ep2bp34-j3ej39j2bj34p2d">
+          <a href="/sequence/songs/v4,90,0p5,p26p3dp39p36-j26j3d-p2dj3d-p32p36p40-p26j36j40-j36j40p28-p39p3ep2bp34-j3ej39j2bj34p2d">
             Piano groove
           </a>
           .
@@ -230,19 +239,24 @@ export default function SequencePage(): JSX.Element {
 
             <div className="mt-2 text-center">
               <label>
-                Beats/step{" "}
-                <span className="d-flex">
-                  <input
-                    type="range"
-                    min="1"
-                    max="4"
-                    value={sequencer.bps}
-                    onChange={e => {
-                      sequencer.bps = Number(e.target.value);
-                    }}
-                  />
-                  <span className="ms-1">{sequencer.bps}</span>
-                </span>
+                Step length{" "}
+                <select
+                  style={{ padding: "3px 0" }}
+                  value={
+                    bpsOptions.find(el => el.value === String(sequencer.bps))
+                      ?.value
+                  }
+                  onChange={e => {
+                    sequencer.bps = Number(e.target.value);
+                    forceRender();
+                  }}
+                >
+                  {bpsOptions.map(({ value, label }) => (
+                    <option value={value} key={label}>
+                      {label}
+                    </option>
+                  ))}
+                </select>
               </label>
             </div>
           </div>
