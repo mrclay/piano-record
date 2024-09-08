@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "tsc": "tsc",
     "build": "tsc && vite build",
     "build:local": "tsc && LOCAL=1 vite build",
     "preview": "vite preview",

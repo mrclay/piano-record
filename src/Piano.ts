@@ -5,14 +5,14 @@ import { getShepardTones, isShepardToneActive, Playable } from "./players";
 
 export type ActiveKeys = Set<number>;
 
-export type PianoActiveKeysListener = (activeKeys: ActiveKeys) => void;
-export type PianoOperationListener = (op: Op) => void;
-export type PianoResetListener = () => void;
+export type PianoListener<K extends keyof PianoEvents> = (
+  evt: PianoEvents[K]
+) => void;
 
-export enum PianoEvents {
-  activeKeysChange = "activeKeysChange",
-  operation = "operation",
-  reset = "reset",
+export interface PianoEvents {
+  activeKeysChange: ActiveKeys;
+  operation: Op;
+  reset: null;
 }
 
 /**
@@ -20,11 +20,11 @@ export enum PianoEvents {
  * Fires "activeKeysChange" with activeKeys object
  * Fires "reset" for MIDI reset
  */
-export default class Piano extends EventTarget {
+export default class Piano extends EventTarget<PianoEvents> {
   activeKeys: ActiveKeys = new Set();
   player: Playable;
   monitorMidi = true;
-  shepardMode = true;
+  shepardMode = false;
 
   constructor(player: Playable) {
     super();
@@ -63,7 +63,7 @@ export default class Piano extends EventTarget {
   }
 
   performOperation(op: Op, sendOp = true) {
-    sendOp && this.send(PianoEvents.operation, op);
+    sendOp && this.send("operation", op);
     const [operation, midi] = op;
 
     switch (operation) {
@@ -80,7 +80,7 @@ export default class Piano extends EventTarget {
           this.player.keyDown({ midi, velocity: 1 });
         }
         this.activeKeys.add(midi);
-        this.send(PianoEvents.activeKeysChange, new Set(this.activeKeys));
+        this.send("activeKeysChange", new Set(this.activeKeys));
         return;
 
       case C.OP_NOTE_UP:
@@ -96,7 +96,7 @@ export default class Piano extends EventTarget {
         } else {
           this.player.keyUp({ midi });
         }
-        this.send(PianoEvents.activeKeysChange, new Set(this.activeKeys));
+        this.send("activeKeysChange", new Set(this.activeKeys));
         return;
 
       default:

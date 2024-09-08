@@ -1,21 +1,9 @@
-import React, {
-  CSSProperties,
-  MouseEvent,
-  ReactNode,
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import React, { MouseEvent, ReactNode, useCallback, useRef } from "react";
 import Ops from "../Ops";
-import { ActiveKeys, PianoActiveKeysListener, PianoEvents } from "../Piano";
-import { RecorderCompleteListener, RecorderState } from "../Recorder";
-import { atoms, useStore } from "../store";
-import Keyboard from "../ui/Keyboard";
-import PianoSpeed from "../ui/PianoSpeed";
-import SongChords from "../ui/SongChords";
+import { useStore } from "../store";
 import { useCommonChordsQuery } from "./useCommonChordsQuery";
-import { playSequence, sequenceFromStream } from "../Sequencer";
+import { sequenceFromStream } from "../Sequencer";
+import { ChordSetKeyboard } from "./ChordSetKeyboard";
 
 export interface Chord {
   func: string;
@@ -40,67 +28,6 @@ const fancyMap: Record<string, string | undefined> = {
   m7b5: "ø⁷",
 };
 
-function ChordSetKeys({ close }: { close(): void }): JSX.Element {
-  const [recorder] = useStore.recorder();
-  const [sequencer] = useStore.sequencer();
-  const piano = recorder.piano;
-  const [activeKeys, setActiveKeys] = useState<ActiveKeys>(new Set());
-  const [style, setStyle] = useState<CSSProperties>({});
-
-  useEffect(() => {
-    if (sequencer) {
-      sequencer.eventTarget.addEventListener("step", () => {
-        const ak = sequencer?.getActiveKeys();
-        if (ak) {
-          setActiveKeys(ak);
-        }
-      });
-
-      return;
-    }
-
-    piano.shepardMode = false;
-    const keysListener: PianoActiveKeysListener = activeKeys => {
-      setActiveKeys(activeKeys);
-    };
-    piano.addEventListener(PianoEvents.activeKeysChange, keysListener);
-
-    const cc = document.querySelector<HTMLDivElement>(".CC");
-    if (cc) {
-      const margin = -cc.getBoundingClientRect().left;
-      setStyle({
-        marginLeft: `${margin}px`,
-        marginRight: `${margin}px`,
-      });
-    }
-
-    return () => {
-      piano.removeEventListener(PianoEvents.activeKeysChange, keysListener);
-    };
-  }, [piano, sequencer]);
-
-  return (
-    <div style={style} className="my-5">
-      <Keyboard activeKeys={activeKeys} />
-      <div
-        className="d-flex align-items-center my-0 mx-auto mt-2"
-        style={{ width: "1246px" }}
-      >
-        <div>
-          <button
-            type="button"
-            className="btn btn-outline-light"
-            onClick={close}
-          >
-            Close <i className="fa fa-times" aria-hidden="true" />
-          </button>
-        </div>
-        <PianoSpeed /> <SongChords />
-      </div>
-    </div>
-  );
-}
-
 const isolateSong = (songUrl: string) => songUrl.split("/").pop();
 
 interface ChordSetProps {
@@ -115,7 +42,6 @@ interface ChordSetRef {
 export function ChordSet({ els }: ChordSetProps): JSX.Element {
   const ref = useRef<ChordSetRef>({ song: "" }).current;
   const { sevenths } = useCommonChordsQuery();
-
   const [chordSet, setChordSet] = useStore.chordSet();
   const [song, setSong] = useStore.song();
   ref.song = song;
@@ -123,25 +49,13 @@ export function ChordSet({ els }: ChordSetProps): JSX.Element {
   const [recorder] = useStore.recorder();
   const [sequencer, setSequencer] = useStore.sequencer();
   const [piano] = useStore.piano();
-  const [pianoSpeed] = useStore.pianoSpeed();
   const [offset] = useStore.offset();
 
-  useEffect(() => {
-    const completeListener: RecorderCompleteListener = () => {
-      setSong("");
-    };
-    recorder.addEventListener("complete", completeListener);
-
-    return () => {
-      recorder.removeEventListener("complete", completeListener);
-    };
-  }, [recorder, setSong, sequencer]);
-
   const closePiano = useCallback(() => {
-    if (sequencer) {
+    if (sequencer.isPlaying()) {
       sequencer.stop();
-      setSequencer(null);
     } else {
+      recorder.repeatAfterMs = null;
       recorder.stop();
     }
 
@@ -166,17 +80,14 @@ export function ChordSet({ els }: ChordSetProps): JSX.Element {
       }
 
       piano.shepardMode = false;
-      const newSequence = playSequence({
+      Object.assign(sequencer, {
         bpm,
         bps,
         stepData: newStepData,
         joinData: newJoinData,
-        step: 0,
-        piano,
       });
       setup = () => {
-        setSequencer(newSequence);
-        setTimeout(() => newSequence.start(), 100);
+        setTimeout(() => sequencer.start(), 100);
       };
     } else {
       const [, streamAndName] = chord.songUrl.split(
@@ -185,12 +96,13 @@ export function ChordSet({ els }: ChordSetProps): JSX.Element {
       stream = streamAndName.replace(/(\/|\?).*/, "");
       setup = () => {
         recorder.setOperations(Ops.operationsFromStream(stream, offset));
-        recorder.play(pianoSpeed / 100);
+        recorder.repeatAfterMs = 1e3;
+        recorder.play();
       };
     }
 
     if (ref.song !== stream || chordSet !== ref) {
-      sequencer?.stop();
+      sequencer.stop();
       recorder.stop();
 
       ref.song = stream;
@@ -202,13 +114,6 @@ export function ChordSet({ els }: ChordSetProps): JSX.Element {
       closePiano();
     }
   };
-
-  useEffect(() => {
-    if (recorder.getState() === RecorderState.playing) {
-      recorder.stop();
-      recorder.play(pianoSpeed / 100);
-    }
-  }, [pianoSpeed, recorder]);
 
   const setIsActive = Boolean(
     song && els.some(el => isolateSong(el.songUrl) === song)
@@ -266,7 +171,7 @@ export function ChordSet({ els }: ChordSetProps): JSX.Element {
           );
         })}
       </h2>
-      {chordSet === ref && <ChordSetKeys close={closePiano} />}
+      {chordSet === ref && <ChordSetKeyboard close={closePiano} />}
     </>
   );
 }

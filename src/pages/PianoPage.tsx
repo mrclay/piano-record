@@ -12,16 +12,11 @@ import * as C from "../constants";
 import Keyboard from "../ui/Keyboard";
 import Ops, { TimedOp } from "../Ops";
 import Paths from "../Paths";
-import Piano, {
-  ActiveKeys,
-  PianoActiveKeysListener,
-  PianoEvents,
-} from "../Piano";
-import Recorder, { RecorderProgressListener, RecorderState } from "../Recorder";
+import { ActiveKeys, PianoListener } from "../Piano";
+import Recorder, { RecorderListener, RecorderState } from "../Recorder";
 import Title from "../ui/Title";
 import Preview from "../ui/Preview";
 import Saver from "../ui/Saver";
-import Status from "../ui/Status";
 import PianoSpeed from "../ui/PianoSpeed";
 import { useStore } from "../store";
 import PianoShepardMode from "../ui/PianoShepardMode";
@@ -47,7 +42,7 @@ interface MatchItems {
 
 interface PianoPageProps extends C.RouteComponentProps<MatchItems> {
   pianoSpeed: number;
-  piano: Piano;
+  recorder: Recorder;
   sfStorage: UseSfStorage;
 }
 
@@ -64,7 +59,7 @@ export default function Wrapper() {
   const navigate = useNavigate();
   const params: MatchItems = useParams();
   const { pathname } = useLocation();
-  const [piano] = useStore.piano();
+  const [recorder] = useStore.recorder();
 
   const [searchParams] = useSearchParams();
   const [pianoSpeed] = useStore.pianoSpeed();
@@ -84,7 +79,7 @@ export default function Wrapper() {
     <PianoPage
       key={pathname}
       pathname={pathname}
-      piano={piano}
+      recorder={recorder}
       navigate={navigate}
       params={params}
       pianoSpeed={pianoSpeed}
@@ -112,8 +107,8 @@ class PianoPage extends React.Component<PianoPageProps, PianoPageState> {
   constructor(props: PianoPageProps) {
     super(props);
 
-    this.recorder = new Recorder({ piano: props.piano });
-    this.state = PianoPage.stateFromProps(props, this.recorder);
+    this.recorder = props.recorder;
+    this.state = PianoPage.stateFromProps(props);
     this.notes = PianoPage.notesFromOps(this.recorder.getOperations());
     this.notesIndex = 0;
     this.notesByKey = Object.create(null);
@@ -125,10 +120,12 @@ class PianoPage extends React.Component<PianoPageProps, PianoPageState> {
       .map(([midiNote]) => midiNote[1]);
   }
 
-  static stateFromProps(
-    { params, pathname, piano, transpose }: PianoPageProps,
-    recorder: Recorder
-  ): PianoPageState {
+  static stateFromProps({
+    params,
+    pathname,
+    recorder,
+    transpose,
+  }: PianoPageProps): PianoPageState {
     const stream = params.stream || "";
     const title = params.title ? decodeURIComponent(params.title) : "";
     const offset = parseInt(transpose || "0");
@@ -150,7 +147,7 @@ class PianoPage extends React.Component<PianoPageProps, PianoPageState> {
     return {
       stream,
       title,
-      activeKeys: new Set(piano.activeKeys),
+      activeKeys: new Set(recorder.piano.activeKeys),
       mode,
       progress: 0,
       undoStream: "",
@@ -175,11 +172,8 @@ class PianoPage extends React.Component<PianoPageProps, PianoPageState> {
     //this.recorder.addEventListener('state', this.onRecorderState);
     this.recorder.addEventListener("progress", this.onRecorderProgress);
     const piano = this.recorder.getPiano();
-    piano.addEventListener(
-      PianoEvents.activeKeysChange,
-      this.onActiveKeysChange
-    );
-    piano.addEventListener(PianoEvents.reset, this.reset);
+    piano.addEventListener("activeKeysChange", this.onActiveKeysChange);
+    piano.addEventListener("reset", this.reset);
     document.addEventListener("keydown", this.oneKeyPlay);
     document.addEventListener("keyup", this.oneKeyPlay);
   }
@@ -189,16 +183,16 @@ class PianoPage extends React.Component<PianoPageProps, PianoPageState> {
     document.removeEventListener("keyup", this.oneKeyPlay);
   }
 
-  onRecorderProgress: RecorderProgressListener = progress => {
+  onRecorderProgress: RecorderListener<"progress"> = progress => {
     this.setState({ progress });
   };
 
-  onActiveKeysChange: PianoActiveKeysListener = activeKeys => {
+  onActiveKeysChange: PianoListener<"activeKeysChange"> = activeKeys => {
     this.setState({ activeKeys });
   };
 
   play = () => {
-    this.recorder.play(this.props.pianoSpeed / 100);
+    this.recorder.play();
   };
 
   stop = () => {

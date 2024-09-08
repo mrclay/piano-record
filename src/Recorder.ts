@@ -3,17 +3,16 @@ import { TimedOp, Op } from "./Ops";
 import Piano, { PianoEvents } from "./Piano";
 import { EventTarget } from "./dom-event-target";
 
-export type RecorderProgressListener = (progress: number) => void;
-export type RecorderStateListener = (state: RecorderState) => void;
-export type RecorderStopListener = () => void;
-export type RecorderCompleteListener = RecorderStopListener;
-
-type RecorderEventTypes = {
+type RecorderEvents = {
   state: RecorderState;
   progress: number;
   complete: null;
   stop: null;
 };
+
+export type RecorderListener<K extends keyof RecorderEvents> = (
+  evt: RecorderEvents[K]
+) => void;
 
 export enum RecorderState {
   playing = "playing",
@@ -21,17 +20,20 @@ export enum RecorderState {
   recording = "recording",
 }
 
-export default class Recorder extends EventTarget<RecorderEventTypes> {
+export default class Recorder extends EventTarget<RecorderEvents> {
   firstTime: number | undefined;
-  keyTimeouts: Record<string, number>;
+  keyTimeouts: Record<string, number> = Object.create(null);
   operations: TimedOp[];
-  lastOperations: TimedOp[];
+  lastOperations: TimedOp[] = [];
   piano: Piano;
-  playAllIntervals: number[];
-  progressInterval: number | null;
+  playAllIntervals: number[] = [];
+  progressInterval: number | null = null;
   progressPeriod: number;
-  startedRecording: boolean;
-  state: RecorderState;
+  repeatAfterMs: number | null = null;
+  repeatTimeout = 0;
+  speed = 1;
+  startedRecording = false;
+  state = RecorderState.stopped;
 
   constructor(
     spec: {
@@ -44,13 +46,6 @@ export default class Recorder extends EventTarget<RecorderEventTypes> {
     this.progressPeriod = spec.progressPeriod || 40;
     this.piano = spec.piano;
     this.operations = spec.operations || [];
-    this.lastOperations = [];
-    this.playAllIntervals = [];
-    this.progressInterval = null;
-    this.firstTime = undefined;
-    this.startedRecording = false;
-    this.keyTimeouts = Object.create(null);
-    this.state = RecorderState.stopped;
   }
 
   setOperations(operations: TimedOp[]) {
@@ -97,7 +92,7 @@ export default class Recorder extends EventTarget<RecorderEventTypes> {
     this.firstTime = undefined;
 
     if (!this.startedRecording) {
-      this.piano.addEventListener(PianoEvents.operation, this.onPianoOperation);
+      this.piano.addEventListener("operation", this.onPianoOperation);
       this.startedRecording = true;
     }
 
@@ -115,7 +110,7 @@ export default class Recorder extends EventTarget<RecorderEventTypes> {
     this.firstTime = dividedTime - time;
 
     if (!this.startedRecording) {
-      this.piano.addEventListener(PianoEvents.operation, this.onPianoOperation);
+      this.piano.addEventListener("operation", this.onPianoOperation);
       this.startedRecording = true;
     }
 
@@ -144,7 +139,7 @@ export default class Recorder extends EventTarget<RecorderEventTypes> {
     this.operations.push([op, dividedTime - this.firstTime]);
   }
 
-  play(speed = 1) {
+  play() {
     const numOperations = this.operations.length;
     if (!numOperations) {
       return false;
@@ -170,9 +165,9 @@ export default class Recorder extends EventTarget<RecorderEventTypes> {
           numPerformed++;
           if (numPerformed === numOperations) {
             this.send("complete", null);
-            this.stop();
+            this.stop(true);
           }
-        }, el[1] * C.TIME_RESOLUTION_DIVISOR * (1 / speed))
+        }, el[1] * C.TIME_RESOLUTION_DIVISOR * (1 / this.speed))
       );
     });
 
@@ -180,25 +175,38 @@ export default class Recorder extends EventTarget<RecorderEventTypes> {
     return true;
   }
 
-  stop() {
+  stop(completed = false) {
     if (this.operations.length === 0 && this.lastOperations.length) {
       this.operations = this.lastOperations;
     }
 
     while (this.playAllIntervals.length) {
       let interval = this.playAllIntervals.pop();
-      clearInterval(interval);
+      window.clearInterval(interval);
     }
 
     Object.keys(this.keyTimeouts).forEach(note => {
-      clearTimeout(this.keyTimeouts[note]);
+      window.clearTimeout(this.keyTimeouts[note]);
     });
     this.keyTimeouts = Object.create(null);
 
+    if (this.repeatTimeout) {
+      window.clearTimeout(this.repeatTimeout);
+    }
+
     if (this.progressInterval) {
-      clearInterval(this.progressInterval);
+      window.clearInterval(this.progressInterval);
     }
     this.piano.stopAll();
+
+    if (completed && this.repeatAfterMs) {
+      this.repeatTimeout = window.setTimeout(
+        () => this.play(),
+        this.repeatAfterMs
+      );
+      return;
+    }
+
     this.setState(RecorderState.stopped);
     this.send("stop", null);
     this.send("progress", 0);

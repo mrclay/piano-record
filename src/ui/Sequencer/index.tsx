@@ -16,7 +16,7 @@ interface SequencerProps {
 
 const { whites, blacks } = getPianoKeyLayout();
 
-export default function Sequencer({
+export default function SequencerUi({
   currentStepIndex,
   onStepsChange,
   stepData,

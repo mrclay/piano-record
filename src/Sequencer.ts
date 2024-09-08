@@ -1,36 +1,71 @@
 import { EventTarget } from "./dom-event-target";
 import Piano, { ActiveKeys } from "./Piano";
+import * as Tone from "tone";
 
-export const initialSequenceConfig = {
+export interface SequencerEvents {
+  step: { step: number };
+  start: null;
+  stop: null;
+}
+
+export type SequencerListener<K extends keyof SequencerEvents> = (
+  evt: SequencerEvents[K]
+) => void;
+
+const sequencerDefaults = {
   bpm: 60,
   bps: 2,
-  step: 0 as number | undefined,
   stepData: [1, 2, 3, 4, 5, 6, 7, 8].map(() => [] as number[]),
   joinData: [1, 2, 3, 4, 5, 6, 7, 8].map(() => [] as number[]),
 };
 
-type SequencerConfig = typeof initialSequenceConfig & {
+export class Sequencer extends EventTarget<SequencerEvents> {
+  bpm = sequencerDefaults.bpm;
+  bps = sequencerDefaults.bps;
+  #step = 0;
+  #playing = false;
+  #stepTimeout = 0;
   piano: Piano;
-};
+  activeKeys: ActiveKeys = new Set();
+  stepData = sequencerDefaults.stepData;
+  joinData = sequencerDefaults.joinData;
 
-export function playSequence(config: SequencerConfig) {
-  const { stepData, joinData, piano } = config;
-  let playing = false;
-  let bpm = config.bpm;
-  let bps = config.bps;
-  let step = Math.max(0, config.step || 0);
-  let stepTimeout = 0;
-  let activeKeys: ActiveKeys = new Set();
+  constructor(piano: Piano) {
+    super();
+    this.piano = piano;
+  }
 
-  const eventTarget = new EventTarget<{
-    step: { step: number };
-    start: null;
-    stop: null;
-  }>();
+  reset() {
+    this.stop();
+    Object.assign(this, sequencerDefaults);
+  }
 
-  function playStep() {
-    const currentNotes = stepData[step];
-    const currentJoins = joinData[step];
+  isPlaying() {
+    return Boolean(this.#playing);
+  }
+
+  getStep() {
+    return this.#step;
+  }
+
+  getNumSteps() {
+    return this.stepData.length;
+  }
+
+  setNumSteps(steps: number) {
+    while (this.stepData.length < steps) {
+      this.stepData.push([]);
+      this.joinData.push([]);
+    }
+    while (this.stepData.length > steps) {
+      this.stepData.pop();
+      this.joinData.pop();
+    }
+  }
+
+  playStep() {
+    const currentNotes = this.stepData[this.#step];
+    const currentJoins = this.joinData[this.#step];
 
     // Keep track of which are started
     const bannedNotes: ActiveKeys = new Set();
@@ -39,7 +74,7 @@ export function playSequence(config: SequencerConfig) {
     // Why the new Set()? Because we need to play new notes in the
     // callback. But if we do so, activeKeys.forEach will get called
     // again for the new note, resulting in an infinite loop.
-    new Set(piano.activeKeys).forEach(note => {
+    new Set(this.piano.activeKeys).forEach(note => {
       const willJoin = currentJoins.includes(note);
       const willPlay = currentNotes.includes(note);
 
@@ -48,63 +83,50 @@ export function playSequence(config: SequencerConfig) {
         if (willJoin) {
           // Let it ring
         } else {
-          piano.stopNote(note);
-          piano.startNote(note);
+          this.piano.stopNote(note);
+          this.piano.startNote(note);
         }
       } else {
-        piano.stopNote(note);
+        this.piano.stopNote(note);
       }
     });
 
     // Start notes that still need starting
     currentNotes.forEach(note => {
       if (!bannedNotes.has(note)) {
-        piano.startNote(note);
+        this.piano.startNote(note);
       }
     });
 
-    activeKeys = new Set(currentNotes);
+    this.activeKeys = new Set(currentNotes);
 
-    if (playing) {
-      const delay = (60 / bpm) * bps * 1000;
-      stepTimeout = window.setTimeout(incPlay, delay);
+    if (this.#playing) {
+      const delay = (60 / this.bpm) * this.bps * 1000;
+      this.#stepTimeout = window.setTimeout(this.#incPlay.bind(this), delay);
     }
 
-    eventTarget.send("step", { step });
+    this.send("step", { step: this.#step });
   }
 
-  function incPlay() {
-    step = (step + 1) % stepData.length;
-    playStep();
+  #incPlay() {
+    this.#step = (this.#step + 1) % this.stepData.length;
+    this.playStep();
   }
 
-  function start() {
-    playing = true;
-    eventTarget.send("start", null);
-    playStep();
+  async start(step = 0) {
+    this.#playing = true;
+    this.#step = step;
+    this.send("start", null);
+    await Tone.start();
+    this.playStep();
   }
 
-  function stop() {
-    playing = false;
-    window.clearTimeout(stepTimeout);
-    piano.stopAll();
-    eventTarget.send("stop", null);
-    eventTarget.reset();
+  stop() {
+    this.#playing = false;
+    window.clearTimeout(this.#stepTimeout);
+    this.piano.stopAll();
+    this.send("stop", null);
   }
-
-  function setBps(val: number) {
-    bps = val;
-  }
-
-  function setBpm(val: number) {
-    bpm = val;
-  }
-
-  function getActiveKeys() {
-    return activeKeys;
-  }
-
-  return { getActiveKeys, eventTarget, start, stop, setBpm, setBps };
 }
 
 function parseStream(stream: string) {

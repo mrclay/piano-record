@@ -1,22 +1,17 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import { useSearchParams } from "react-router-dom";
-import * as Tone from "tone";
 
 import Paths from "../Paths";
 import Keyboard from "../ui/Keyboard";
-import Sequencer from "../ui/Sequencer";
+import SequencerUi from "../ui/Sequencer";
 import Preview from "../ui/Preview";
 import Saver from "../ui/Saver";
 import PianoShepardMode from "../ui/PianoShepardMode";
 import { useStore } from "../store";
 import SoundSelector, { useSfStorage } from "../ui/SoundSelector";
 import { Content900, H1, HeadingNav, HrFinal } from "../ui/Common";
-import {
-  initialSequenceConfig,
-  playSequence,
-  sequenceFromStream,
-} from "../Sequencer";
+import { sequenceFromStream, Sequencer, SequencerEvents } from "../Sequencer";
 
 function streamFromSong(
   bpm: number,
@@ -40,8 +35,6 @@ function streamFromSong(
   return out;
 }
 
-const initial = initialSequenceConfig;
-
 export default function SequencePage(): JSX.Element {
   const { saveSf } = useSfStorage();
   const navigate = useNavigate();
@@ -50,61 +43,46 @@ export default function SequencePage(): JSX.Element {
   const offset = parseInt(searchParams.get("transpose") || "0");
 
   const [piano] = useStore.piano();
+  const [sequencer] = useStore.sequencer();
 
-  const [sequencer, setSequencer] = useState<ReturnType<
-    typeof playSequence
-  > | null>(null);
-  const playing = Boolean(sequencer);
+  const [, setRenderNum] = useState(0);
+  const forceRender = () => setRenderNum(prev => prev + 1);
+
+  const step = sequencer.isPlaying() ? sequencer.getStep() : -1;
+  const numSteps = sequencer.getNumSteps();
 
   const [internalStep, setStep] = useState(0);
-  const step = playing ? internalStep : -1;
+  const [bpmInput, setBpmInput] = useState(String(sequencer.bpm));
+  const [numStepsInput, setNumStepsInput] = useState(
+    String(sequencer.getNumSteps())
+  );
 
-  const [bpm, setBpm] = useState(initial.bpm);
-  const [bpmInput, setBpmInput] = useState(String(bpm));
+  useEffect(() => {
+    function stepHandler({ step }: SequencerEvents["step"]) {
+      setStep(step);
+      forceRender();
+    }
 
-  const [bps, setBps] = useState(initial.bps);
+    sequencer.addEventListener("step", stepHandler);
 
-  const [stepData, setStepData] = useState<Array<number[]>>(initial.stepData);
-  const [joinData, setJoinData] = useState<Array<number[]>>(initial.joinData);
-
-  const [numSteps, setNumSteps] = useState(initial.stepData.length);
-  const [numStepsInput, setnumStepsInput] = useState(String(numSteps));
-
-  const activeKeys = sequencer?.getActiveKeys() || new Set();
+    return () => sequencer.removeEventListener("step", stepHandler);
+  }, [sequencer]);
 
   async function handleStart() {
-    await Tone.start();
-    const sequencer = playSequence({
-      bpm,
-      bps,
-      step: internalStep,
-      stepData,
-      joinData,
-      piano,
-    });
-    sequencer.eventTarget.addEventListener("step", e => {
-      setStep(e.step);
-    });
-    sequencer.eventTarget.addEventListener("stop", () => setStep(-1));
-    sequencer.start();
-    setSequencer(sequencer);
+    sequencer.start(internalStep);
   }
 
   function handleStop() {
     piano.stopAll();
-    sequencer?.stop();
-    setSequencer(null);
+    sequencer.stop();
+    setStep(0);
+    forceRender();
   }
 
   function reset() {
-    piano.stopAll();
-    setBpm(initial.bpm);
-    setBps(initial.bps);
-    setNumSteps(initial.stepData.length);
-    setStepData(initial.stepData);
-    setJoinData(initial.joinData);
-    setStep(internalStep % initial.stepData.length);
-    setSequencer(null);
+    handleStop();
+    sequencer.reset();
+    setBpmInput(String(sequencer.bpm));
   }
 
   function play(currentNotes: number[]) {
@@ -117,7 +95,12 @@ export default function SequencePage(): JSX.Element {
     const params = saveSf();
     navigate(
       Paths.sequencePrefix(
-        `/songs/${streamFromSong(bpm, bps, stepData, joinData)}?${params}`
+        `/songs/${streamFromSong(
+          sequencer.bpm,
+          sequencer.bps,
+          sequencer.stepData,
+          sequencer.joinData
+        )}?${params}`
       )
     );
   }
@@ -133,14 +116,14 @@ export default function SequencePage(): JSX.Element {
         offset
       );
       if (newStepData && newJoinData) {
-        setBpm(bpm);
-        setBpmInput(String(bpm));
-        setBps(bps);
-        setStepData(newStepData);
-        setJoinData(newJoinData);
-        setNumSteps(newStepData.length);
-        setnumStepsInput(String(newStepData.length));
-        setSequencer(null);
+        sequencer.reset();
+        Object.assign(sequencer, {
+          bpm,
+          bps,
+          stepData: newStepData,
+          joinData: newJoinData,
+        });
+        setBpmInput(String(sequencer.bpm));
       }
     }
   }, [params.stream, offset]);
@@ -187,7 +170,7 @@ export default function SequencePage(): JSX.Element {
           <Preview
             handlePlay={handleStart}
             handleStop={handleStop}
-            isPlaying={playing}
+            isPlaying={sequencer.isPlaying()}
             isWaiting={false}
             progress={{
               ratio: step / (numSteps - 1),
@@ -216,15 +199,10 @@ export default function SequencePage(): JSX.Element {
                   onChange={e => setBpmInput(e.target.value)}
                   onBlur={e => {
                     const num = parseInt(e.target.value);
-                    if (isNaN(num) || num < 1 || num > 400) {
-                      // Invalid
-                      setBpmInput(String(bpm));
-                      return;
+                    if (!isNaN(num) && num >= 1 && num <= 400) {
+                      sequencer.bpm = num;
                     }
-
-                    setBpm(num);
-                    sequencer?.setBpm(num);
-                    setBpmInput(String(num));
+                    setBpmInput(String(sequencer.bpm));
                   }}
                 />
               </label>
@@ -236,28 +214,15 @@ export default function SequencePage(): JSX.Element {
                   type="text"
                   value={numStepsInput}
                   onFocus={e => e.target.select()}
-                  onChange={e => setnumStepsInput(e.target.value)}
+                  onChange={e => setNumStepsInput(e.target.value)}
                   onBlur={e => {
                     const num = parseInt(e.target.value);
-                    if (isNaN(num) || num < 2) {
-                      // Invalid
-                      setnumStepsInput(String(numSteps));
-                      return;
+                    if (!isNaN(num) && num >= 2) {
+                      sequencer.setNumSteps(num);
                     }
 
-                    const newSteps = stepData.slice();
-                    const newJoinData = joinData.slice();
-                    while (newSteps.length < num) {
-                      newSteps.push([]);
-                      newJoinData.push([]);
-                    }
-                    while (newSteps.length > num) {
-                      newSteps.pop();
-                      newJoinData.pop();
-                    }
-                    setStepData(newSteps);
-                    setJoinData(newJoinData);
-                    setNumSteps(num);
+                    setNumStepsInput(String(sequencer.getNumSteps()));
+                    forceRender();
                   }}
                 />
               </label>
@@ -271,13 +236,12 @@ export default function SequencePage(): JSX.Element {
                     type="range"
                     min="1"
                     max="4"
-                    value={bps}
+                    value={sequencer.bps}
                     onChange={e => {
-                      setBps(Number(e.target.value));
-                      sequencer?.setBps(Number(e.target.value));
+                      sequencer.bps = Number(e.target.value);
                     }}
                   />
-                  <span className="ms-1">{bps}</span>
+                  <span className="ms-1">{sequencer.bps}</span>
                 </span>
               </label>
             </div>
@@ -285,23 +249,22 @@ export default function SequencePage(): JSX.Element {
         </div>
       </Content900>
 
-      <Sequencer
+      <SequencerUi
         currentStepIndex={step}
-        stepData={stepData}
-        joinData={joinData}
+        stepData={sequencer.stepData}
+        joinData={sequencer.joinData}
         onStepsChange={(newStepData, newJoinData, changedStep) => {
           // console.log(JSON.stringify([newStepData, newJoinData]));
 
-          setStepData(newStepData);
-          setJoinData(newJoinData);
-          setNumSteps(newStepData.length);
-          setnumStepsInput(String(newStepData.length));
+          sequencer.stepData = newStepData;
+          sequencer.joinData = newJoinData;
+          setNumStepsInput(String(sequencer.getNumSteps()));
           handleStop();
           setStep(changedStep);
           play(newStepData[changedStep]);
         }}
       />
-      <Keyboard activeKeys={activeKeys} />
+      <Keyboard activeKeys={sequencer.activeKeys} />
 
       <Content900>
         <SoundSelector />

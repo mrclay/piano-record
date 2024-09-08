@@ -67,7 +67,7 @@ function MajorKeyChords({ musicKey, offset }: Keyed) {
           ),
           f(
             "bVII 7",
-            "https://mrclay.org/sequence/songs/v4,60,1,p30p34-p2fp37j34-p2dp34p3bp39-p2dj34p3cj39-p35p32p3ap22-j32j35j3ap3cp22-p29p35p39j3c-p29j35j39j3c",
+            "https://mrclay.org/sequence/songs/v4,60,1,p30p34p40p37-p2fj34p43j37-p2dp34p39p47-p2dj39p48j34p40-p35p32p22p46p3e-j32j35p22p48p40-p29p35p45p3c-p29j35j45j3c",
             <>
               {note("I")} - {note("vi")}m - <b>{note("bVII")}</b> - {note("IV")}
             </>

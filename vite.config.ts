@@ -8,5 +8,8 @@ export default defineConfig(({ command, mode, ssrBuild }) => {
   return {
     plugins: [react()],
     base: command === "serve" || localBuild ? "/" : "/piano/",
+    server: {
+      open: true,
+    },
   };
 });

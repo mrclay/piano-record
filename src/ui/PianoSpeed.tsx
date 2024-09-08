@@ -1,9 +1,24 @@
-import React from "react";
+import React, { useEffect } from "react";
 
 import { useStore } from "../store";
+import { RecorderState } from "../Recorder";
 
 export default function PianoSpeed() {
   const [speed, setSpeed] = useStore.pianoSpeed();
+  const [recorder] = useStore.recorder();
+
+  useEffect(() => {
+    if (recorder.speed !== speed / 100) {
+      recorder.speed = speed / 100;
+
+      console.log(recorder.getState());
+
+      if (recorder.getState() === RecorderState.playing) {
+        recorder.stop();
+        recorder.play();
+      }
+    }
+  }, [speed, recorder]);
 
   return (
     <div className="btn-group" role="group">
