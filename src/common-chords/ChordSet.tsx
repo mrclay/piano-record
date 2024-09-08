@@ -32,6 +32,7 @@ const isolateSong = (songUrl: string) => songUrl.split("/").pop();
 
 interface ChordSetProps {
   els: Chord[];
+  desc?: ReactNode;
 }
 
 interface ChordSetRef {
@@ -39,7 +40,7 @@ interface ChordSetRef {
   songChords?: ReactNode;
 }
 
-export function ChordSet({ els }: ChordSetProps): JSX.Element {
+export function ChordSet({ desc = null, els }: ChordSetProps): JSX.Element {
   const ref = useRef<ChordSetRef>({ song: "" }).current;
   const { sevenths } = useCommonChordsQuery();
   const [chordSet, setChordSet] = useStore.chordSet();
@@ -171,6 +172,7 @@ export function ChordSet({ els }: ChordSetProps): JSX.Element {
           );
         })}
       </h2>
+      {desc}
       {chordSet === ref && <ChordSetKeyboard close={closePiano} />}
     </>
   );

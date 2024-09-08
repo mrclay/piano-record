@@ -35,7 +35,8 @@ function CommonChordsPage() {
   const { sevenths, qs, setSevenths } = useCommonChordsQuery();
 
   const [offset, setOffset] = useStore.offset();
-  const [sequencer, setSequencer] = useStore.sequencer();
+  const [sequencer] = useStore.sequencer();
+  const [recorder] = useStore.recorder();
   const navigate = useNavigate();
   const { urlKey = "" }: ParamsMatch = useParams();
   const musicKey = keys.find(el => {
@@ -44,15 +45,12 @@ function CommonChordsPage() {
   });
 
   useEffect(() => {
-    return () => {
-      sequencer?.stop();
-    };
-  }, [sequencer]);
+    sequencer.stop();
+    recorder.stop();
 
-  useEffect(() => {
     if (musicKey) {
       const { deltaSemitones } = getInterval("C", musicKey.getTonicNote());
-      setOffset(deltaSemitones < 3 ? deltaSemitones : deltaSemitones - 12);
+      setOffset(deltaSemitones < 8 ? deltaSemitones : deltaSemitones - 12);
 
       const quality = uCase(musicKey.getQuality());
       const keyName = musicKey.toString();
@@ -76,7 +74,7 @@ function CommonChordsPage() {
 
       navigate(Paths.commonChordsPrefix("/C-major"));
     }
-  }, [musicKey, setOffset]);
+  }, [musicKey]);
 
   if (!musicKey) {
     return null;

@@ -117,6 +117,7 @@ export default function SequencePage(): JSX.Element {
   // Handle load
   useEffect(() => {
     document.title = "Sequence";
+    sequencer.reset();
 
     const stream = params.stream;
     if (typeof stream === "string") {
@@ -125,7 +126,6 @@ export default function SequencePage(): JSX.Element {
         offset
       );
       if (newStepData && newJoinData) {
-        sequencer.reset();
         Object.assign(sequencer, {
           bpm,
           bps,
@@ -135,6 +135,8 @@ export default function SequencePage(): JSX.Element {
         setBpmInput(String(sequencer.bpm));
       }
     }
+
+    forceRender();
   }, [params.stream, offset]);
 
   return (

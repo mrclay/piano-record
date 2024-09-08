@@ -19,11 +19,13 @@ function MajorKeyChords({ musicKey, offset }: Keyed) {
           f("V 7"),
           f("vi m7"),
         ]}
+        desc={
+          <p>
+            Many major key songs are made only from the first six{" "}
+            <strong>diatonic chords</strong> (built solely with scale tones).
+          </p>
+        }
       />
-      <p>
-        Many major key songs are made only from the first six{" "}
-        <strong>diatonic chords</strong> (built solely with scale tones).
-      </p>
 
       <ClickToPlay />
 
@@ -59,7 +61,7 @@ function MajorKeyChords({ musicKey, offset }: Keyed) {
           ),
           f(
             "bVI maj7",
-            "https://mrclay.org/sequence/songs/v4,90,1,p43p34p37p24-j34j37p24p3e-p2cp3cp33p3f-p2cp3cj33j3f-p3ep37p43p22-j3ep22j37j43-p43p37p3cp2cp3f-j43j37j3cp2cj3f",
+            "https://mrclay.org/sequence/songs/v4,90,1,p45p36p39p26-j36j39p26p3e-p2ep3ep35p41-p2ep3ej35j41-p40p39p45p24-j40p24j39j45-p45p39p3ep2ep41-j45j39j3ep2ej41",
             <>
               {note("I")} - <b>{note("bVI")}</b> - {note("v")}m/{note("bvii")} -{" "}
               <b>{note("bVI")}maj7</b>
@@ -67,22 +69,25 @@ function MajorKeyChords({ musicKey, offset }: Keyed) {
           ),
           f(
             "bVII 7",
-            "https://mrclay.org/sequence/songs/v4,60,1,p30p34p40p37-p2fj34p43j37-p2dp34p39p47-p2dj39p48j34p40-p35p32p22p46p3e-j32j35p22p48p40-p29p35p45p3c-p29j35j45j3c",
+            "https://mrclay.org/sequence/songs/v4,60,1,p32p36p42p39-p31j36p45j39-p2fp36p3bp49-p2fj3bp4aj36p42-p37p34p24p48p40-j34j37p24p4aj40-p2bp37p47p3e-p2bj37j47j3e",
             <>
               {note("I")} - {note("vi")}m - <b>{note("bVII")}</b> - {note("IV")}
             </>
           ),
         ]}
+        desc={
+          <>
+            <p>
+              These are <strong>borrowed chords</strong> from the parallel minor
+              (aeolian) mode.
+            </p>
+            <p>
+              {note("bVII")} and {note("v")}m are also often borrowed in the
+              mixolydian mode.
+            </p>
+          </>
+        }
       />
-
-      <p>
-        These are <strong>borrowed chords</strong> from the parallel minor
-        (aeolian) mode.
-      </p>
-      <p>
-        {note("bVII")} and {note("v")}m are also often borrowed in the
-        mixolydian mode.
-      </p>
 
       <ChordSet
         els={[
@@ -109,22 +114,26 @@ function MajorKeyChords({ musicKey, offset }: Keyed) {
           ),
           f(
             "V/ii 7",
-            "https://mrclay.org/sequence/songs/v4,60,0p5,p40p24p37-j40j24j37p2b-p3ej24p35p30-p3dp2dp34-j3dj2dp31j34-p40j2dj3dp37p34-p41p26p35p39-j41j26j35j39-j41j26j35j39-j41j26j39j35--",
+            "https://mrclay.org/sequence/songs/v4,60,0p5,p44p28p3b-j44j28j3bp2f-p42j28p39p34-p41p31p38-j41j31p35j38-p44j31j41p3bp38-p45p2ap39p3d-j45j2aj39j3dp31-j45j2aj39j3dp36-p34p28p31p39p40-p28j31j34j39p3d-j28j31j34p39j3d",
             <>
-              {note("I")} - <b>{note("VI")}7</b> - {note("ii")}m
+              {note("I")} - <b>{note("VI")}7</b> - {note("ii")}m - {note("IV")}/
+              {note("I")}
             </>
           ),
         ]}
+        desc={
+          <>
+            <p>
+              These are <strong>secondary dominants</strong> of the {rom("IV")},{" "}
+              {rom("V")}, {rom("vi")} and {rom("ii")} chords.
+            </p>
+            <p>
+              The secondary dominant of {rom("iii")}, {note("V/iii")}7, is
+              pretty rarely used.
+            </p>
+          </>
+        }
       />
-
-      <p>
-        These are <strong>secondary dominants</strong> of the {rom("IV")},{" "}
-        {rom("V")}, {rom("vi")} and {rom("ii")} chords.
-      </p>
-      <p>
-        The secondary dominant of {rom("iii")}, {note("V/iii")}7, is pretty
-        rarely used.
-      </p>
 
       <ChordSet
         els={[
@@ -150,23 +159,24 @@ function MajorKeyChords({ musicKey, offset }: Keyed) {
             "bVI 7",
             "https://mrclay.org/sequence/songs/v4,100,0p5,p3cp37p24-p30j3cj37j24-j30j3cj37j24-p2cp33p36p3c-j2cj33j36j3c-j2cj33j36j3cp3f-j2cj33j36j3cj3f-j2cj33j36j3fj3c-p29p3cp33p39-j29j3cj33p37-j29j3cj33j37-j29j33j3cp35-j29j33j3cj35-j29j33j3cj35-j29j33j3cj35-",
             <>
-              {note("I")}7 - <b>{note("bVI")}7</b> - {note("IV")}7
+              {note("I")}5 - <b>{note("bVI")}7</b> - {note("IV")}7
             </>
           ),
           f7(
             "bVII 7",
             "https://mrclay.org/sequence/songs/v4,190,1,p40p30p3cp37-j40j30j3cj37-p43p30p3cj37-j43j30j3cj37-p44p2ep3ep38-j44j2ej3ej38-p41p2ep3ej38-p3fj2ej3ej38-j3fp29p3cp39p30-j3fj29j3cj39j30-j3fp29j3cp39p30-j3cj3fj29j39j30",
             <>
-              {note("I")}7 - <b>{note("bVII")}7</b> - {note("IV")}7
+              {note("I")} - <b>{note("bVII")}7</b> - {note("IV")}7
             </>
           ),
         ]}
+        desc={
+          <p>
+            These are often used in rock &amp; blues with the 7th notes just for
+            color rather than serving a dominant function.
+          </p>
+        }
       />
-
-      <p>
-        These are often used in rock &amp; blues with the 7th notes just for
-        color rather than serving a dominant function.
-      </p>
 
       <ChordSet
         els={[
@@ -178,51 +188,55 @@ function MajorKeyChords({ musicKey, offset }: Keyed) {
             </>
           ),
         ]}
+        desc={
+          <p>
+            The {rom("bVII9")} chord combines the sound of the {rom("bVII")} and{" "}
+            borrowed {rom("iv")} triads. Because the {note("iv")} and{" "}
+            {note("bVI")} notes want to resolve down to {note("iii")} and{" "}
+            {note("v")}, jazz players often call this chord the "backdoor V",
+            moving to {rom("I")}.
+          </p>
+        }
       />
-
-      <p>
-        The {rom("bVII9")} chord combines the sound of the {rom("bVII")} and{" "}
-        borrowed {rom("iv")} triads. Because the {note("iv")} and {note("bVI")}{" "}
-        notes want to resolve down to {note("iii")} and {note("v")}, jazz
-        players often call this chord the "backdoor V", moving to {rom("I")}.
-      </p>
 
       <ChordSet
         els={[
           f7(
             "#iv m7b5",
-            "https://mrclay.org/piano/songs/C2b0C34iC37tC3c1fC407jD409eC40a4D2bczD34d6D37dcD3cdhD40e6C2aedC34eqC39etC3cf1C45f8D45kdC43llD43oqC40puD40rfC3es9D34v0D2av1D39vaD3cveD3evnC29woC34wpC39wuC3cx1D391bfD3c1bfD341bgD291bh",
+            "https://mrclay.org/piano/songs/C2b0C349C39dC3crC409bD40asC40beD34e5D39e6D2beaD3cecD40ejC2afaC34fbC39fcC3cfuC45g1C43lrD45lzC40piD43pnC3ersD40s0D34uoD2auqD39uxD3cuxD3ev1C29vvC30w3C39w9C3cwjD3c158C3c16mC3e18sD3c190C3c1aqD3e1auC3e1ciD3c1ctD301drD391dsD291dtD3e1egC301euC341ewC371exC401eyD401nrD371nsD301nsD341nt",
             <>
-              {note("I")}6/{note("V")} - <b>{note("#iv")}ø7</b> - {note("IV")}
-              maj7
+              {note("vi")}m7/{note("V")} - <b>{note("#iv")}ø7</b> - {note("IV")}{" "}
+              - {note("I")}
             </>
           ),
         ]}
+        desc={
+          <p>
+            This chord can be thought of as the {note("vi")}m triad with a tense{" "}
+            {note("#iv")} bass note beneath. Usually the {note("#iv")} bass
+            falls to {note("IV")} in the {rom("IV")} chord.
+          </p>
+        }
       />
-
-      <p>
-        This chord can be thought of as the {note("vi")}m triad with a tense{" "}
-        {note("#iv")} bass note beneath. Usually the {note("#iv")} bass falls to{" "}
-        {note("IV")} in the {rom("IV")} chord.
-      </p>
 
       <ChordSet
         els={[
           f(
             "vii m7b5",
-            "https://mrclay.org/sequence/songs/v4,70,1,p30p40p37-p30j40j37-p3ep35p39p23-p28j3ep38p34p3b-p34p39p3cp2d-j34j39j3cp2bj2d-p29p35p3ap30-j29p39j35j30-j29j39j35j30-",
+            "https://mrclay.org/sequence/songs/v4,70,1,p30p40p37-p30j40j37-p3ep35p39p23-p28j3ep38p34p3b-p34p39p3cp2d-j34j39j3cp2bj2d-p29p35p3ap30-j29p39j35j30",
             <>
               {note("I")} - <b>{note("vii")}ø7</b> - {note("III")}7 -{" "}
               {note("vi")}m - {note("IV")}sus {note("IV")}
             </>
           ),
         ]}
+        desc={
+          <p>
+            The 7th diatonic chord is far less popular and generally only used
+            for leading into {rom("V/vi")} ({note("III")}7).
+          </p>
+        }
       />
-
-      <p>
-        The 7th diatonic chord is far less popular and generally only used for
-        leading into {rom("V/vi")} ({note("III")}7).
-      </p>
 
       <ChordSet
         els={[
@@ -245,21 +259,22 @@ function MajorKeyChords({ musicKey, offset }: Keyed) {
             </>
           ),
         ]}
+        desc={
+          <p>
+            These are often used as passing chords between {note("I")} and{" "}
+            {note("vi")}m to harmonize the note {note("#v")}.
+          </p>
+        }
       />
-
-      <p>
-        These are often used as passing chords between {note("I")} and{" "}
-        {note("vi")}m to harmonize the note {note("#v")}.
-      </p>
 
       <ChordSet
         els={[
           f7(
             "vii/ii dim7",
-            "https://mrclay.org/sequence/songs/v4,40,1,p40p3cp39p34p24-p25p40p3ap37-p26p3ep35p39p3c-p35p2bp3bp3f",
+            "https://mrclay.org/sequence/songs/v4,40,1,p42p3ep36p26p39-p27p42p3cp39-p28p40p37p3bp3e-p37p2dp3dp41",
             <>
-              {note("I")}6 - <b>{note("#i")}°7</b> - {note("ii")}m7 -{" "}
-              {note("V")}7+
+              {note("I")} - <b>{note("#i")}°7</b> - {note("ii")}m7 - {note("V")}
+              7+
             </>
           ),
           f7(
@@ -278,39 +293,44 @@ function MajorKeyChords({ musicKey, offset }: Keyed) {
             </>
           ),
         ]}
+        desc={
+          <>
+            <p>
+              These are <strong>secondary leading-tone diminished</strong>{" "}
+              chords naturally leading to the chords {rom("ii")}, {rom("V")},
+              and {rom("vi")}.
+            </p>
+            <p>
+              {note("#ii")}dim7 is sometimes called a "passing-tone" diminished
+              7th with {note("ii")} passing to {note("iii")}
+              —or vice versa—but it may be clearer to think of it as an
+              inversion of {note("#iv")}dim7.
+            </p>
+          </>
+        }
       />
-
-      <p>
-        These are <strong>secondary leading-tone diminished</strong> chords
-        naturally leading to the chords {rom("ii")}, {rom("V")}, and {rom("vi")}
-        .
-      </p>
-      <p>
-        {note("#ii")}dim7 is sometimes called a "passing-tone" diminished 7th
-        with {note("ii")} passing to {note("iii")}
-        —or vice versa—but it may be clearer to think of it as an inversion of{" "}
-        {note("#iv")}dim7.
-      </p>
 
       <ChordSet
         els={[
           f(
             "bII maj7",
-            "https://mrclay.org/sequence/songs/v4,50,0p5,p40p3bp37p2bp30-j40j3bj37j2bj30-p43p3ep28p3bp2f-j43j3ej28j3bj2f-p26p43p39p3cp30-j26j43j39j3cj30p32-p25p38p35p3cp41-j25j38j35j3cj41-j25j38j35j3cj41p37-j25j38j35j3cj41j37-j25j38j35j3cj41j37-",
+            "https://mrclay.org/sequence/songs/v4,50,0p5,p42p3dp2dp32p36-j42j3dj2dj32j36-p45p40p2ap3dp31-j45j40j2aj3dj31-p28p45p3bp3ep32-j28j45j3bj3ej32p34-p27p3ap37p3ep43-j27j3aj37j3ej43-j27j3aj37j3ej43p39-j27j3ap37j3ej43j39",
             <>
-              {note("I")}/{note("v")} - {note("iii")}m7 - {note("ii")}m7 -{" "}
+              {note("I")}maj7/{note("v")} - {note("iii")}m7 - {note("ii")}m7 -{" "}
               <b>{note("bII")}maj7</b>
             </>
           ),
         ]}
+        desc={
+          <p>
+            Borrowed from phrygian, {rom("bII")} most often appears following{" "}
+            {rom("V/V")}, {rom("ii")}, or {rom("bVI")} and often goes to{" "}
+            {rom("I")} or {rom("V")}. In classical music, it often appears in
+            1st inversion ({note("bII")}/{note("iv")}) as a substitute for the{" "}
+            {rom("iv")} chord.
+          </p>
+        }
       />
-
-      <p>
-        Borrowed from phrygian, {rom("bII")} most often appears following{" "}
-        {rom("V/V")}, {rom("ii")}, or {rom("bVI")} and often goes to {rom("I")}{" "}
-        or {rom("V")}. In classical music, it often appears in 1st inversion (
-        {note("bII")}/{note("iv")}) as a substitute for the {rom("iv")} chord.
-      </p>
 
       <SeventhTeaser>
         <ChordSet
@@ -323,12 +343,13 @@ function MajorKeyChords({ musicKey, offset }: Keyed) {
               </>
             ),
           ]}
+          desc={
+            <p>
+              This is borrowed from the mixolydian mode due to the presence of
+              the note {note("vi")}.
+            </p>
+          }
         />
-
-        <p>
-          This is borrowed from the mixolydian mode due to the presence of the
-          note {note("vi")}.
-        </p>
 
         <ChordSet
           els={[
@@ -347,11 +368,13 @@ function MajorKeyChords({ musicKey, offset }: Keyed) {
               </>
             ),
           ]}
+          desc={
+            <p>
+              These are from the harmonic minor mode, and usually go to{" "}
+              {rom("I")}.
+            </p>
+          }
         />
-
-        <p>
-          These are from the harmonic minor mode, and usually go to {rom("I")}.
-        </p>
 
         <ChordSet
           els={[
@@ -364,28 +387,29 @@ function MajorKeyChords({ musicKey, offset }: Keyed) {
             ),
             f7(
               "iv mMaj7",
-              "https://mrclay.org/piano/songs/C300C34eC3718C3c7yC3eakD3cb2D34c4D30c6D37c8D3ecwC35d4C38diC3cdsC40eiC3eo8D40ogD38q0D35q1D3cqaC34rcC37rgD3eroC3cs8D3c12bD3412qD3712r",
+              "https://mrclay.org/piano/songs/C320C36qC3916C3e7hC40amD3eayD32b8D36b9D39bpC2bdhD40doC3ae2C3eebC42f0C40nqD42ntD2bpzD3aq5D3eqdC2araD40rjC32rpC39ryC3esuD3916nD3e16pD3216xD2a16x",
               <>
                 {note("I")} - <b>{note("iv")}m(maj7)</b> - {note("I")}/
                 {note("iii")}
               </>
             ),
           ]}
+          desc={
+            <p>
+              The notes {note("bVI")} and {note("iii")} in these chords help
+              evoke the altered mode <em>mixolydian b6</em>, which is basically
+              aeolian but with a distinctive major 3rd. The {rom("bVII")}7 chord
+              is sometimes called the <strong>backdoor V</strong>, as it
+              resolves nicely to the tonic.
+            </p>
+          }
         />
-
-        <p>
-          The notes {note("bVI")} and {note("iii")} in these chords help evoke
-          the altered mode <em>mixolydian b6</em>, which is basically aeolian
-          but with a distinctive major 3rd. The {rom("bVII")}7 chord is
-          sometimes called the <strong>backdoor V</strong>, as it resolves
-          nicely to the tonic.
-        </p>
 
         <ChordSet
           els={[
             f7(
               "subV/V 7",
-              "https://mrclay.org/piano/songs/C300C37kC3coC40xD307oD3c7wD3782D408kC2c8nC3399C3c9aC429lD2ch0D33hcD3ci2C2bi5D42i9C32iuC3bj7C43jnD32s4D3bs5D2bsaD43sh",
+              "https://mrclay.org/piano/songs/C300C3750C3c65C406tD30bbD37buD3cc0C2cc6D40cbC36cyC3cczC3fdhC42dsD2cpzD36q3D3cqdD3fqfD42qnC2br3C35rhC3brlC3eskC43szD2b18hD3e19bD3b19dD3519hD431b0",
               <>
                 {note("I")} - <b>{note("bVI")}7</b> - {note("V")}
               </>
@@ -399,20 +423,22 @@ function MajorKeyChords({ musicKey, offset }: Keyed) {
             ),
             f7(
               "subV/IV 7",
-              "https://mrclay.org/piano/songs/C300C37gC3b14C401iD306mD3770D3b7cD407mC2a7yC3a88C3c8xC409bD40h6C3eieD2ajtD3akfD3ckgD3ekgC29kuC39lcC3cluC40mgD39xyD3cy4D29y8D40yb",
+              "https://mrclay.org/sequence/songs/v4,60,0p5,p30p40p43p3b-j30j40j43p37j3b-j40j43p2bj3b-p2ap40p46p3c-j2aj40j46j3cp34-j2aj40j46p3a-p29p40p45p39-j29j40j45p30j39-j29j40j45p37-p2ep44p3ep38-p2ej44j3ep3a-p2ej44j3ep3c",
               <>
-                {note("I")}maj7 - <b>{note("bV")}7b5</b> - {note("IV")}maj7
+                {note("I")}maj7 - <b>{note("bV")}7b5</b> - {note("IV")}maj7 -{" "}
+                {note("bVII")}7
               </>
             ),
           ]}
+          desc={
+            <p>
+              These are <strong>tritone substitutes</strong> for the chords{" "}
+              {rom("V/V")}, {rom("V")}, and {rom("V/IV")} typically resolving a
+              step down (to {rom("V")}, {rom("I")}, and {rom("IV")}). In sheet
+              music you may find the 7th notated as an augmented 6th.
+            </p>
+          }
         />
-
-        <p>
-          These are <strong>tritone substitutes</strong> for the chords{" "}
-          {rom("V/V")}, {rom("V")}, and {rom("V/IV")} typically resolving a step
-          down (to {rom("V")}, {rom("I")}, and {rom("IV")}). In sheet music you
-          may find the 7th notated as an augmented 6th.
-        </p>
 
         <ChordSet
           els={[
@@ -441,13 +467,15 @@ function MajorKeyChords({ musicKey, offset }: Keyed) {
               </>
             ),
           ]}
+          desc={
+            <p>
+              These sometimes function as "secondary predominants", appearing
+              before secondary dominants {rom("V/ii")}, {rom("V/IV")}, or{" "}
+              {rom("V/vi")} (or before their equivalent secondary leading-tone
+              diminished chords).
+            </p>
+          }
         />
-
-        <p>
-          These sometimes function as "secondary predominants", appearing before
-          secondary dominants {rom("V/ii")}, {rom("V/IV")}, or {rom("V/vi")} (or
-          before their equivalent secondary leading-tone diminished chords).
-        </p>
 
         <ChordSet
           els={[
@@ -466,19 +494,20 @@ function MajorKeyChords({ musicKey, offset }: Keyed) {
               </>
             ),
           ]}
+          desc={
+            <p>
+              Just a couple examples of dominant 7th chords that have been
+              "altered" with their 5th and/or 9th chord tones lowered or raised.
+              Commonly done in jazz.
+            </p>
+          }
         />
-
-        <p>
-          Just a couple examples of dominant 7th chords that have been "altered"
-          with their 5th and/or 9th chord tones lowered or raised. Commonly done
-          in jazz.
-        </p>
 
         <ChordSet
           els={[
             f7(
               "VII 7",
-              "https://mrclay.org/piano/songs/C370C3cgC4016C481cC4c8eD488mD37dsD3cdyD40e2D4ceyC36f2C39fcC3bfqC3ffyC51geD51jaC51k8D3bsaD39scD36sgD3fsoD51tmC34tsC37u4C3cuaC40umC54v0C53yiD54ysC5110aD5310iC4f124D5112eD401a2D341a4D371a6D3c1a6D4f1a8",
+              "https://mrclay.org/piano/songs/C2b0C344C37gC3cyC4082D34byD37ciD2bclD3cctC2ae0D40e5C33e6C36eiC3besC45f8D45hsC45irD2aq7D36qeD33qfD3bqmD45riC28s1C37s9C3csdC40spC48taC47wdD48wnC45y0D47y5C43zqD45zzD431b6D371b8D401b9D281b9D3c1be",
               <>
                 {note("I")}/{note("V")} -{" "}
                 <b>
@@ -488,12 +517,13 @@ function MajorKeyChords({ musicKey, offset }: Keyed) {
               </>
             ),
           ]}
+          desc={
+            <p>
+              {note("VII")}7 is often used as a smoother substitute for{" "}
+              {note("#iv")}dim7, often inverted as {note("VII")}7/{note("#iv")}.
+            </p>
+          }
         />
-
-        <p>
-          {note("VII")}7 is often used as a smoother substitute for{" "}
-          {note("#iv")}dim7, often inverted as {note("VII")}7/{note("#iv")}.
-        </p>
       </SeventhTeaser>
     </section>
   );

@@ -18,12 +18,13 @@ function MinorKeyChords({ musicKey, offset }: Keyed) {
           f("bVI maj7"),
           f("bVII 7"),
         ]}
+        desc={
+          <p>
+            Many minor key songs are made only from the these six{" "}
+            <strong>diatonic chords</strong> (built solely with scale tones).
+          </p>
+        }
       />
-
-      <p>
-        Many minor key songs are made only from the these six{" "}
-        <strong>diatonic chords</strong> (built solely with scale tones).
-      </p>
 
       <ClickToPlay />
 
@@ -49,16 +50,20 @@ function MinorKeyChords({ musicKey, offset }: Keyed) {
             </>
           ),
         ]}
+        desc={
+          <>
+            <p>
+              The <strong>dominant</strong> chord ({rom("V")}) is very commonly
+              used and was nearly always used instead of {rom("v")} in classical
+              music.
+            </p>
+            <p>
+              The leading-tone diminished chord has three chord tones in common
+              with {note("V")}7, and so has a similar sound.
+            </p>
+          </>
+        }
       />
-
-      <p>
-        The <strong>dominant</strong> chord ({rom("V")}) is very commonly used
-        and was nearly always used instead of {rom("v")} in classical music.
-      </p>
-      <p>
-        The leading-tone diminished chord has three chord tones in common with{" "}
-        {note("V")}7, and so has a similar sound.
-      </p>
 
       <ChordSet
         els={[
@@ -77,11 +82,12 @@ function MinorKeyChords({ musicKey, offset }: Keyed) {
             </>
           ),
         ]}
+        desc={
+          <p>
+            These are two <strong>borrowed chords</strong> from the dorian mode.
+          </p>
+        }
       />
-
-      <p>
-        These are two <strong>borrowed chords</strong> from the dorian mode.
-      </p>
 
       <ChordSet
         els={[
@@ -102,9 +108,8 @@ function MinorKeyChords({ musicKey, offset }: Keyed) {
             </>
           ),
         ]}
+        desc={<p>Two more borrowed chords from the phrygian mode.</p>}
       />
-
-      <p>Two more borrowed chords from the phrygian mode.</p>
 
       <ChordSet
         els={[
@@ -120,12 +125,13 @@ function MinorKeyChords({ musicKey, offset }: Keyed) {
             </>
           ),
         ]}
+        desc={
+          <p>
+            The 2nd diatonic chord is uncommon in pop music, but in classical
+            and jazz commonly leads to the {rom("V")}.
+          </p>
+        }
       />
-
-      <p>
-        The 2nd diatonic chord is uncommon in pop music, but in classical and
-        jazz commonly leads to the {rom("V")}.
-      </p>
 
       <ChordSet
         els={[
@@ -151,12 +157,13 @@ function MinorKeyChords({ musicKey, offset }: Keyed) {
             </>
           ),
         ]}
+        desc={
+          <p>
+            These are <strong>secondary dominants</strong> of the {rom("iv")},{" "}
+            {rom("V")}, and {rom("bVI")} chords.
+          </p>
+        }
       />
-
-      <p>
-        These are <strong>secondary dominants</strong> of the {rom("iv")},{" "}
-        {rom("V")}, and {rom("bVI")} chords.
-      </p>
 
       <ChordSet
         els={[
@@ -177,12 +184,13 @@ function MinorKeyChords({ musicKey, offset }: Keyed) {
             </>
           ),
         ]}
+        desc={
+          <p>
+            The parallel major tonic is sometimes used not as secondary
+            dominant, but just because it sounds surprising but familiar.
+          </p>
+        }
       />
-
-      <p>
-        The parallel major tonic is sometimes used not as secondary dominant,
-        but just because it sounds surprising but familiar.
-      </p>
 
       <ChordSet
         els={[
@@ -198,13 +206,14 @@ function MinorKeyChords({ musicKey, offset }: Keyed) {
             </>
           ),
         ]}
+        desc={
+          <p>
+            This commonly follows the tonic triad, harmonizing the leading-tone
+            bass note while keeping the other tones ({note("biii")} and{" "}
+            {note("v")}) static.
+          </p>
+        }
       />
-
-      <p>
-        This commonly follows the tonic triad, harmonizing the leading-tone bass
-        note while keeping the other tones ({note("biii")} and {note("v")})
-        static.
-      </p>
 
       <ChordSet
         els={[
@@ -235,12 +244,13 @@ function MinorKeyChords({ musicKey, offset }: Keyed) {
             </>
           ),
         ]}
+        desc={
+          <p>
+            Added maj6 and maj7 extensions are common on minor chords in jazz
+            and noir music.
+          </p>
+        }
       />
-
-      <p>
-        Added maj6 and maj7 extensions are common on minor chords in jazz and
-        noir music.
-      </p>
 
       <ChordSet
         els={[
@@ -261,12 +271,13 @@ function MinorKeyChords({ musicKey, offset }: Keyed) {
             </>
           ),
         ]}
+        desc={
+          <p>
+            These are <strong>secondary leading-tone diminished</strong> chords
+            naturally leading to the chords {rom("V")} and {rom("iv")}.
+          </p>
+        }
       />
-
-      <p>
-        These are <strong>secondary leading-tone diminished</strong> chords
-        naturally leading to the chords {rom("V")} and {rom("iv")}.
-      </p>
 
       <ChordSet
         els={[
@@ -291,14 +302,15 @@ function MinorKeyChords({ musicKey, offset }: Keyed) {
             </>
           ),
         ]}
+        desc={
+          <p>
+            These are <strong>tritone substitutes</strong> for the chords{" "}
+            {rom("V/V")} and {rom("V")} typically resolving to {rom("V")} and{" "}
+            {rom("i")}. In sheet music you may find the 7th notated as an
+            augmented 6th.
+          </p>
+        }
       />
-
-      <p>
-        These are <strong>tritone substitutes</strong> for the chords{" "}
-        {rom("V/V")} and {rom("V")} typically resolving to {rom("V")} and{" "}
-        {rom("i")}. In sheet music you may find the 7th notated as an augmented
-        6th.
-      </p>
 
       <ChordSet
         els={[
@@ -318,13 +330,14 @@ function MinorKeyChords({ musicKey, offset }: Keyed) {
             </>
           ),
         ]}
+        desc={
+          <p>
+            Just a couple examples of dominant 7th chords that have been
+            "altered" with their 5th and/or 9th chord tones lowered or raised.
+            Commonly done in jazz.
+          </p>
+        }
       />
-
-      <p>
-        Just a couple examples of dominant 7th chords that have been "altered"
-        with their 5th and/or 9th chord tones lowered or raised. Commonly done
-        in jazz.
-      </p>
 
       <ChordSet
         els={[
@@ -336,13 +349,14 @@ function MinorKeyChords({ musicKey, offset }: Keyed) {
             </>
           ),
         ]}
+        desc={
+          <p>
+            A borrowed chord from {note("bIII")} minor, the parallel minor mode
+            of the relative major. It usually follows the tonic {note("i")}m to
+            provide a mysterious change.
+          </p>
+        }
       />
-
-      <p>
-        A borrowed chord from {note("bIII")} minor, the parallel minor mode of
-        the relative major. It usually follows the tonic {note("i")}m to provide
-        a mysterious change.
-      </p>
     </section>
   );
 }
