@@ -31,7 +31,7 @@ function MajorKeyChords({ musicKey, offset }: Keyed) {
         els={[
           f(
             "ii m7b5",
-            "https://mrclay.org/sequence/songs/v4,70,1,p43p28p34p3c-p40j28j34j43j3c-p41p26p35p38j3c-j26j35j38p3ej3cj41-p40p24p37p3cp34-j40j24j37j3cj34-j40j24j37j3cj34-",
+            "https://mrclay.org/sequence/songs/v4,70,1,p43p3cp29p39-p40j43j3cj29j39-p41p26p38j3c-j26j38p3cj41-p40p24p37j3c-j40j24j37j3c-j40j24j37j3c-",
             <>
               {note("I")}/{note("iii")} - <b>{note("ii")}ø7</b> - {note("I")}
             </>
@@ -45,7 +45,7 @@ function MajorKeyChords({ musicKey, offset }: Keyed) {
           ),
           f(
             "iv m7",
-            "https://mrclay.org/sequence/songs/v4,90,1,p41p39p29-j41j39j29p30-p41p38p29j30-j41j38j29p32-p40p37p24p34-j40j37j24p30-j40j24p2bj37-j24j40j2bj37-",
+            "https://mrclay.org/sequence/songs/v4,90,1,p41p39p29-j41j39j29p30-p41p38p29j30-j41j38j29p32-p40p37p24p34-j40j37j24j34-j40j24j37j34-j24j40j37j34-",
             <>
               {note("IV")} - <b>{note("iv")}m</b> - {note("I")}
             </>
@@ -59,10 +59,10 @@ function MajorKeyChords({ musicKey, offset }: Keyed) {
           ),
           f(
             "bVI maj7",
-            "https://mrclay.org/sequence/songs/v4,90,1,p29p43p39p34-p29p41j39j34-p2cp43p3cp33-j2cp41j3cj33-p2bp43p35p3cp3e-p2bj43j35j3cj3e-p24p40p37j3c-j40j37p24j3c",
+            "https://mrclay.org/sequence/songs/v4,90,1,p43p34p37p24-j34j37p24p3e-p2cp3cp33p3f-p2cp3cj33j3f-p3ep37p43p22-j3ep22j37j43-p43p37p3cp2cp3f-j43j37j3cp2cj3f",
             <>
-              {note("IV")}maj7 - <b>{note("bVI")}maj7</b> - {note("V")}7sus -{" "}
-              {note("I")}
+              {note("I")} - <b>{note("bVI")}</b> - {note("v")}m/{note("bvii")} -{" "}
+              <b>{note("bVI")}maj7</b>
             </>
           ),
           f(
@@ -95,21 +95,21 @@ function MajorKeyChords({ musicKey, offset }: Keyed) {
           ),
           f(
             "V/V 7",
-            "https://mrclay.org/sequence/songs/v4,250,1,p40-j40-p3e-p3cp37p24-j3cj37j24-j3cj37j24-p34p30j24-j34j30j24-j34j30j24-p36p26p2dj30-j36j26j2dj30-j36j26j2dj30-p37p2bp2fp32-j37j2bj2fj32-j37j2bj2fj32-j37j2bj2fj32-j37j2bj2fj32---",
+            "https://mrclay.org/sequence/songs/v4,60,0p25,p40-j40-p3e-p3cp37p24-j3cj37j24-j3cj37j24-p34p30j24-j34j30j24-j34j30j24-p36p26p2dj30-j36j26j2dj30-j36j26j2dj30-p37p2bp2fp32-j37j2bj2fj32-j37j2bj2fj32-j37j2bj2fj32-j37j2bj2fj32---",
             <>
               {note("I")} - <b>{note("II")}7</b> - {note("V")}
             </>
           ),
           f(
             "V/vi 7",
-            "https://mrclay.org/sequence/songs/v4,75,1,p34p24p30p37-j24j30j37j34-p38p28p34-p3bj28j38j34p32-p39p21p30j34-j39j21j30j34-j39j21j30j34-",
+            "https://mrclay.org/sequence/songs/v4,75,1,p34p24p37-j24j37j34-p38p28p32j34-j28j38p34j32-p39p21p30j34-j39j21j30j34-j39j21j30j34-",
             <>
               {note("I")} - <b>{note("III")}7</b> - {note("vi")}m
             </>
           ),
           f(
             "V/ii 7",
-            "https://mrclay.org/sequence/songs/v4,120,1,p40p24p37-j40j24j37p2b-p3ej24p35p30-p3dp2dp34-j3dj2dp31j34-p40j2dj3dp37p34-p41p26p35p39-j41j26j35j39p2d-j41j26j35j39p32-j41j26p35j39-j35-",
+            "https://mrclay.org/sequence/songs/v4,60,0p5,p40p24p37-j40j24j37p2b-p3ej24p35p30-p3dp2dp34-j3dj2dp31j34-p40j2dj3dp37p34-p41p26p35p39-j41j26j35j39-j41j26j35j39-j41j26j39j35--",
             <>
               {note("I")} - <b>{note("VI")}7</b> - {note("ii")}m
             </>
@@ -130,25 +130,25 @@ function MajorKeyChords({ musicKey, offset }: Keyed) {
         els={[
           f7(
             "I 7",
-            "https://mrclay.org/piano/songs/C400C3adC37pC301bC2b5vD305xC2eahD2basC30cyD2ed5C33feD30frD33gsC30ifD40tiD3atnD30tpD37tt"
+            "https://mrclay.org/piano/songs/C3a0C3c9C40jC43lC24vC275qD245vC287pD277rC2b94D2898C30b2D2bb5C2ed5D30daC30isD2eiuD43spD3aspD30srD3cstD40su"
           ),
           f7(
             "IV 7",
-            "https://mrclay.org/sequence/songs/v4,200,1,p24-p29p39p33p35-j29j33j39j35-j29j33j39j35-p24-p29p33p39p35p30-p29j30j33j35j39--p24p37p2bp30-j24j37j2bj30-j24j37j2bj30-",
+            "https://mrclay.org/sequence/songs/v4,100,0p5,p2b-p29p39p33p35-j29j33j39j35-j29j33j39j35-p2b-p29p33p39p35p30-p29j30j33j35j39--p24p37p30p3c-j24j37j30j3c-j24j37j30j3c-",
             <>
               <b>{note("IV")}7</b> - {note("I")}5
             </>
           ),
           f7(
             "v m",
-            "https://mrclay.org/sequence/songs/v4,190,1,p24p40p3cp37-p24p40p3cp37-p24p40p3cp37---p29p41p3cp39-p29p41p3cp39-j39j3cj41-p2bp43p3ep3a-p2bp43p3ep3a-p2bp43p3ep3a----",
+            "https://mrclay.org/sequence/songs/v4,110,0p5,p24p40p3cp37-p24p40p3cp37-p24p40p3cp37---p29p41p3cp39-p29p41p3cp39-j39j3cj41-p2bp43p3ep3a-p2bp43p3ep3a-p2bp43p3ep3a----",
             <>
               {note("I")} - {note("IV")} - <b>{note("v")}m</b>
             </>
           ),
           f7(
             "bVI 7",
-            "https://mrclay.org/sequence/songs/v4,200,1,p30p3cp37-j30j3cj37-j30j3cj37-p2cp33p36p3c-j2cj33j36j3c-j2cj33j36j3cp3f-j2cj33j36j3cj3f-j2cj33j36j3fj3c-p29p3cp33p39-j29j3cj33p37-j29j3cj33j37-j29j33j3cp35-j29j33j3cj35-j29j33j3cj35-j29j33j3cj35-",
+            "https://mrclay.org/sequence/songs/v4,100,0p5,p3cp37p24-p30j3cj37j24-j30j3cj37j24-p2cp33p36p3c-j2cj33j36j3c-j2cj33j36j3cp3f-j2cj33j36j3cj3f-j2cj33j36j3fj3c-p29p3cp33p39-j29j3cj33p37-j29j3cj33j37-j29j33j3cp35-j29j33j3cj35-j29j33j3cj35-j29j33j3cj35-",
             <>
               {note("I")}7 - <b>{note("bVI")}7</b> - {note("IV")}7
             </>
@@ -172,9 +172,9 @@ function MajorKeyChords({ musicKey, offset }: Keyed) {
         els={[
           f7(
             "bVII 9",
-            "https://mrclay.org/sequence/songs/v4,80,1,p26p41p35p39p3e-j26j35j39j41j3e-p22p32p38p35p3c-j22j32j38j35j3c-p24p34p3bp3ep37-j24j34j3bj3ej37-j24j34j3bj3ej37-",
+            "https://mrclay.org/sequence/songs/v4,40,0p5,p24p47p3bp40-j24p43j3bj40p2b-j24j43j3bp40j2bp34-p22p38p40-j22j38p3cp29j40-j22j38j3cj29p32j40",
             <>
-              {note("ii")}m - <b>{note("bVII")}9</b> - {note("I")}maj9
+              {note("I")}maj7 - <b>{note("bVII")}9#11</b>
             </>
           ),
         ]}
@@ -210,10 +210,10 @@ function MajorKeyChords({ musicKey, offset }: Keyed) {
         els={[
           f(
             "vii m7b5",
-            "https://mrclay.org/piano/songs/C300C374C406D30bcD37bcD40biC2fc2C35ccC39ckC3ecmD35jiD39jmD3ejuD2fk5C34kiC38kmC3bkmD34scD38scD3bskC35tcC39teC3ctfD3514zD3c152D3915c",
+            "https://mrclay.org/sequence/songs/v4,70,1,p30p40p37-p30j40j37-p3ep35p39p23-p28j3ep38p34p3b-p34p39p3cp2d-j34j39j3cp2bj2d-p29p35p3ap30-j29p39j35j30-j29j39j35j30-",
             <>
-              {note("I")} - <b>{note("vii")}ø7</b> - {note("III")} -{" "}
-              {note("IV")}
+              {note("I")} - <b>{note("vii")}ø7</b> - {note("III")}7 -{" "}
+              {note("vi")}m - {note("IV")}sus {note("IV")}
             </>
           ),
         ]}
@@ -228,14 +228,14 @@ function MajorKeyChords({ musicKey, offset }: Keyed) {
         els={[
           f(
             "I +",
-            "https://mrclay.org/piano/songs/C300C37mC4016D3068D376oD4072C3076C387sC408aD30joD38kiC30kmD40koC39lkC3cluC40mmD39ziD3czqD30zuD40zw",
+            "https://mrclay.org/sequence/songs/v4,90,0p5,p24p37p40p34p43-p24j37j40j34j43-p24j37j40j34j43-p24p38p40p34-p24j38j40j34-p24j38j40j34-p24p39p34p3c-p24j39j34j3c-p24j39j34j3c-p24j39j34j3c-p24j39j34j3c-p24j39j34j3c",
             <>
               {note("I")} - <b>{note("I")}+</b> - {note("vi")}m/{note("I")}
             </>
           ),
           f(
             "V/vi + /#V",
-            "https://mrclay.org/piano/songs/C390C3c6C40sD396yD3c7cD407pC388nC3c93C409pD38ktD3ckxD40l7C37maC3cmjC40n1D37u5D3cudD40umC32v2C36vhC39vsC3cwdD3216rD3616xD39171D3c178",
+            "https://mrclay.org/piano/songs/C2d0C342C3c2D2d63D3467D3c6bC2c74C3475C3c76D3cd8D34d9D2cdgC2bekC34elC3celD2bmcD3cmfD34moC26nxC36nyC39nyC3cnzC3eo4D3914mD3614nD2614nD3e14xD3c14y",
             <>
               {note("vi")}m -{" "}
               <b>
@@ -256,14 +256,15 @@ function MajorKeyChords({ musicKey, offset }: Keyed) {
         els={[
           f7(
             "vii/ii dim7",
-            "https://mrclay.org/piano/songs/C300C374C3c6C408D3c87D308cD408jD378uC319kC379wC3aa0C40a2D37i2D31i4D3ai7D40ieC32jkC39joC3cjqC41jsD32twD39u0D41u1D3cu8",
+            "https://mrclay.org/sequence/songs/v4,40,1,p40p3cp39p34p24-p25p40p3ap37-p26p3ep35p39p3c-p35p2bp3bp3f",
             <>
-              {note("I")} - <b>{note("#i")}°7</b> - {note("ii")}m7
+              {note("I")}6 - <b>{note("#i")}°7</b> - {note("ii")}m7 -{" "}
+              {note("V")}7+
             </>
           ),
           f7(
             "vii/V dim7",
-            "https://mrclay.org/piano/songs/C350C392C3ceC41xD416oD357aC368aC3f8eD3ffuD39g8D3cgeD36goC37heC3chsC40i8D37qaC2dqeD3cqkD40quC34reC37ryC3ds8D37128D3412aD2d12iD3d12k",
+            "https://mrclay.org/sequence/songs/v4,60,0p5,p29p41p39p3c-j29j41j39j3c-p2ap3fp3cp39-j2aj3fj3cj39-p2bp40p3cp37-j2bj40j3cp32-p2dp3dp37p35-j2dj3dj37p34-j2dj3dj37j34p31-j2dj3dj37j34j31-j2dj3dj37j34j31",
             <>
               {note("IV")} - <b>{note("#iv")}°7</b> - {note("I")}/{note("V")} -{" "}
               {note("VI")}7
@@ -271,7 +272,7 @@ function MajorKeyChords({ musicKey, offset }: Keyed) {
           ),
           f7(
             "vii/vi dim7",
-            "https://mrclay.org/piano/songs/C300C375C4012D309xD37afC2cahD40ahC35avC3bbfC3ebtD2ckdD35kpD3bkvD3ekzC2dlfC34ltC39m5C3cmnD34y9D2dyfD39ylD3cyr",
+            "https://mrclay.org/sequence/songs/v4,80,2,p40p30p37-p3ep2cp35p3b-p3cp2dp39p34-",
             <>
               {note("I")} - <b>{note("#v")}°7</b> - {note("vi")}m
             </>
@@ -295,10 +296,10 @@ function MajorKeyChords({ musicKey, offset }: Keyed) {
         els={[
           f(
             "bII maj7",
-            "https://mrclay.org/piano/songs/C300C37bC3bhC40nD304pD3b4rD404xD374zC335rC3a67C3e6fC436nD33d9D3edfD3advD43dxC2cerC33f1C3cfdC43fhD2ckqD3ckqD33kxD43l3C31lrC38m9C3cmhC41mjD31wlD3cwnD38wrD41xlC30y1C37yvC3byxC40z5D3718hD3b18lD3018rD4018r",
+            "https://mrclay.org/sequence/songs/v4,50,0p5,p40p3bp37p2bp30-j40j3bj37j2bj30-p43p3ep28p3bp2f-j43j3ej28j3bj2f-p26p43p39p3cp30-j26j43j39j3cj30p32-p25p38p35p3cp41-j25j38j35j3cj41-j25j38j35j3cj41p37-j25j38j35j3cj41j37-j25j38j35j3cj41j37-",
             <>
-              {note("I")}maj7 - {note("bIII")}maj7 - {note("bVI")}maj7 -{" "}
-              <b>{note("bII")}maj7</b> - {note("I")}maj7
+              {note("I")}/{note("v")} - {note("iii")}m7 - {note("ii")}m7 -{" "}
+              <b>{note("bII")}maj7</b>
             </>
           ),
         ]}
@@ -316,9 +317,9 @@ function MajorKeyChords({ musicKey, offset }: Keyed) {
           els={[
             f7(
               "bVII maj7",
-              "https://mrclay.org/piano/songs/C300C379C3biC40pD4058C4062D4074C407vD30b0D37b6D3bboD40ccC2eceC35ciC39d0C3edfD3eizC3ejyD3eoaC41pmD2eroD35rqD39s1D41saC30slC37syC3btcC40tgD3013yD40141D3b142D37144",
+              "https://mrclay.org/piano/songs/C300C3cdC40uC431fC471sC2ba0D2bgfD30gwD3cheD40hgD43hmD47hrC22i0C39ilC3aj3C3ejhC41k0C45k8D3910wD3a10zD3e10zD4111aD2211fD4511g",
               <>
-                {note("I")}maj7 - <b>{note("bVII")}maj7</b> - {note("I")}maj7
+                {note("I")}maj7 - <b>{note("bVII")}maj7</b>
               </>
             ),
           ]}
