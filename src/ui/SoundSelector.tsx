@@ -1,10 +1,4 @@
-import {
-  atoms,
-  pianoSpec,
-  PlayerSpec,
-  playerSpecFromUrl,
-  useStore,
-} from "../store";
+import { PlayerSpec, useStore } from "../store";
 import { availableInstruments, SoundFont } from "../players";
 import { useRef } from "react";
 
@@ -112,7 +106,7 @@ export function useSfStorage(): UseSfStorage {
   const [playerSpec] = useStore.playerSpec();
 
   function saveSf(params = new URLSearchParams()) {
-    if (playerSpec === pianoSpec) {
+    if (playerSpec.sf === SoundFont.TonePiano) {
       params.delete("sf");
     } else {
       params.set("sf", `${playerSpec.sf}.${playerSpec.name}`);
