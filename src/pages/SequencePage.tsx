@@ -11,7 +11,7 @@ import PianoShepardMode from "../ui/PianoShepardMode";
 import { useStore } from "../store";
 import SoundSelector, { useSfStorage } from "../ui/SoundSelector";
 import { Content900, H1, HeadingNav, HrFinal } from "../ui/Common";
-import { sequenceFromStream, Sequencer, SequencerEvents } from "../Sequencer";
+import { sequenceFromStream, SequencerEvents } from "../Sequencer";
 
 function streamFromSong(
   bpm: number,
@@ -278,7 +278,7 @@ export default function SequencePage(): JSX.Element {
           play(newStepData[changedStep]);
         }}
       />
-      <Keyboard activeKeys={sequencer.activeKeys} />
+      <Keyboard piano={sequencer.piano} />
 
       <Content900>
         <SoundSelector />

@@ -351,7 +351,7 @@ class PianoPage extends React.Component<PianoPageProps, PianoPageState> {
         </Content900>
 
         <Keyboard
-          activeKeys={activeKeys}
+          piano={this.recorder.piano}
           onKeyClick={mode === Mode.recording ? this.onKeyClick : undefined}
         />
         <PianoSpeed />

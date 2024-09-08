@@ -34,7 +34,7 @@ export function ChordSetKeyboard({ close }: ChordSetKeyboardProps) {
 
   return (
     <div style={style} className="my-5">
-      <Keyboard activeKeys={activeKeys} />
+      <Keyboard piano={piano} />
       <div
         className="d-flex align-items-center my-0 mx-auto mt-2"
         style={{ width: "1246px" }}

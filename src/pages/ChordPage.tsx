@@ -10,7 +10,6 @@ import {
   Navigate,
   useParams,
   useNavigate,
-  useLocation,
   useSearchParams,
 } from "react-router-dom";
 import * as Tone from "tone";
@@ -51,7 +50,6 @@ export default function ChordPage() {
 
   const navigate = useNavigate();
   const params: MatchItems = useParams();
-  const { pathname } = useLocation();
   const [searchParams] = useSearchParams();
   const transpose = searchParams.get("transpose") || "0";
 
@@ -193,11 +191,7 @@ export default function ChordPage() {
         </p>
       </Content900>
 
-      <Keyboard
-        key={pathname}
-        activeKeys={activeKeys}
-        onKeyClick={onKeyClick}
-      />
+      <Keyboard activeKeys={activeKeys} onKeyClick={onKeyClick} />
 
       <Container900 className="mt-3">
         <BigPlay

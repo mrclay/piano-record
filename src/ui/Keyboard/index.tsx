@@ -1,17 +1,51 @@
-import React, { MouseEventHandler, useCallback, useMemo } from "react";
+import React, {
+  MouseEventHandler,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 
-import { ActiveKeys } from "../../Piano";
+import Piano, { ActiveKeys, PianoListener } from "../../Piano";
 
 import "./index.scss";
 import * as C from "../../constants";
 
-interface KeyboardProps {
-  activeKeys: ActiveKeys;
-  onKeyClick?(note: number): void;
-}
+type KeyboardProps =
+  | {
+      activeKeys: ActiveKeys;
+      piano?: null;
+      onKeyClick?(note: number): void;
+    }
+  | {
+      activeKeys?: null;
+      piano: Piano;
+      onKeyClick?(note: number): void;
+    };
 
-export default function Keyboard({ activeKeys, onKeyClick }: KeyboardProps) {
+export default function Keyboard({
+  activeKeys,
+  piano,
+  onKeyClick,
+}: KeyboardProps) {
   const { whites, blacks } = useMemo(() => getPianoKeyLayout(), []);
+  const [localActiveKeys, setActiveKeys] = useState<ActiveKeys>(
+    activeKeys || piano.activeKeys
+  );
+
+  useEffect(() => {
+    if (activeKeys) {
+      setActiveKeys(activeKeys);
+      return;
+    }
+
+    const listener: PianoListener<"activeKeysChange"> = val =>
+      setActiveKeys(val);
+
+    piano.addEventListener("activeKeysChange", listener);
+
+    return () => piano.removeEventListener("activeKeysChange", listener);
+  }, [activeKeys, piano]);
 
   const handleKey: MouseEventHandler<HTMLDivElement> = useCallback(
     e => {
@@ -32,11 +66,11 @@ export default function Keyboard({ activeKeys, onKeyClick }: KeyboardProps) {
     <div className={`Keyboard Keyboard--traditional`} onMouseDown={handleKey}>
       <div className={onKeyClick ? "piano" : "piano noinput"}>
         <div className="white">
-          {whites.map(({ note }) => renderKey(activeKeys.has(note), note))}
+          {whites.map(({ note }) => renderKey(localActiveKeys.has(note), note))}
         </div>
         <div className="black">
           {blacks.map(({ note, left }) =>
-            renderKey(activeKeys.has(note), note, left)
+            renderKey(localActiveKeys.has(note), note, left)
           )}
         </div>
       </div>
