@@ -3,6 +3,7 @@ import Piano, { ActiveKeys } from "./Piano";
 import * as Tone from "tone";
 
 export interface SequencerEvents {
+  repeat: { plays: number };
   step: { step: number };
   start: null;
   stop: null;
@@ -26,6 +27,7 @@ export class Sequencer extends EventTarget<SequencerEvents> {
   #playing = false;
   #stepTimeout = 0;
   piano: Piano;
+  #plays = 0;
   activeKeys: ActiveKeys = new Set();
   stepData = sequencerDefaults.stepData;
   joinData = sequencerDefaults.joinData;
@@ -110,11 +112,19 @@ export class Sequencer extends EventTarget<SequencerEvents> {
 
   #incPlay() {
     this.#step = (this.#step + 1) % this.stepData.length;
+    if (this.#step === 0) {
+      this.#plays += 1;
+      this.send("repeat", { plays: this.#plays });
+      if (!this.#playing) {
+        return;
+      }
+    }
     this.playStep();
   }
 
   async start(step = 0) {
     this.#playing = true;
+    this.#plays = 0;
     this.#step = step;
     this.send("start", null);
     await Tone.start();

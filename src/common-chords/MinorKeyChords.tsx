@@ -1,11 +1,11 @@
 import React from "react";
 import { ChordSet } from "./ChordSet";
 import { Keyed } from "./Intro";
-import { getRenderers } from "./renderers";
+import { useRenderers } from "./renderers";
 import { ClickToPlay } from "./ClickToPlay";
 
 function MinorKeyChords({ musicKey, offset }: Keyed) {
-  const { f, f7, rom, note } = getRenderers(musicKey, offset);
+  const { f, f7, rom, note } = useRenderers(musicKey, offset);
 
   return (
     <section>

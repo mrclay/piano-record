@@ -6,7 +6,7 @@ import { Chord } from "./ChordSet";
 
 const rom = (str: string) => <b className="roman">{str}</b>;
 
-export function getRenderers(key: Key, offset: number) {
+export function useRenderers(key: Key, offset: number) {
   const majKey =
     key.getQuality() === ThirdQuality.MAJOR
       ? key

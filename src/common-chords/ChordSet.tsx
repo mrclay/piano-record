@@ -1,9 +1,18 @@
-import React, { MouseEvent, ReactNode, useCallback, useRef } from "react";
+import React, {
+  MouseEvent,
+  ReactNode,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+} from "react";
 import Ops from "../Ops";
 import { useStore } from "../store";
 import { useCommonChordsQuery } from "./useCommonChordsQuery";
 import { sequenceFromStream } from "../Sequencer";
 import { ChordSetKeyboard } from "./ChordSetKeyboard";
+import { TourContext, TourSet } from "../TourContext";
 
 export interface Chord {
   func: string;
@@ -40,7 +49,33 @@ interface ChordSetRef {
   songChords?: ReactNode;
 }
 
+let tourCounter = 0;
+
 export function ChordSet({ desc = null, els }: ChordSetProps): JSX.Element {
+  const { tour, updateTour } = useContext(TourContext);
+  const tourSetKey = useMemo(
+    () => els.map(el => `${el.func}${el.type}`).join(),
+    []
+  );
+  let tourSet = tour[tourSetKey];
+
+  if (!tourSet && els.some(chord => chord.songUrl)) {
+    tourSet = {
+      active: false,
+      key: tourSetKey,
+      done: false,
+      chords: Object.fromEntries(
+        els
+          .filter(chord => chord.songUrl)
+          .map(chord => {
+            const key = `chord${tourCounter++}`;
+            return [key, { key, done: false, chord }];
+          })
+      ),
+    } satisfies TourSet;
+    tour[tourSetKey] = tourSet;
+  }
+
   const wrapperRef = useRef<HTMLDivElement>(null);
   const songRef = useRef<ChordSetRef>({ song: "" }).current;
   const { sevenths } = useCommonChordsQuery();
@@ -52,6 +87,19 @@ export function ChordSet({ desc = null, els }: ChordSetProps): JSX.Element {
   const [sequencer, setSequencer] = useStore.sequencer();
   const [piano] = useStore.piano();
   const [offset] = useStore.offset();
+
+  useEffect(() => {
+    if (!tourSet?.active) {
+      return;
+    }
+
+    const chords = [...Object.values(tourSet.chords)];
+    const next = chords.find(el => !el.done);
+    if (next) {
+      activateChord(next.chord);
+      next.done = true;
+    }
+  }, [tour]);
 
   const closePiano = useCallback(() => {
     if (sequencer.isPlaying()) {
@@ -67,7 +115,10 @@ export function ChordSet({ desc = null, els }: ChordSetProps): JSX.Element {
 
   const selectChord = (e: MouseEvent<HTMLAnchorElement>, chord: Chord) => {
     e.preventDefault();
+    activateChord(chord);
+  };
 
+  const activateChord = (chord: Chord) => {
     let stream = "";
     let setup;
 

@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import Key from "../music-theory/Key";
 import {
@@ -17,6 +17,7 @@ import { Intro } from "../common-chords/Intro";
 import MajorKeyChords from "../common-chords/MajorKeyChords";
 import MinorKeyChords from "../common-chords/MinorKeyChords";
 import { Content900, H1, HeadingNav, HrFinal } from "../ui/Common";
+import { Tour, TourContext } from "../TourContext";
 
 Note.unicodeAccidentals = true;
 
@@ -32,11 +33,21 @@ interface ParamsMatch {
 const uCase = (qual: string) => qual.replace(/^m/, "M");
 
 function CommonChordsPage() {
+  const [isFirstRender, setIsFirstRender] = useState(true);
   const { sevenths, qs, setSevenths } = useCommonChordsQuery();
 
   const [offset, setOffset] = useStore.offset();
   const [sequencer] = useStore.sequencer();
   const [recorder] = useStore.recorder();
+  const [tour, setTour] = useState<Tour>({});
+  const tourContext = useMemo(
+    () => ({
+      tour,
+      updateTour: () => setTour(old => ({ ...old })),
+    }),
+    [tour]
+  );
+
   const navigate = useNavigate();
   const { urlKey = "" }: ParamsMatch = useParams();
   const musicKey = keys.find(el => {
@@ -45,6 +56,28 @@ function CommonChordsPage() {
   });
 
   useEffect(() => {
+    // Handle react dev mode calling this twice
+    if (!isFirstRender) {
+      return;
+    }
+
+    setTimeout(() => {
+      // Activate the first set
+      const first = Object.values(tour)[0];
+      if (first) {
+        first.active = true;
+        setTour({ ...tour });
+      }
+    }, 1000);
+
+    setIsFirstRender(false);
+  }, []);
+
+  useEffect(() => {
+    if (!isFirstRender) {
+      setTour({});
+    }
+
     sequencer.stop();
     recorder.stop();
 
@@ -81,7 +114,7 @@ function CommonChordsPage() {
   }
 
   return (
-    <>
+    <TourContext.Provider value={tourContext}>
       <HeadingNav />
 
       <Content900>
@@ -159,7 +192,7 @@ function CommonChordsPage() {
       </div>
 
       <HrFinal />
-    </>
+    </TourContext.Provider>
   );
 }
 
