@@ -62,11 +62,6 @@ function CommonChordsPage() {
       return;
     }
 
-    const { active, done } = tourContext.tourState;
-    if (!active && !done) {
-      tourDispatch({ type: "start" });
-    }
-
     setIsFirstRender(false);
   }, []);
 
@@ -180,6 +175,16 @@ function CommonChordsPage() {
         </section>
 
         <hr className="hr-thin" />
+
+        <p>
+          <button
+            type="button"
+            className="btn"
+            onClick={() => tourDispatch({ type: "start" })}
+          >
+            Start tour
+          </button>
+        </p>
 
         {musicKey.getQuality() === ThirdQuality.MAJOR ? (
           <MajorKeyChords musicKey={musicKey} offset={offset} />
