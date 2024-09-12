@@ -14,6 +14,7 @@ import { sequenceFromStream, SequencerListener } from "../Sequencer";
 import { ChordSetKeyboard } from "./ChordSetKeyboard";
 import { pushTourItems, TourContext } from "../TourContext";
 import { RecorderListener, RecorderState } from "../Recorder";
+import clsx from "clsx";
 
 export interface Chord {
   func: string;
@@ -79,6 +80,11 @@ export function ChordSet({ desc = null, els }: ChordSetProps): JSX.Element {
   const [offset] = useStore.offset();
 
   useEffect(() => {
+    if (isPlaying && !activeItem) {
+      closePiano();
+      return;
+    }
+
     if (isPlaying || !activeItem || activeItem.setKey !== setKey) {
       return;
     }
@@ -188,10 +194,11 @@ export function ChordSet({ desc = null, els }: ChordSetProps): JSX.Element {
   return (
     <div ref={wrapperRef}>
       <h2 className="chordSet d-flex align-items-center flex-wrap">
-        {els.map((el, i) => {
+        {els.map(el => {
           const [func1, func2 = ""] = el.func.split("/");
 
-          const dimmed = setIsActive && song !== isolateSong(el.songUrl);
+          const playing = song && song === isolateSong(el.songUrl);
+          const dimmed = song && song !== isolateSong(el.songUrl);
 
           let type = el.type;
           if (!sevenths && !el.require7th) {
@@ -222,7 +229,12 @@ export function ChordSet({ desc = null, els }: ChordSetProps): JSX.Element {
           return el.songUrl ? (
             <a
               key={elKey + "but"}
-              className={`link-info ${dimmed && "opacity-50"}`}
+              className={clsx({
+                "text-info": true,
+                "opacity-50": dimmed,
+                "fw-normal": playing,
+                "fw-light": !playing,
+              })}
               href={el.songUrl}
               target="_blank"
               rel="noreferrer"
@@ -231,7 +243,14 @@ export function ChordSet({ desc = null, els }: ChordSetProps): JSX.Element {
               {content}
             </a>
           ) : (
-            <span key={elKey} className={dimmed ? "opacity-50" : ""}>
+            <span
+              key={elKey}
+              className={clsx({
+                "text-info": true,
+                "opacity-50": dimmed,
+                "fw-light": true,
+              })}
+            >
               {content}
             </span>
           );

@@ -22,12 +22,16 @@ const initState: TourState = {
   playing: false,
 };
 
-type TourAction = { type: "next" } | { type: "reset" } | { type: "start" };
+type TourAction =
+  | { type: "next" }
+  | { type: "reset" }
+  | { type: "start" }
+  | { type: "start-random" };
 
 function tourReducer(state: TourState, action: TourAction): TourState {
   switch (action.type) {
     case "reset":
-      return structuredClone(initState);
+      return { ...initState, items: [] };
 
     case "next":
       let activeIdx = state.activeIdx + 1;
@@ -35,7 +39,18 @@ function tourReducer(state: TourState, action: TourAction): TourState {
       return { ...state, activeIdx, done, active: !done };
 
     case "start":
-      return { ...initState, active: true };
+      return { ...state, active: true };
+
+    case "start-random":
+      shuffleArray(state.items);
+      return { ...state, active: true };
+  }
+}
+
+function shuffleArray<T>(array: T[]) {
+  for (let i = array.length - 1; i >= 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
   }
 }
 
@@ -46,6 +61,11 @@ export function pushTourItems(
   setKey: string,
   chords: Chord[]
 ) {
+  if (items.some(item => item.setKey === setKey)) {
+    // Already added.
+    return;
+  }
+
   items.push(
     ...chords.filter(chord => chord.songUrl).map(chord => ({ setKey, chord }))
   );

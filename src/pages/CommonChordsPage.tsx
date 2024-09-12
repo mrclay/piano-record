@@ -176,16 +176,6 @@ function CommonChordsPage() {
 
         <hr className="hr-thin" />
 
-        <p>
-          <button
-            type="button"
-            className="btn"
-            onClick={() => tourDispatch({ type: "start" })}
-          >
-            Start tour
-          </button>
-        </p>
-
         {musicKey.getQuality() === ThirdQuality.MAJOR ? (
           <MajorKeyChords musicKey={musicKey} offset={offset} />
         ) : (
