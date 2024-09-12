@@ -116,6 +116,7 @@ export class Sequencer extends EventTarget<SequencerEvents> {
       this.#plays += 1;
       this.send("repeat", { plays: this.#plays });
       if (!this.#playing) {
+        // An event handler stopped
         return;
       }
     }

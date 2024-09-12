@@ -1,12 +1,12 @@
 import * as C from "./constants";
 import { TimedOp, Op } from "./Ops";
-import Piano, { PianoEvents } from "./Piano";
+import Piano from "./Piano";
 import { EventTarget } from "./dom-event-target";
 
 type RecorderEvents = {
   state: RecorderState;
   progress: number;
-  complete: null;
+  complete: { plays: number };
   stop: null;
 };
 
@@ -26,6 +26,7 @@ export default class Recorder extends EventTarget<RecorderEvents> {
   operations: TimedOp[];
   lastOperations: TimedOp[] = [];
   piano: Piano;
+  #plays = 0;
   playAllIntervals: number[] = [];
   progressInterval: number | null = null;
   progressPeriod: number;
@@ -164,7 +165,9 @@ export default class Recorder extends EventTarget<RecorderEvents> {
           this.piano.performOperation(el[0], false);
           numPerformed++;
           if (numPerformed === numOperations) {
-            this.send("complete", null);
+            this.#plays += 1;
+            this.send("complete", { plays: this.#plays });
+            // No event handler stopped us
             this.stop(true);
           }
         }, el[1] * C.TIME_RESOLUTION_DIVISOR * (1 / this.speed))
@@ -175,7 +178,7 @@ export default class Recorder extends EventTarget<RecorderEvents> {
     return true;
   }
 
-  stop(completed = false) {
+  stop(justCompleted = false) {
     if (this.operations.length === 0 && this.lastOperations.length) {
       this.operations = this.lastOperations;
     }
@@ -199,7 +202,7 @@ export default class Recorder extends EventTarget<RecorderEvents> {
     }
     this.piano.stopAll();
 
-    if (completed && this.repeatAfterMs) {
+    if (justCompleted && this.repeatAfterMs) {
       this.repeatTimeout = window.setTimeout(
         () => this.play(),
         this.repeatAfterMs
@@ -210,5 +213,6 @@ export default class Recorder extends EventTarget<RecorderEvents> {
     this.setState(RecorderState.stopped);
     this.send("stop", null);
     this.send("progress", 0);
+    this.#plays = 0;
   }
 }

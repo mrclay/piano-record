@@ -10,9 +10,10 @@ import React, {
 import Ops from "../Ops";
 import { useStore } from "../store";
 import { useCommonChordsQuery } from "./useCommonChordsQuery";
-import { sequenceFromStream } from "../Sequencer";
+import { sequenceFromStream, SequencerListener } from "../Sequencer";
 import { ChordSetKeyboard } from "./ChordSetKeyboard";
-import { TourContext, TourSet } from "../TourContext";
+import { pushTourItems, TourContext } from "../TourContext";
+import { RecorderListener, RecorderState } from "../Recorder";
 
 export interface Chord {
   func: string;
@@ -49,31 +50,18 @@ interface ChordSetRef {
   songChords?: ReactNode;
 }
 
-let tourCounter = 0;
-
 export function ChordSet({ desc = null, els }: ChordSetProps): JSX.Element {
-  const { tour, updateTour } = useContext(TourContext);
-  const tourSetKey = useMemo(
+  const setKey = useMemo(
     () => els.map(el => `${el.func}${el.type}`).join(),
     []
   );
-  let tourSet = tour[tourSetKey];
+  const { tourState, activeItem, tourDispatch } = useContext(TourContext);
 
-  if (!tourSet && els.some(chord => chord.songUrl)) {
-    tourSet = {
-      active: false,
-      key: tourSetKey,
-      done: false,
-      chords: Object.fromEntries(
-        els
-          .filter(chord => chord.songUrl)
-          .map(chord => {
-            const key = `chord${tourCounter++}`;
-            return [key, { key, done: false, chord }];
-          })
-      ),
-    } satisfies TourSet;
-    tour[tourSetKey] = tourSet;
+  const isActiveSet = activeItem?.setKey === setKey;
+  const isRegistered = tourState.items.some(el => el.setKey === setKey);
+  if (!isRegistered) {
+    // Add our chords to the tour w/o triggering rerender.
+    pushTourItems(tourState.items, setKey, els);
   }
 
   const wrapperRef = useRef<HTMLDivElement>(null);
@@ -85,21 +73,42 @@ export function ChordSet({ desc = null, els }: ChordSetProps): JSX.Element {
   const [, setSongChords] = useStore.songChords();
   const [recorder] = useStore.recorder();
   const [sequencer, setSequencer] = useStore.sequencer();
+  const isPlaying =
+    sequencer.isPlaying() || recorder.getState() === RecorderState.playing;
   const [piano] = useStore.piano();
   const [offset] = useStore.offset();
 
   useEffect(() => {
-    if (!tourSet?.active) {
+    if (isPlaying || !activeItem || activeItem.setKey !== setKey) {
       return;
     }
 
-    const chords = [...Object.values(tourSet.chords)];
-    const next = chords.find(el => !el.done);
-    if (next) {
-      activateChord(next.chord);
-      next.done = true;
+    activateChord(activeItem.chord);
+  }, [tourState]);
+
+  useEffect(() => {
+    const onSequenceRepeat: SequencerListener<"repeat"> = ({ plays }) => {
+      if (plays >= 2) {
+        sequencer.stop();
+        tourDispatch({ type: "next" });
+      }
+    };
+    const onRecorderRepeat: RecorderListener<"complete"> = ({ plays }) => {
+      if (plays >= 2) {
+        recorder.stop();
+        tourDispatch({ type: "next" });
+      }
+    };
+    if (isActiveSet) {
+      sequencer.addEventListener("repeat", onSequenceRepeat);
+      recorder.addEventListener("complete", onRecorderRepeat);
     }
-  }, [tour]);
+
+    return () => {
+      sequencer.removeEventListener("repeat", onSequenceRepeat);
+      recorder.removeEventListener("complete", onRecorderRepeat);
+    };
+  }, [recorder, sequencer, isActiveSet]);
 
   const closePiano = useCallback(() => {
     if (sequencer.isPlaying()) {

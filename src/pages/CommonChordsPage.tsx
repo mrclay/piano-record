@@ -17,7 +17,7 @@ import { Intro } from "../common-chords/Intro";
 import MajorKeyChords from "../common-chords/MajorKeyChords";
 import MinorKeyChords from "../common-chords/MinorKeyChords";
 import { Content900, H1, HeadingNav, HrFinal } from "../ui/Common";
-import { Tour, TourContext } from "../TourContext";
+import { TourContext, useTour } from "../TourContext";
 
 Note.unicodeAccidentals = true;
 
@@ -39,13 +39,14 @@ function CommonChordsPage() {
   const [offset, setOffset] = useStore.offset();
   const [sequencer] = useStore.sequencer();
   const [recorder] = useStore.recorder();
-  const [tour, setTour] = useState<Tour>({});
+  const { tourState, tourDispatch } = useTour();
   const tourContext = useMemo(
     () => ({
-      tour,
-      updateTour: () => setTour(old => ({ ...old })),
+      tourState,
+      tourDispatch,
+      activeItem: tourState.items[tourState.activeIdx],
     }),
-    [tour]
+    [tourState, tourDispatch]
   );
 
   const navigate = useNavigate();
@@ -61,21 +62,17 @@ function CommonChordsPage() {
       return;
     }
 
-    setTimeout(() => {
-      // Activate the first set
-      const first = Object.values(tour)[0];
-      if (first) {
-        first.active = true;
-        setTour({ ...tour });
-      }
-    }, 1000);
+    const { active, done } = tourContext.tourState;
+    if (!active && !done) {
+      tourDispatch({ type: "start" });
+    }
 
     setIsFirstRender(false);
   }, []);
 
   useEffect(() => {
     if (!isFirstRender) {
-      setTour({});
+      tourDispatch({ type: "reset" });
     }
 
     sequencer.stop();
