@@ -226,7 +226,7 @@ function MinorKeyChords({ musicKey, offset }: Keyed) {
             </>
           ),
           f7(
-            "i mMaj7",
+            "i m(maj7)",
             "https://mrclay.org/sequence/songs/v4,55,0p5,p47p30p3bp37p33-j47j30j37j3bj33-p48j30j37j3bj33-p41j37j3bj33p2ej48-p43p2cp3fp38p3cj48-j43p2bj38j3cj3fj48-j43p29j38j3cj3f-j43j29j38j3cj3f-",
             <>
               <b>{note("i")}m(maj7)</b> - {note("bVI")}maj7 - {note("iv")}m9
@@ -294,11 +294,9 @@ function MinorKeyChords({ musicKey, offset }: Keyed) {
           ),
           f7(
             "subV 7",
-            "https://mrclay.org/piano/songs/C300C3c26C3f53C4357D3093D3ca4D3fa6D43adC32ahC39dmC3cghC42gjD32l3D39ljD3clkD42lxC31mtC38myC3bnkC41nxD31xtD38y8D3byfD41ysC30z8C37zsC3c10aC3f10cD3719gD3c19jD3019kD3f19r",
+            "https://mrclay.org/sequence/songs/v4,50,0p5,p26p41p3cp35-j26p44j41j3cj35-j26p48j41j44j3cj35-p25p43p3bp3fp35-j25p47j43j3bj3fj35-j25p4bj43j47j3bj3fj35-p24p48p3fp43p3cp33-j24j48j43j3fj3cj33-",
             <>
-              {note("i")}m - {note("V/V")}7 - <b>{note("bII")}7</b>
-              {" - "}
-              {note("i")}m
+              {note("ii")}m7b5 - <b>{note("bII")}9b5</b> - {note("i")}m
             </>
           ),
         ]}

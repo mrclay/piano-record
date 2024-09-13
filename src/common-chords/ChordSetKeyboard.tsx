@@ -26,7 +26,7 @@ export function ChordSetKeyboard({ close }: ChordSetKeyboardProps) {
   return (
     <div style={style} className="mt-2 mb-5">
       <div
-        className="d-flex align-items-center my-0 mx-auto mt-2"
+        className="d-flex align-items-center my-0 mx-auto mt-2 mb-2 ps-3"
         style={{ width: "1246px" }}
       >
         <button type="button" className="btn btn-outline-light" onClick={close}>

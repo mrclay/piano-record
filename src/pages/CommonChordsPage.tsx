@@ -44,7 +44,9 @@ function CommonChordsPage() {
     () => ({
       tourState,
       tourDispatch,
-      activeItem: tourState.items[tourState.activeIdx],
+      activeItem: tourState.active
+        ? tourState.items[tourState.activeIdx]
+        : null,
     }),
     [tourState, tourDispatch]
   );

@@ -123,10 +123,13 @@ export function ChordSet({ desc = null, els }: ChordSetProps): JSX.Element {
       recorder.repeatAfterMs = null;
       recorder.stop();
     }
+    if (activeItem) {
+      tourDispatch({ type: "reset" });
+    }
 
     setChordSet({});
     setSong("");
-  }, [sequencer, recorder]);
+  }, [sequencer, recorder, activeItem]);
 
   const selectChord = (e: MouseEvent<HTMLAnchorElement>, chord: Chord) => {
     e.preventDefault();
@@ -186,10 +189,6 @@ export function ChordSet({ desc = null, els }: ChordSetProps): JSX.Element {
       closePiano();
     }
   };
-
-  const setIsActive = Boolean(
-    song && els.some(el => isolateSong(el.songUrl) === song)
-  );
 
   return (
     <div ref={wrapperRef}>
