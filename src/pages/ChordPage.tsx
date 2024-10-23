@@ -221,7 +221,6 @@ export default function ChordPage() {
 
       <Content900>
         <SoundSelector />
-        <PianoShepardMode piano={piano} />
       </Content900>
 
       <Content900>

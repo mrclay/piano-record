@@ -441,7 +441,6 @@ class PianoPage extends React.Component<PianoPageProps, PianoPageState> {
 
         <Content900>
           <SoundSelector />
-          <PianoShepardMode piano={this.recorder.piano} />
         </Content900>
 
         <Content900>

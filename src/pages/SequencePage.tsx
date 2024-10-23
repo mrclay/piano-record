@@ -290,7 +290,6 @@ export default function SequencePage(): JSX.Element {
 
       <Content900>
         <SoundSelector />
-        <PianoShepardMode piano={piano} />
       </Content900>
 
       <Content900>

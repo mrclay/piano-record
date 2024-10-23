@@ -5,6 +5,7 @@ interface PianoShepardModeProps {
   piano: Piano;
 }
 
+// Unused
 export default function PianoShepardMode({ piano }: PianoShepardModeProps) {
   const [shepardMode, setShepardMode] = useState(false);
 
