@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import Head from "@uiw/react-head";
 import Key from "../music-theory/Key";
 import {
   Char,
@@ -78,10 +79,6 @@ function CommonChordsPage() {
     if (musicKey) {
       const { deltaSemitones } = getInterval("C", musicKey.getTonicNote());
       setOffset(deltaSemitones < 8 ? deltaSemitones : deltaSemitones - 12);
-
-      const quality = uCase(musicKey.getQuality());
-      const keyName = musicKey.toString();
-      document.title = `The Common Chords of ${quality} Keys: ${keyName}`;
     } else {
       let m = location.hash.match(/^#-(major|minor)/);
       if (m) {
@@ -114,7 +111,11 @@ function CommonChordsPage() {
       <Content900>
         <div className="d-flex align-items-center">
           <H1>The Common Chords of {uCase(musicKey.getQuality())} Keys</H1>
-
+          <Head>
+            <Head.Title>
+              The Common Chords of {musicKey.toString()} : mrclay.org
+            </Head.Title>
+          </Head>
           <form className="form-inline ms-4">
             <select
               className="form-control"

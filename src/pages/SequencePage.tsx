@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import { useSearchParams } from "react-router-dom";
+import Head from "@uiw/react-head";
 
 import Paths from "../Paths";
 import Keyboard from "../ui/Keyboard";
@@ -116,7 +117,6 @@ export default function SequencePage(): JSX.Element {
 
   // Handle load
   useEffect(() => {
-    document.title = "Sequence";
     sequencer.reset();
 
     const stream = params.stream;
@@ -146,6 +146,9 @@ export default function SequencePage(): JSX.Element {
       <Content900>
         <div className="d-flex justify-content-between">
           <H1>Sequence</H1>
+          <Head>
+            <Head.Title>Sequence : mrclay.org</Head.Title>
+          </Head>
 
           <button
             type="button"

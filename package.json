@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@types/throttle-debounce": "^5.0.0",
+    "@uiw/react-head": "^1.0.4",
     "chart.js": "^4.4.0",
     "clsx": "^2.1.1",
     "jotai": "^1.11.0",

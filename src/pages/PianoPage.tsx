@@ -7,6 +7,7 @@ import {
   useParams,
   useSearchParams,
 } from "react-router-dom";
+import Head from "@uiw/react-head";
 
 import * as C from "../constants";
 import Keyboard from "../ui/Keyboard";
@@ -168,7 +169,6 @@ class PianoPage extends React.Component<PianoPageProps, PianoPageState> {
       }
     }
 
-    document.title = "Simple Piano";
     //this.recorder.addEventListener('state', this.onRecorderState);
     this.recorder.addEventListener("progress", this.onRecorderProgress);
     const piano = this.recorder.getPiano();
@@ -331,6 +331,9 @@ class PianoPage extends React.Component<PianoPageProps, PianoPageState> {
         <Content900>
           <div className="d-flex justify-content-between">
             <H1>Melody</H1>
+            <Head>
+              <Head.Title>Melody : mrclay.org</Head.Title>
+            </Head>
 
             <button
               type="button"

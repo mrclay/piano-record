@@ -13,6 +13,7 @@ import {
   useSearchParams,
 } from "react-router-dom";
 import * as Tone from "tone";
+import Head from "@uiw/react-head";
 
 import BigPlay from "../ui/BigPlay";
 import Keyboard from "../ui/Keyboard";
@@ -110,7 +111,6 @@ export default function ChordPage() {
   );
 
   useEffect(() => {
-    document.title = "Simple Chord";
     piano.addEventListener("reset", reset);
 
     return () => {
@@ -172,6 +172,9 @@ export default function ChordPage() {
       <Content900>
         <div className="d-flex justify-content-between">
           <H1>Chord</H1>
+          <Head>
+            <Head.Title>Simple Chord : mrclay.org</Head.Title>
+          </Head>
 
           <button
             type="button"
