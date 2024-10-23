@@ -278,9 +278,12 @@ export default function SequencePage(): JSX.Element {
           sequencer.stepData = newStepData;
           sequencer.joinData = newJoinData;
           setNumStepsInput(String(sequencer.getNumSteps()));
-          handleStop();
-          setStep(changedStep);
-          play(newStepData[changedStep]);
+
+          if (!sequencer.isPlaying()) {
+            handleStop();
+            setStep(changedStep);
+            play(newStepData[changedStep]);
+          }
         }}
       />
       <Keyboard piano={sequencer.piano} />
