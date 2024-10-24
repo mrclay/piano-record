@@ -32,6 +32,7 @@ import {
   HeadingNav,
   HrFinal,
 } from "../ui/Common";
+import Transpose from "../ui/Transpose";
 
 interface MatchItems {
   notes?: string;
@@ -217,6 +218,16 @@ export default function ChordPage() {
         >
           <i className="fa fa-floppy-o" aria-hidden="true" /> <span>Save</span>
         </button>
+
+        <Transpose
+          className="chord-page-transpose py-2 px-2"
+          onChange={semitones => {
+            setActiveKeys(
+              new Set(Array.from(activeKeys).map(note => note + semitones))
+            );
+            handlePlay();
+          }}
+        />
       </Container900>
 
       <Content900>

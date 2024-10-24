@@ -29,6 +29,7 @@ import {
   HeadingNav,
   HrFinal,
 } from "../ui/Common";
+import Transpose from "../ui/Transpose";
 
 enum Mode {
   recording = "recording",
@@ -436,6 +437,27 @@ class PianoPage extends React.Component<PianoPageProps, PianoPageState> {
                 <span>Share</span>
               </button>
             ) : null}
+
+            {mode === Mode.shared && (
+              <Transpose
+                className="chord-page-transpose py-2 px-2"
+                onChange={semitones => {
+                  const stream = Ops.streamFromOperations(
+                    this.recorder.getOperations().map(timedOp => {
+                      const [op, time] = timedOp;
+                      const [comm, note] = op;
+                      return [[comm, note + semitones], time] as TimedOp;
+                    })
+                  );
+                  const params = this.props.sfStorage.saveSf();
+                  if (stream) {
+                    this.props.navigate(
+                      Paths.pianoPrefix(`/songs/${stream}?${params}`)
+                    );
+                  }
+                }}
+              />
+            )}
           </div>
         </Container900>
 

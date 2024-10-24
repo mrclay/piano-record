@@ -11,8 +11,6 @@ export default function PianoSpeed() {
     if (recorder.speed !== speed / 100) {
       recorder.speed = speed / 100;
 
-      console.log(recorder.getState());
-
       if (recorder.getState() === RecorderState.playing) {
         recorder.stop();
         recorder.play();

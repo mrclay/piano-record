@@ -8,11 +8,13 @@ import Keyboard from "../ui/Keyboard";
 import SequencerUi from "../ui/Sequencer";
 import Preview from "../ui/Preview";
 import Saver from "../ui/Saver";
-import PianoShepardMode from "../ui/PianoShepardMode";
 import { useStore } from "../store";
 import SoundSelector, { useSfStorage } from "../ui/SoundSelector";
 import { Content900, H1, HeadingNav, HrFinal } from "../ui/Common";
 import { sequenceFromStream, SequencerEvents } from "../Sequencer";
+import Transpose from "../ui/Transpose";
+
+let resetDuringNextEffect = true;
 
 function streamFromSong(
   bpm: number,
@@ -117,7 +119,9 @@ export default function SequencePage(): JSX.Element {
 
   // Handle load
   useEffect(() => {
-    sequencer.reset();
+    if (resetDuringNextEffect) {
+      sequencer.reset();
+    }
 
     const stream = params.stream;
     if (typeof stream === "string") {
@@ -265,6 +269,26 @@ export default function SequencePage(): JSX.Element {
               </label>
             </div>
           </div>
+
+          <div className="ms-3">
+            <Transpose
+              onChange={semitones => {
+                sequencer.stepData = sequencer.stepData.map(step =>
+                  step.map(note => note + semitones)
+                );
+                sequencer.joinData = sequencer.joinData.map(step =>
+                  step.map(note => note + semitones)
+                );
+
+                // Don't reset the sequencer during the next few effects
+                resetDuringNextEffect = false;
+                setTimeout(() => {
+                  resetDuringNextEffect = true;
+                }, 500);
+                share();
+              }}
+            />
+          </div>
         </div>
       </Content900>
 
@@ -302,6 +326,8 @@ export default function SequencePage(): JSX.Element {
           </section>
         )}
       </Content900>
+
+      <Content900></Content900>
 
       <HrFinal />
     </>
