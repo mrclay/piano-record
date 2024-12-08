@@ -20,19 +20,20 @@ function streamFromSong(
   bpm: number,
   bps: number,
   stepData: Array<number[]>,
-  joinData: Array<number[]>
+  joinData: Array<number[]>,
 ) {
   let out = `v4,${bpm},${String(bps).replace(".", "p")},`;
 
   out += stepData
-    .map((stepNotes, stepIdx) =>
-      stepNotes
-        .map(note => {
-          const str = note.toString(16);
-          const j = joinData[stepIdx].includes(note) ? "j" : "p";
-          return j + (str.length < 2 ? "0" + str : str);
-        })
-        .join("")
+    .map(
+      (stepNotes, stepIdx) =>
+        stepNotes
+          .map(note => {
+            const str = note.toString(16);
+            const j = joinData[stepIdx].includes(note) ? "j" : "p";
+            return j + (str.length < 2 ? "0" + str : str);
+          })
+          .join("") || ".",
     )
     .join("-");
   return out;
@@ -66,7 +67,7 @@ export default function SequencePage(): JSX.Element {
   const [internalStep, setStep] = useState(0);
   const [bpmInput, setBpmInput] = useState(String(sequencer.bpm));
   const [numStepsInput, setNumStepsInput] = useState(
-    String(sequencer.getNumSteps())
+    String(sequencer.getNumSteps()),
   );
 
   useEffect(() => {
@@ -111,9 +112,9 @@ export default function SequencePage(): JSX.Element {
           sequencer.bpm,
           sequencer.bps,
           sequencer.stepData,
-          sequencer.joinData
-        )}?${params}`
-      )
+          sequencer.joinData,
+        )}?${params}`,
+      ),
     );
   }
 
@@ -127,7 +128,7 @@ export default function SequencePage(): JSX.Element {
     if (typeof stream === "string") {
       const { bpm, bps, newStepData, newJoinData } = sequenceFromStream(
         stream,
-        offset
+        offset,
       );
       if (newStepData && newJoinData) {
         Object.assign(sequencer, {
@@ -137,6 +138,7 @@ export default function SequencePage(): JSX.Element {
           joinData: newJoinData,
         });
         setBpmInput(String(sequencer.bpm));
+        setNumStepsInput(String(newStepData.length));
       }
     }
 
@@ -274,10 +276,10 @@ export default function SequencePage(): JSX.Element {
             <Transpose
               onChange={semitones => {
                 sequencer.stepData = sequencer.stepData.map(step =>
-                  step.map(note => note + semitones)
+                  step.map(note => note + semitones),
                 );
                 sequencer.joinData = sequencer.joinData.map(step =>
-                  step.map(note => note + semitones)
+                  step.map(note => note + semitones),
                 );
 
                 // Don't reset the sequencer during the next few effects

@@ -10,7 +10,7 @@ export interface SequencerEvents {
 }
 
 export type SequencerListener<K extends keyof SequencerEvents> = (
-  evt: SequencerEvents[K]
+  evt: SequencerEvents[K],
 ) => void;
 
 const sequencerDefaults = {
@@ -193,7 +193,7 @@ function parseStream(stream: string) {
 
 export function sequenceFromStream(
   stream: string,
-  offset = 0
+  offset = 0,
 ): {
   bpm: number;
   bps: number;
@@ -210,6 +210,11 @@ export function sequenceFromStream(
   const newStepData = raw.split("-").map(str => {
     const notes: number[] = [];
     const joins: number[] = [];
+
+    if (str === ".") {
+      newJoinData.push(joins);
+      return notes;
+    }
 
     let chunk = "";
     const chunkLen = version > 2 ? 3 : 2;
