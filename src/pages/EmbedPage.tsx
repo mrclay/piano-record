@@ -23,6 +23,15 @@ export default function EmbedPage(): JSX.Element {
   const [activeKeys, setActiveKeys] = useState<ActiveKeys | null>(null);
   const songRef = useRef({ song: "" }).current;
   songRef.song = song;
+  const { iframeUrl, embedHtml } = getEmbedUrl(url);
+
+  const [lowestNote, setLowestNote] = useState(0);
+  const keysLeftMargin = lowestNote
+    ? Math.max(
+        -300,
+        Math.min(0, -((lowestNote - 3 - C.RANGE[0]) * (32 * 7)) / 12),
+      )
+    : 0;
 
   useEffect(() => {
     if (!test) {
@@ -34,6 +43,8 @@ export default function EmbedPage(): JSX.Element {
   useEffect(() => {
     const newUrl = searchParams.get("url") || "";
     setUrl(prev => newUrl || prev);
+    setActiveKeys(null);
+    setChordOps(null);
 
     if (newUrl.includes("/chord/")) {
       const notes = newUrl
@@ -53,16 +64,32 @@ export default function EmbedPage(): JSX.Element {
       ];
       setActiveKeys(new Set(notes));
       setChordOps(timedOps);
-    } else {
-      setActiveKeys(null);
-      setChordOps(null);
+      setLowestNote(Math.min(...notes));
+    } else if (newUrl.includes("/sequence/songs/")) {
+      const { newStepData } = sequenceFromStream(isolateSong(newUrl) || "", 0);
+
+      let lowestNote = C.RANGE[1];
+      (newStepData || null)?.forEach(step =>
+        step.forEach(note => {
+          lowestNote = Math.min(lowestNote, note);
+        }),
+      );
+      setLowestNote(lowestNote);
+    } else if (newUrl.includes("/sequence/songs/")) {
+      const [, streamAndName] = url.split(/\/piano\/(?:songs|record)\//);
+      const stream = streamAndName.replace(/(\/|\?).*/, "");
+      const ops = Ops.operationsFromStream(stream, 0);
+
+      let lowestNote = C.RANGE[1];
+      ops.forEach(timedOp => {
+        lowestNote = Math.min(lowestNote, timedOp[0][1]);
+      });
+      setLowestNote(lowestNote);
     }
 
     sequencer.stop();
     recorder.stop();
   }, [searchParams]);
-
-  const { iframeUrl, embedHtml } = getEmbedUrl(url);
 
   const play = () => {
     if (!url) {
@@ -104,6 +131,7 @@ export default function EmbedPage(): JSX.Element {
     } else {
       const [, streamAndName] = url.split(/\/piano\/(?:songs|record)\//);
       stream = streamAndName.replace(/(\/|\?).*/, "");
+
       setup = () => {
         recorder.setOperations(Ops.operationsFromStream(stream, offset));
         recorder.repeatAfterMs = 1e3;
@@ -133,7 +161,7 @@ export default function EmbedPage(): JSX.Element {
     <div>
       {!test && (
         <div className="d-flex">
-          <div className="flex-shrink-1 text-center">
+          <div className="flex-shrink-1 text-center pe-3">
             <Play
               handlePlay={play}
               handleStop={stop}
@@ -142,26 +170,37 @@ export default function EmbedPage(): JSX.Element {
               progress={0}
             />
 
-            <a
-              href={url}
-              target="_blank"
-              className="mt-3 d-inline-block"
-              title="Open in new tab"
-              onClick={stop}
-            >
-              <i
-                className="fa fa-external-link"
-                aria-hidden="true"
-                aria-label="Load in new tab"
-              />
-            </a>
+            <div>
+              <a
+                href={url}
+                target="_blank"
+                className="mt-3 d-inline-block"
+                title="Open in new tab"
+                onClick={stop}
+              >
+                <i
+                  className="fa fa-external-link"
+                  aria-hidden="true"
+                  aria-label="Load in new tab"
+                />
+              </a>
+            </div>
           </div>
           <div>
-            <div style={{ transform: "scale(0.62)", transformOrigin: "0 0" }}>
-              <Keyboard
-                activeKeys={activeKeys || undefined}
-                piano={activeKeys ? undefined : piano}
-              />
+            <div
+              style={{
+                flex: 1,
+                transform: "scale(0.62)",
+                transformOrigin: "0 0",
+                overflow: "hidden",
+              }}
+            >
+              <div style={{ marginLeft: `${keysLeftMargin}px` }}>
+                <Keyboard
+                  activeKeys={activeKeys || undefined}
+                  piano={activeKeys ? undefined : piano}
+                />
+              </div>
             </div>
           </div>
         </div>
