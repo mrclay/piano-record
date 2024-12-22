@@ -12,9 +12,7 @@ import { ActiveKeys } from "../Piano";
 const isolateSong = (songUrl: string) => songUrl.split("/").pop();
 
 export default function EmbedPage(): JSX.Element {
-  const [url, setUrl] = useState(
-    "https://mrclay.org/sequence/songs/v4,100,1,p2dp45p38p3dp40-j2dp47j38j3dj40-p2bp49p36p3bp3e-j2bp4aj36j3bj3e-p4cp2ep39p3ep35-p51j2ej39j3ej35-p4ep37p3bp40p30-j4ej37j3bj40j30-p26p39p3dp42p4c-j26j39j3dj42p4e-p26j39j3dj42p49-j26j39j3dj42j49-p2bp3bp3ep42p47-p49j3bj3ej42j2b-p45j3bj3ej42p2b-j45j3bj3ej42j2b",
-  );
+  const [url, setUrl] = useState("");
   const [searchParams] = useSearchParams();
   const test = Boolean(searchParams.get("test"));
   const [sequencer] = useStore.sequencer();
@@ -64,7 +62,8 @@ export default function EmbedPage(): JSX.Element {
     recorder.stop();
   }, [searchParams]);
 
-  const iframeUrl = `http://localhost:5173/embed?${new URLSearchParams({ url })}`;
+  const iframeUrl =
+    window.origin + `/piano/embed?${new URLSearchParams({ url })}`;
   const embedHtml = `<iframe src="${escape(iframeUrl)}" height="100" width="600" style="width:100%"></iframe>`;
 
   const play = () => {

@@ -20,7 +20,8 @@ export default function Saver({ href, title = "" }: SaverProps) {
     title || C.DEFAULT_TITLE,
   )}</a>`;
 
-  const iframeUrl = window.origin + `/embed?${new URLSearchParams({ url })}`;
+  const iframeUrl =
+    window.origin + `/piano/embed?${new URLSearchParams({ url })}`;
   const embedHtml = `<iframe src="${escape(iframeUrl)}" height="100" width="600" style="width:100%"></iframe>`;
 
   return (

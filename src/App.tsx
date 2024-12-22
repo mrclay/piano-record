@@ -27,6 +27,7 @@ const App = () => {
   return (
     <div>
       <Routes>
+        <Route path={Paths.pianoPrefix("/embed")} element={<EmbedPage />} />
         <Route
           path={Paths.pianoPrefix("/songs/:stream/:title")}
           element={PathKeyedComponent(AsyncPiano)}
@@ -79,7 +80,6 @@ const App = () => {
           path={Paths.guessKeyPrefix("/")}
           element={PathKeyedComponent(AsyncGuessKey)}
         />
-        <Route path="/embed" element={<EmbedPage />} />
         <Route path="/" element={<Navigate to={Paths.pianoPrefix("/")} />} />
       </Routes>
     </div>
