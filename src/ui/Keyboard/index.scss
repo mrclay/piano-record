@@ -1,6 +1,10 @@
 .Keyboard {
   margin: 0 auto;
 
+  .embed-page & {
+    margin: 0;
+  }
+
   &.Keyboard--traditional {
     width: 1246px;
   }

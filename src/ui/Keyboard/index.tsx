@@ -11,17 +11,11 @@ import Piano, { ActiveKeys, PianoListener } from "../../Piano";
 import "./index.scss";
 import * as C from "../../constants";
 
-type KeyboardProps =
-  | {
-      activeKeys: ActiveKeys;
-      piano?: null;
-      onKeyClick?(note: number): void;
-    }
-  | {
-      activeKeys?: null;
-      piano: Piano;
-      onKeyClick?(note: number): void;
-    };
+interface KeyboardProps {
+  activeKeys?: ActiveKeys;
+  piano?: Piano;
+  onKeyClick?(note: number): void;
+}
 
 export default function Keyboard({
   activeKeys,
@@ -30,7 +24,7 @@ export default function Keyboard({
 }: KeyboardProps) {
   const { whites, blacks } = useMemo(() => getPianoKeyLayout(), []);
   const [localActiveKeys, setActiveKeys] = useState<ActiveKeys>(
-    activeKeys || piano.activeKeys
+    activeKeys || piano?.activeKeys || new Set(),
   );
 
   useEffect(() => {
@@ -42,9 +36,9 @@ export default function Keyboard({
     const listener: PianoListener<"activeKeysChange"> = val =>
       setActiveKeys(val);
 
-    piano.addEventListener("activeKeysChange", listener);
+    piano?.addEventListener("activeKeysChange", listener);
 
-    return () => piano.removeEventListener("activeKeysChange", listener);
+    return () => piano?.removeEventListener("activeKeysChange", listener);
   }, [activeKeys, piano]);
 
   const handleKey: MouseEventHandler<HTMLDivElement> = useCallback(
@@ -59,7 +53,7 @@ export default function Keyboard({
       const note = Number(t.dataset.note);
       onKeyClick(note);
     },
-    [onKeyClick]
+    [onKeyClick],
   );
 
   return (
@@ -70,7 +64,7 @@ export default function Keyboard({
         </div>
         <div className="black">
           {blacks.map(({ note, left }) =>
-            renderKey(localActiveKeys.has(note), note, left)
+            renderKey(localActiveKeys.has(note), note, left),
           )}
         </div>
       </div>

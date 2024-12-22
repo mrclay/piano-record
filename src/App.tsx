@@ -3,6 +3,7 @@ import { Route, Routes, Navigate, useLocation } from "react-router-dom";
 
 import Paths from "./Paths";
 import { useRootSoundManager } from "./useRootSoundManager";
+import EmbedPage from "./pages/EmbedPage";
 
 const AsyncChord = lazy(() => import("./pages/ChordPage"));
 const AsyncPiano = lazy(() => import("./pages/PianoPage"));
@@ -78,6 +79,7 @@ const App = () => {
           path={Paths.guessKeyPrefix("/")}
           element={PathKeyedComponent(AsyncGuessKey)}
         />
+        <Route path="/embed" element={<EmbedPage />} />
         <Route path="/" element={<Navigate to={Paths.pianoPrefix("/")} />} />
       </Routes>
     </div>

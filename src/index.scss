@@ -2,6 +2,11 @@
   margin: 0 auto;
   max-width: 1246px;
   padding: 0 20px;
+
+  .embed-page & {
+    margin: 0;
+    padding: 10px;
+  }
 }
 
 .max-width-900 {
@@ -160,6 +165,10 @@ button .progress {
 #big-play {
   vertical-align: baseline;
   margin-right: 20px;
+
+  .embed-page & {
+    margin: 0;
+  }
 }
 
 .GTK__results {
