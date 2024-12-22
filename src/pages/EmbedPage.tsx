@@ -62,9 +62,7 @@ export default function EmbedPage(): JSX.Element {
     recorder.stop();
   }, [searchParams]);
 
-  const iframeUrl =
-    window.origin + `/piano/embed?${new URLSearchParams({ url })}`;
-  const embedHtml = `<iframe src="${escape(iframeUrl)}" height="100" width="600" style="width:100%"></iframe>`;
+  const { iframeUrl, embedHtml } = getEmbedUrl(url);
 
   const play = () => {
     if (!url) {
@@ -220,4 +218,12 @@ export default function EmbedPage(): JSX.Element {
       )}
     </div>
   );
+}
+
+export function getEmbedUrl(url: string) {
+  const iframeUrl =
+    window.origin + `/piano/embed?${new URLSearchParams({ url })}`;
+  const embedHtml = `<iframe src="${escape(iframeUrl)}" height="120" width="600" style="border:0; width:100%"></iframe>`;
+
+  return { iframeUrl, embedHtml };
 }
