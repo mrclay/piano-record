@@ -50,7 +50,9 @@ export default function EmbedPage(): JSX.Element {
 
     if (newUrl) {
       const urlParams = new URL(newUrl).searchParams;
-      setPlayerSpec(playerSpecFromUrl(urlParams) || pianoSpec);
+      const spec = playerSpecFromUrl(urlParams) || pianoSpec;
+      console.log("spec", spec);
+      setPlayerSpec(spec);
     }
 
     setActiveKeys(null);
