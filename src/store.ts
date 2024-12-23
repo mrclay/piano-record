@@ -15,7 +15,7 @@ type AtomSet<T = {}> = {
 type HookSet<T = {}> = {
   [Property in keyof T]: () => [
     T[Property],
-    (val: T[Property] | ((prev: T[Property]) => T[Property])) => void
+    (val: T[Property] | ((prev: T[Property]) => T[Property])) => void,
   ];
 };
 
@@ -32,8 +32,10 @@ export const pianoSpec: PlayerSpec = {
   name: availableInstruments[SoundFont.TonePiano]![0],
 };
 
-export function playerSpecFromUrl(): PlayerSpec | undefined {
-  const params = new URLSearchParams(window.location.search);
+export function playerSpecFromUrl(
+  urlParams?: URLSearchParams,
+): PlayerSpec | undefined {
+  const params = urlParams || new URLSearchParams(window.location.search);
   const [sf, name] = (params.get("sf") || ".").split(".");
 
   const available = availableInstruments[sf as SoundFont];
@@ -59,7 +61,7 @@ export const atoms = {
 function createUseStoreHook<T>(atomSet: AtomSet<T>) {
   return Object.fromEntries(
     // @ts-ignore
-    Object.entries(atomSet).map(([k, v]) => [k, () => useAtom(v)])
+    Object.entries(atomSet).map(([k, v]) => [k, () => useAtom(v)]),
   ) as unknown as HookSet<T>;
 }
 

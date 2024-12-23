@@ -1,13 +1,14 @@
 import { useSearchParams } from "react-router-dom";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { escape } from "html-escaper";
-import { useStore } from "../store";
+import { pianoSpec, playerSpecFromUrl, useStore } from "../store";
 import Keyboard from "../ui/Keyboard";
 import Play from "../ui/BigPlay";
 import { sequenceFromStream } from "../Sequencer";
 import Ops, { TimedOp } from "../Ops";
 import * as C from "../constants";
 import { ActiveKeys } from "../Piano";
+import { useRootSoundManager } from "../useRootSoundManager";
 
 const isolateSong = (songUrl: string) => songUrl.split("/").pop();
 
@@ -24,6 +25,9 @@ export default function EmbedPage(): JSX.Element {
   const songRef = useRef({ song: "" }).current;
   songRef.song = song;
   const { iframeUrl, embedHtml } = getEmbedUrl(url);
+
+  const [, setPlayerSpec] = useStore.playerSpec();
+  useRootSoundManager();
 
   const [lowestNote, setLowestNote] = useState(0);
   const keysLeftMargin = lowestNote
@@ -43,6 +47,12 @@ export default function EmbedPage(): JSX.Element {
   useEffect(() => {
     const newUrl = searchParams.get("url") || "";
     setUrl(prev => newUrl || prev);
+
+    if (newUrl) {
+      const urlParams = new URL(newUrl).searchParams;
+      setPlayerSpec(playerSpecFromUrl(urlParams) || pianoSpec);
+    }
+
     setActiveKeys(null);
     setChordOps(null);
 
@@ -231,25 +241,11 @@ export default function EmbedPage(): JSX.Element {
               </tr>
               <tr>
                 <th>Embed&nbsp;URL</th>
-                <td>
-                  <textarea
-                    value={iframeUrl}
-                    readOnly
-                    style={{ width: "100%" }}
-                    onClick={e => e.currentTarget.select()}
-                  />
-                </td>
+                <td className="font-monospace">{iframeUrl}</td>
               </tr>
               <tr>
                 <th>Embed&nbsp;HTML</th>
-                <td>
-                  <textarea
-                    value={embedHtml}
-                    readOnly
-                    style={{ width: "100%" }}
-                    onClick={e => e.currentTarget.select()}
-                  />
-                </td>
+                <td className="font-monospace">{embedHtml}</td>
               </tr>
             </tbody>
           </table>
@@ -261,7 +257,7 @@ export default function EmbedPage(): JSX.Element {
 
 export function getEmbedUrl(url: string) {
   const iframeUrl =
-    window.origin + `/piano/embed?${new URLSearchParams({ url })}`;
+    window.origin + `/piano/embed?${new URLSearchParams([["url", url]])}`;
   const embedHtml = `<iframe src="${escape(iframeUrl)}" height="120" width="600" style="border:0; width:100%"></iframe>`;
 
   return { iframeUrl, embedHtml };
