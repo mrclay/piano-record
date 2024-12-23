@@ -32,10 +32,16 @@ export const pianoSpec: PlayerSpec = {
   name: availableInstruments[SoundFont.TonePiano]![0],
 };
 
-export function playerSpecFromUrl(
-  urlParams?: URLSearchParams,
-): PlayerSpec | undefined {
-  const params = urlParams || new URLSearchParams(window.location.search);
+export function playerSpecFromUrl(): PlayerSpec | undefined {
+  let params = new URLSearchParams(window.location.search);
+
+  if (window.location.pathname.includes("/piano/embed")) {
+    const url = params.get("url");
+    if (url) {
+      params = new URL(url).searchParams;
+    }
+  }
+
   const [sf, name] = (params.get("sf") || ".").split(".");
 
   const available = availableInstruments[sf as SoundFont];

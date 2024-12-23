@@ -26,9 +26,6 @@ export default function EmbedPage(): JSX.Element {
   songRef.song = song;
   const { iframeUrl, embedHtml } = getEmbedUrl(url);
 
-  const [, setPlayerSpec] = useStore.playerSpec();
-  useRootSoundManager();
-
   const [lowestNote, setLowestNote] = useState(0);
   const keysLeftMargin = lowestNote
     ? Math.max(
@@ -47,13 +44,6 @@ export default function EmbedPage(): JSX.Element {
   useEffect(() => {
     const newUrl = searchParams.get("url") || "";
     setUrl(prev => newUrl || prev);
-
-    if (newUrl) {
-      const urlParams = new URL(newUrl).searchParams;
-      const spec = playerSpecFromUrl(urlParams) || pianoSpec;
-      console.log("spec", spec);
-      setPlayerSpec(spec);
-    }
 
     setActiveKeys(null);
     setChordOps(null);
