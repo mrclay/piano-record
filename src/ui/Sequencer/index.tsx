@@ -1,4 +1,9 @@
-import React, { MouseEventHandler } from "react";
+import React, {
+  DragEventHandler,
+  MouseEventHandler,
+  useEffect,
+  useState,
+} from "react";
 
 import "./index.scss";
 import { getPianoKeyLayout } from "../Keyboard";
@@ -8,7 +13,7 @@ interface SequencerProps {
   onStepsChange(
     stepData: Array<number[]>,
     joinData: Array<number[]>,
-    changedStep: number
+    changedSteps: number[],
   ): void;
   stepData: Array<number[]>;
   joinData: Array<number[]>;
@@ -16,12 +21,30 @@ interface SequencerProps {
 
 const { whites, blacks } = getPianoKeyLayout();
 
+interface StepNote {
+  step: number;
+  note: number;
+}
+
+function stepNoteFromId(id: string): StepNote {
+  const [step, note] = id.substring(2).split("-").map(Number);
+  return { step, note };
+}
+
 export default function SequencerUi({
   currentStepIndex,
   onStepsChange,
   stepData,
   joinData,
 }: SequencerProps) {
+  const [fromNote, setFromNote] = useState<StepNote | null>(null);
+
+  const onDragStart: DragEventHandler = e => {
+    if (e.target instanceof HTMLElement) {
+      setFromNote(stepNoteFromId(e.target.id));
+    }
+  };
+
   const handleKey: MouseEventHandler<HTMLDivElement> = e => {
     e.preventDefault();
 
@@ -73,7 +96,7 @@ export default function SequencerUi({
     newStepData[stepIdx] = chord;
     newJoinData[stepIdx] = joins;
 
-    onStepsChange(newStepData, newJoinData, stepIdx);
+    onStepsChange(newStepData, newJoinData, [stepIdx]);
   };
 
   const handleRemoveStep: MouseEventHandler<HTMLButtonElement> = e => {
@@ -87,7 +110,7 @@ export default function SequencerUi({
     const newJoinData = [...joinData];
     newStepData.splice(stepIdx, 1);
     newJoinData.splice(stepIdx, 1);
-    onStepsChange(newStepData, newJoinData, Math.max(0, stepIdx - 1));
+    onStepsChange(newStepData, newJoinData, [Math.max(0, stepIdx - 1)]);
   };
 
   const handleCopyStep: MouseEventHandler<HTMLButtonElement> = e => {
@@ -117,25 +140,96 @@ export default function SequencerUi({
       newStepData.pop();
     }
 
-    onStepsChange(newStepData, newJoinData, stepIdx + 1);
+    onStepsChange(newStepData, newJoinData, [stepIdx + 1]);
+  };
+
+  const handleDrop: DragEventHandler = e => {
+    if (!(e.target instanceof HTMLElement) || !fromNote) {
+      return;
+    }
+
+    const note = fromNote.note;
+    const fromIsActive = stepData[fromNote.step].includes(note);
+    const toNote = stepNoteFromId(e.target.id);
+    const toIsActive = stepData[toNote.step].includes(note);
+    const remove = fromIsActive && toIsActive;
+
+    let changing = false;
+    const stepsChanged = stepData
+      .map((notes, idx) => idx)
+      .filter(idx => {
+        if (changing) {
+          if (fromNote.step === idx || toNote.step === idx) {
+            changing = !changing;
+          }
+          return true;
+        } else {
+          if (fromNote.step === idx || toNote.step === idx) {
+            changing = !changing;
+          }
+
+          return changing;
+        }
+      });
+
+    const newSteps = structuredClone(stepData);
+    const newJoins = structuredClone(joinData);
+
+    let lastPresent = false;
+    for (let i = 0; i < stepData.length; i++) {
+      if (stepsChanged.includes(i)) {
+        newSteps[i] = newSteps[i].filter(el => el !== note);
+        newJoins[i] = newJoins[i].filter(el => el !== note);
+        if (!remove) {
+          newSteps[i].push(note);
+          if (lastPresent) {
+            newJoins[i].push(note);
+          }
+        }
+      }
+
+      lastPresent = newSteps[i].includes(note);
+    }
+
+    onStepsChange(newSteps, newJoins, stepsChanged);
+  };
+
+  const onEnterOver: DragEventHandler = e => {
+    if (e.target instanceof HTMLElement && fromNote) {
+      const toNote = stepNoteFromId(e.target.id);
+      if (fromNote.note === toNote.note && fromNote.step !== toNote.step) {
+        // Tell browser this is a drop target
+        e.preventDefault();
+      }
+    }
   };
 
   const renderKey = (
     active: boolean,
+    step: number,
     note: number,
     left = 0,
-    isJoin = false
+    isJoin = false,
   ) => (
     <span
       key={note}
+      id={`n-${step}-${note}`}
       data-note={note}
+      draggable={true}
+      onDragStart={onDragStart}
+      onClick={handleKey}
       className={(active ? "active " : " ") + (isJoin ? "joined " : " ")}
       style={{ left: left + "px" }}
     />
   );
 
   return (
-    <div className="Sequencer" onMouseDown={handleKey}>
+    <div
+      className="Sequencer"
+      onDragEnter={onEnterOver}
+      onDragOver={onEnterOver}
+      onDrop={handleDrop}
+    >
       {stepData.map((activeNotes, i) => (
         <div
           key={i}
@@ -147,9 +241,10 @@ export default function SequencerUi({
               const isJoin = joinData[i].includes(note);
               return renderKey(
                 activeNotes.indexOf(note) !== -1,
+                i,
                 note,
                 0,
-                isJoin
+                isJoin,
               );
             })}
           </div>
@@ -158,9 +253,10 @@ export default function SequencerUi({
               const isJoin = joinData[i].includes(note);
               return renderKey(
                 activeNotes.indexOf(note) !== -1,
+                i,
                 note,
                 left,
-                isJoin
+                isJoin,
               );
             })}
           </div>

@@ -298,7 +298,7 @@ export default function SequencePage(): JSX.Element {
         currentStepIndex={step}
         stepData={sequencer.stepData}
         joinData={sequencer.joinData}
-        onStepsChange={(newStepData, newJoinData, changedStep) => {
+        onStepsChange={(newStepData, newJoinData, changedSteps) => {
           // console.log(JSON.stringify([newStepData, newJoinData]));
 
           sequencer.stepData = newStepData;
@@ -307,8 +307,8 @@ export default function SequencePage(): JSX.Element {
 
           if (!sequencer.isPlaying()) {
             handleStop();
-            setStep(changedStep);
-            play(newStepData[changedStep]);
+            setStep(changedSteps[0]);
+            play(newStepData[changedSteps[0]]);
           }
         }}
       />
