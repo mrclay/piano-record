@@ -1,6 +1,8 @@
+import * as Tone from "tone";
+import * as C from "./constants";
 import { EventTarget } from "./dom-event-target";
 import Piano, { ActiveKeys } from "./Piano";
-import * as Tone from "tone";
+import { midiFromNoteOctave, noteOctaveFromMidi } from "./music-theory/Note";
 
 export interface SequencerEvents {
   repeat: { plays: number };
@@ -137,6 +139,66 @@ export class Sequencer extends EventTarget<SequencerEvents> {
     window.clearTimeout(this.#stepTimeout);
     this.piano.stopAll();
     this.send("stop", null);
+  }
+
+  toTextLines() {
+    let out: string[] = [];
+
+    this.stepData.forEach((notes, step) => {
+      let joinLine = "";
+      let noteLine = "";
+      for (let i = C.RANGE[0]; i <= C.RANGE[1]; i++) {
+        const joinSpace = this.joinData[step].includes(i) ? "|  " : "   ";
+        let noteSpace;
+        if (notes.includes(i)) {
+          noteSpace = noteOctaveFromMidi(i);
+          if (noteSpace.length === 2) {
+            noteSpace += "-";
+          }
+        } else {
+          noteSpace = "---";
+        }
+        joinLine += joinSpace;
+        noteLine += noteSpace;
+      }
+
+      noteLine = noteLine.replace(/^(-+)(.*)/, (m, m1, m2) => {
+        return m1.replaceAll("-", " ") + m2;
+      });
+      noteLine = noteLine.replace(/-+$/, "");
+      out.push(joinLine.trimEnd(), noteLine.trimEnd());
+    });
+
+    return out;
+  }
+
+  setStepsFromText(text: string) {
+    const stepData: number[][] = [];
+    const joinData: number[][] = [];
+    const lines = text.split(/\r?\n/);
+    const regex = /[A-G]([b#])?\d/gi;
+
+    do {
+      const joinLine = lines.shift();
+      const stepLine = lines.shift();
+      if (typeof joinLine !== "string" || typeof stepLine !== "string") {
+        break;
+      }
+
+      const found = Array.from(stepLine.matchAll(regex), m => {
+        if (typeof m.index !== "number") {
+          throw new Error();
+        }
+        const midi = midiFromNoteOctave(m[0]);
+        const isJoin = joinLine.charAt(m.index) === "|";
+        return { midi, isJoin };
+      });
+      stepData.push(found.map(el => el.midi));
+      joinData.push(found.filter(el => el.isJoin).map(el => el.midi));
+    } while (lines.length);
+
+    this.stepData = stepData;
+    this.joinData = joinData;
   }
 }
 

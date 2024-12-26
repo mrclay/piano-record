@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import { useSearchParams } from "react-router-dom";
 import Head from "@uiw/react-head";
@@ -69,6 +69,9 @@ export default function SequencePage(): JSX.Element {
   const [numStepsInput, setNumStepsInput] = useState(
     String(sequencer.getNumSteps()),
   );
+
+  const [editingText, setEditingText] = useState(false);
+  const [editValue, setEditValue] = useState("");
 
   useEffect(() => {
     function stepHandler({ step }: SequencerEvents["step"]) {
@@ -329,7 +332,33 @@ export default function SequencePage(): JSX.Element {
         )}
       </Content900>
 
-      <Content900></Content900>
+      {editingText && (
+        <textarea
+          rows={editValue.split("\n").length}
+          style={{
+            width: "100%",
+            fontSize: "10px",
+            fontFamily: "monospace",
+          }}
+          value={editValue}
+          onChange={e => setEditValue(e.currentTarget.value)}
+        />
+      )}
+      <button
+        type="button"
+        className="btn"
+        onClick={() => {
+          if (editingText) {
+            sequencer.setStepsFromText(editValue);
+            share();
+          } else {
+            setEditValue(sequencer.toTextLines().join("\n"));
+          }
+          setEditingText(prev => !prev);
+        }}
+      >
+        {editingText ? "Save" : "Edit as text"}
+      </button>
 
       <HrFinal />
     </>

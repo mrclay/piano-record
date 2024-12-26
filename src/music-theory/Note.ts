@@ -4,6 +4,7 @@ import {
   readAccidentalsMap,
   writeAccidentalsMap,
   unicodeAccidentalsMap,
+  midiClasses,
 } from "./constants";
 import { boundModulo } from "./CircularSet";
 
@@ -46,7 +47,7 @@ export default class Note {
 
     const note = new Note(
       getPitchClass(letter),
-      readAccidentalsMap[accidental]
+      readAccidentalsMap[accidental],
     );
 
     noteCache.set(name, note);
@@ -56,7 +57,7 @@ export default class Note {
   getNextNote(semitones: number) {
     return new Note(
       incPitchClass(this.pitchClass),
-      this.sharps + semitones - this.pitchClass.width
+      this.sharps + semitones - this.pitchClass.width,
     );
   }
 
@@ -65,5 +66,33 @@ export default class Note {
       ? unicodeAccidentalsMap
       : writeAccidentalsMap;
     return `${this.pitchClass.letter}${map[this.sharps]}`;
+  }
+}
+
+export function noteOctaveFromMidi(midi: number) {
+  const octave = Math.floor(midi / 12) - 1;
+  const note = midiClasses[midi % 12];
+  return note + octave;
+}
+
+export function midiFromNoteOctave(noteOctave: string) {
+  // prettier-ignore
+  const name_to_pc: Record<string, number> = {
+    C: 0, D: 2, E: 4, F: 5, G: 7, A: 9, B: 11,
+  };
+  const letter = noteOctave[0];
+  let pc = name_to_pc[letter.toUpperCase()];
+
+  const mod = noteOctave[1];
+  const trans = readAccidentalsMap[mod] || 0;
+
+  pc += trans;
+
+  const octave = parseInt(noteOctave.at(-1) || "0");
+  if (octave) {
+    return pc + 12 * (octave + 1);
+  } else {
+    // negative mod 12
+    return ((pc % 12) + 12) % 12;
   }
 }
