@@ -180,6 +180,14 @@ export class Sequencer extends EventTarget<SequencerEvents> {
 
     do {
       const joinLine = lines.shift();
+      if (typeof joinLine === "string" && joinLine.includes("/chord/")) {
+        stepData.push(
+          joinLine.split("/chord/")[1].split("/")[0].split(",").map(Number),
+        );
+        joinData.push([]);
+        continue;
+      }
+
       const stepLine = lines.shift();
       if (typeof joinLine !== "string" || typeof stepLine !== "string") {
         break;
