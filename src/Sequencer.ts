@@ -52,6 +52,10 @@ export class Sequencer extends EventTarget<SequencerEvents> {
     return this.#step;
   }
 
+  setStep(step: number) {
+    this.#step = (step + this.stepData.length) % this.stepData.length;
+  }
+
   getNumSteps() {
     return this.stepData.length;
   }
@@ -125,10 +129,9 @@ export class Sequencer extends EventTarget<SequencerEvents> {
     this.playStep();
   }
 
-  async start(step = 0) {
+  async start() {
     this.#playing = true;
     this.#plays = 0;
-    this.#step = step;
     this.send("start", null);
     await Tone.start();
     this.playStep();

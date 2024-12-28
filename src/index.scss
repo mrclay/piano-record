@@ -163,8 +163,11 @@ button .progress {
 
 .med-btn {
   font-size: 1.5em;
-  margin-right: 0.3em;
   vertical-align: baseline;
+
+  &:not(:is(.btn-group .med-btn)) {
+    margin-right: 0.3em;
+  }
 }
 
 #big-play {

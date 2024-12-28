@@ -54,7 +54,7 @@ interface ChordSetRef {
 export function ChordSet({ desc = null, els }: ChordSetProps): JSX.Element {
   const setKey = useMemo(
     () => els.map(el => `${el.func}${el.type}`).join(),
-    []
+    [],
   );
   const { tourState, activeItem, tourDispatch } = useContext(TourContext);
 
@@ -144,7 +144,7 @@ export function ChordSet({ desc = null, els }: ChordSetProps): JSX.Element {
       stream = isolateSong(chord.songUrl) || "";
       const { bpm, bps, newStepData, newJoinData } = sequenceFromStream(
         stream,
-        offset
+        offset,
       );
       if (!newJoinData || !newStepData) {
         return;
@@ -157,12 +157,13 @@ export function ChordSet({ desc = null, els }: ChordSetProps): JSX.Element {
         stepData: newStepData,
         joinData: newJoinData,
       });
+      sequencer.setStep(0);
       setup = () => {
         setTimeout(() => sequencer.start(), 100);
       };
     } else {
       const [, streamAndName] = chord.songUrl.split(
-        /\/piano\/(?:songs|record)\//
+        /\/piano\/(?:songs|record)\//,
       );
       stream = streamAndName.replace(/(\/|\?).*/, "");
       setup = () => {

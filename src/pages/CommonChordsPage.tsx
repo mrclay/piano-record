@@ -10,7 +10,7 @@ import {
 } from "../music-theory/constants";
 import Note from "../music-theory/Note";
 import Paths from "../Paths";
-import { useStore } from "../store";
+import { pianoSpec, useStore } from "../store";
 import "./CommonChordsPage.scss";
 import { getInterval } from "../music-theory/Interval";
 import { useCommonChordsQuery } from "../common-chords/useCommonChordsQuery";
@@ -40,6 +40,7 @@ function CommonChordsPage() {
   const [offset, setOffset] = useStore.offset();
   const [sequencer] = useStore.sequencer();
   const [recorder] = useStore.recorder();
+  const [, setPlayerSpec] = useStore.playerSpec();
   const { tourState, tourDispatch } = useTour();
   const tourContext = useMemo(
     () => ({
@@ -49,7 +50,7 @@ function CommonChordsPage() {
         ? tourState.items[tourState.activeIdx]
         : null,
     }),
-    [tourState, tourDispatch]
+    [tourState, tourDispatch],
   );
 
   const navigate = useNavigate();
@@ -66,6 +67,7 @@ function CommonChordsPage() {
     }
 
     setIsFirstRender(false);
+    setPlayerSpec(pianoSpec);
   }, []);
 
   useEffect(() => {
@@ -91,7 +93,7 @@ function CommonChordsPage() {
 
       if (/^[A-G]b/.test(urlKey)) {
         navigate(
-          Paths.commonChordsPrefix(`/${urlKey.replace("b", Char.FLAT)}`)
+          Paths.commonChordsPrefix(`/${urlKey.replace("b", Char.FLAT)}`),
         );
         return;
       }
@@ -121,13 +123,13 @@ function CommonChordsPage() {
               className="form-control"
               onChange={e => {
                 const newKey = keys.find(
-                  el => el.toString() === e.target.value
+                  el => el.toString() === e.target.value,
                 );
                 if (newKey) {
                   navigate(
                     Paths.commonChordsPrefix(
-                      `/${newKey.toString(true).replace(" ", "-")}${qs}`
-                    )
+                      `/${newKey.toString(true).replace(" ", "-")}${qs}`,
+                    ),
                   );
                 }
               }}

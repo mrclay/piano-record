@@ -61,10 +61,9 @@ export default function SequencePage(): JSX.Element {
   const [, setRenderNum] = useState(0);
   const forceRender = () => setRenderNum(prev => prev + 1);
 
-  const step = sequencer.isPlaying() ? sequencer.getStep() : -1;
+  const step = sequencer.getStep();
   const numSteps = sequencer.getNumSteps();
 
-  const [internalStep, setStep] = useState(0);
   const [bpmInput, setBpmInput] = useState(String(sequencer.bpm));
   const [numStepsInput, setNumStepsInput] = useState(
     String(sequencer.getNumSteps()),
@@ -75,7 +74,6 @@ export default function SequencePage(): JSX.Element {
 
   useEffect(() => {
     function stepHandler({ step }: SequencerEvents["step"]) {
-      setStep(step);
       forceRender();
     }
 
@@ -85,13 +83,27 @@ export default function SequencePage(): JSX.Element {
   }, [sequencer]);
 
   async function handleStart() {
-    sequencer.start(internalStep);
+    sequencer.start();
   }
 
   function handleStop() {
     piano.stopAll();
     sequencer.stop();
-    setStep(0);
+    // setStep(0);
+    forceRender();
+  }
+
+  function handleFFBack() {
+    piano.stopAll();
+    sequencer.stop();
+    sequencer.setStep(0);
+    forceRender();
+  }
+
+  function handleStepInc(inc: number) {
+    piano.stopAll();
+    sequencer.stop();
+    sequencer.setStep(sequencer.getStep() + inc);
     forceRender();
   }
 
@@ -103,7 +115,7 @@ export default function SequencePage(): JSX.Element {
 
   function play(currentNotes: number[]) {
     currentNotes.forEach(note => {
-      piano.startNote(note);
+      piano.startNote(note, 500);
     });
   }
 
@@ -208,6 +220,36 @@ export default function SequencePage(): JSX.Element {
             }}
           />
 
+          <div className="btn-group" role="group">
+            <button
+              type="button"
+              className="btn btn-outline-info med-btn text-nowrap"
+              onClick={handleFFBack}
+            >
+              <i className="fa fa-fast-backward" aria-hidden="true" />
+            </button>
+
+            <button
+              type="button"
+              className="btn btn-outline-info med-btn text-nowrap"
+              onClick={() => handleStepInc(-1)}
+            >
+              <span style={{ display: "inline-block", minWidth: "1em" }}>
+                <i className="fa fa-step-backward" aria-hidden="true" />
+              </span>
+            </button>
+
+            <button
+              type="button"
+              className="btn btn-outline-info med-btn text-nowrap"
+              onClick={() => handleStepInc(1)}
+            >
+              <span style={{ display: "inline-block", minWidth: "1em" }}>
+                <i className="fa fa-step-forward" aria-hidden="true" />
+              </span>
+            </button>
+          </div>
+
           <button
             type="button"
             className="btn btn-primary med-btn text-nowrap mx-3"
@@ -259,10 +301,10 @@ export default function SequencePage(): JSX.Element {
             </div>
 
             <div className="mt-2 text-center">
-              <label>
-                Step length{" "}
+              <label className="me-3">
+                Step ={" "}
                 <select
-                  style={{ padding: "3px 0" }}
+                  style={{ padding: "3px 0", width: "4rem" }}
                   value={
                     bpsOptions.find(el => el.value === String(sequencer.bps))
                       ?.value
@@ -279,27 +321,25 @@ export default function SequencePage(): JSX.Element {
                   ))}
                 </select>
               </label>
+
+              <Transpose
+                onChange={semitones => {
+                  sequencer.stepData = sequencer.stepData.map(step =>
+                    step.map(note => note + semitones),
+                  );
+                  sequencer.joinData = sequencer.joinData.map(step =>
+                    step.map(note => note + semitones),
+                  );
+
+                  // Don't reset the sequencer during the next few effects
+                  resetDuringNextEffect = false;
+                  setTimeout(() => {
+                    resetDuringNextEffect = true;
+                  }, 500);
+                  share();
+                }}
+              />
             </div>
-          </div>
-
-          <div className="ms-3">
-            <Transpose
-              onChange={semitones => {
-                sequencer.stepData = sequencer.stepData.map(step =>
-                  step.map(note => note + semitones),
-                );
-                sequencer.joinData = sequencer.joinData.map(step =>
-                  step.map(note => note + semitones),
-                );
-
-                // Don't reset the sequencer during the next few effects
-                resetDuringNextEffect = false;
-                setTimeout(() => {
-                  resetDuringNextEffect = true;
-                }, 500);
-                share();
-              }}
-            />
           </div>
         </div>
       </Content900>
@@ -317,7 +357,7 @@ export default function SequencePage(): JSX.Element {
 
           if (!sequencer.isPlaying()) {
             handleStop();
-            setStep(changedSteps[0]);
+            sequencer.setStep(changedSteps[0]);
             play(newStepData[changedSteps[0]]);
           }
         }}

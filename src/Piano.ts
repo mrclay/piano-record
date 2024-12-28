@@ -2,11 +2,12 @@ import { EventTarget } from "./dom-event-target";
 import * as C from "./constants";
 import Ops, { MidiOp, Op } from "./Ops";
 import { getShepardTones, isShepardToneActive, Playable } from "./players";
+import { act } from "react-dom/test-utils";
 
 export type ActiveKeys = Set<number>;
 
 export type PianoListener<K extends keyof PianoEvents> = (
-  evt: PianoEvents[K]
+  evt: PianoEvents[K],
 ) => void;
 
 export interface PianoEvents {
@@ -38,12 +39,25 @@ export default class Piano extends EventTarget<PianoEvents> {
     this.player.stopAll();
   }
 
-  startNote(note: number) {
+  startNote(note: number, length = 0) {
     this.stopNote(note);
 
     const op = Ops.keyDownOperation(note);
-    if (op) {
-      this.performOperation(op);
+    if (!op) {
+      return;
+    }
+
+    this.performOperation(op);
+
+    if (length) {
+      window.setTimeout(() => {
+        if (this.activeKeys.has(note)) {
+          const op = Ops.keyUpOperation(note);
+          if (op) {
+            this.performOperation(op);
+          }
+        }
+      }, length);
     }
   }
 
