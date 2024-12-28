@@ -185,32 +185,12 @@ export default function SequencePage(): JSX.Element {
             Sad synths
           </a>
           {", "}
-          <a href="/sequence/songs/v4,80,1,p45p3ep2dp36-p47j3ej2dj36-p45j36p2dp39-p42p3ep32p36-j32j36j42p3b-p3dj32j36j42-p2dp45p3ep36-j2dj3ej36p47-p45p39j36p2d-p42p3ep36p26-j42j36p45j26-j42j36p3ej26-p4cp28p3dp37-j4cj28j3dp39-p4cj28p32p3b-p49p2dp31p3d-j49j2dj31p43-j49j2dj31p40-p4ap2dp36j40-j4aj2dj36p45-p4aj2dp39j36-p45p26p42p32-j45j26j42p36-j45j26j42p3c-p3bp47p32p1f-j47j32j3bp23-p47j32j3bp26-p4ap2bp3ep3b-p49j2bj3ep32-p47j2bj3ep34-p45p26p36p39-p47j26j36j39-p45j26j39j36-p42p26p39p32-j42j26j39j32-j42j26p3cp2d-p47p3bp32p2b-j47j3bj32p2f-j47j3bj32p26-p4ap2bp3b-p49j2bp32p39-p47j2bp34p37-p45p2dp36p39-p47j2dj36j39-p45j2dp39j36-p42p36p39p3bp2f-j42j39j36p31p3d-j42j39p32j36p3e-p4cp45p43p3e-j4cj45j43j3e-p4cj45j43j3ep37-p4fp45p43p3dp39-p4cj45j43j3dp3b-p49j45j43p40p39-p4ap42p45j39-j4aj42j45p3e-j4aj42j45p39-p4ep42p45-j4ej42j45-j4ej42j45-p4ap3ep34p26-p45j3ep36p28-p42j3ep38p2a-p45p39p2dp31-p43j39j2dj31-p40j39p37j2dj31-p3ep36p32-j3ej36j32-j3ej36j32-.-.-.?sf=FluidR3_GM.violin">
+          <a href="/sequence/songs/v4,80,1,p45p3ep2dp36-p47j2dj36j3e-p45j36p2dj3e-p42p32p36p39-j32j36j42p3b-p3dj32j36j42-p2dp45p3ep36-j2dj3ej36p47-p45j36j3ep2d-p42p36p26p39-j42j36p45j26-j42j36p3ej26-p4cp28p3dp37-j4cj28p39j3d-p4cj28p3bp40-p49p2dp3dp40-j49j2dp39p43-j49j2dp34p40-p4ap2dp36p40-j4aj2dj36p45-p4aj2dp39j36-p45p26p42p32-j45j26j42p36-j45j26j42p3c-p3bp47p32p1f-j47j32j3bp23-p47j32j3bp26-p4ap2bp3ep3b-p49j2bj3ep32-p47j2bj3ep34-p45p26p36p39-j26j36j39p47-p45j26j39j36-p42p26p39p32-j42j26j39j32-j42p3cp32p2d-p47p3bp32p2b-j47j3bj32p2f-p47j3bj32p26-p4ap2bp3b-p49j2bp32p39-p47j2bp34p37-p45p2dp36p39-p47j2dj36j39-p45j2dp39j36-p42p36p39p3bp2f-j42j39j36p3dp31-j42j39j36p3ep32-p4cp45p43p3ep34-j4cj45j43j3ep39-p4cj45j43p3e-p4fp45p43p3dp39-p4cj45j43j3dp3b-p49j45j43p40p39-p4ap42p45j39-j4aj42j45p3e-j4aj42j45p39-p4ep42p45-j4ej42j45-j4ej42j45-p4ap32p36p26-p45p28j32p39-p42p2ap38j32-p2dp31p37p45-p43j2dj31j37-p40j31j37p2d-p3ep36p32p26-j3ej36j32j26-j3ej36j32j26-.-.-.?sf=FluidR3_GM.violin">
             Silent Night
           </a>
           {", "}
           <a href="/sequence/songs/v4,80,2,p40p30p3bp43p3e-p33p3ep43p3ap41-p31p38p3cp43p41-p34p38p3ep43-p43p38p3ep2ep40-p38p43p30p3ap3f-p3ap41p43p32p37-p2bp43p40p35p39p3c">
             G on top
-          </a>
-          {", "}
-          <a href="/sequence/songs/v4,75,0p5,p26p3dp39p36-j26j3d-p2dj3d-p32p36p40-p26j36j40-j36j40p28-p39p3ep2bp34-j3ej39j2bj34p2d-p26p3dp39p36-j26j3d-p2dj3d-p32p36p40-j36j40p26-j36j40p28-p39p3ep2bp34-j3ej39j2bj34p2d-p3dp2fp3bp37-p3ej37j3bj2f-j3ej3bp32j37-p3bp37p2bj32-j3bp2dj37j32-j3bp2fj37j32-j3bp32j37j2f-j32p37p41j2f-p2ep35p39p40-j2ej35j39j40-p32j35p3aj39p41-p35j3aj39j32p3ep29-j3aj35p2ej32j3e-p3aj35j2ep30j32j3e-j3aj35j2ep32j3e-j3ap35j2ej3e">
-            Piano groove
-          </a>
-          {", "}
-          <a href="/sequence/songs/v4,110,0p5,p30p37p40p3c-p30j37j40j3c-p3ej37j40p2bj3c-j3ej37j40p2bj3c-p2ep35p39j3e-p2ej35j39j3e-p3aj35j39p29j3e-j35j3aj39p29j3e-p35p41p2dp39j3e-j35j41p2dj39j3e-p3ej35j41p2bj39-j3ej35j41p2bj39-p39p36p26-p3cj36j39p26-j3cj36j39p26-j3cj36p39p26">
-            Lilys
-          </a>
-          {", "}
-          <a href="/sequence/songs/v4,45,1,p36p47p40p39-j36j47p3dj40-p2fp3cp45p41-j2fj45p42j3c-p34p47p44p3f-j34p38p44p3b-p31p3dp40p38-j31j3dj40j38-p47p40p45p2a-j47p40p3dj2a-p3cp45p41p2f-j45p42j3cj2f-p3fp44p38p34-p38p49p3dp28-p40p4bp3cp25-j40p4cp3bj25?sf=FluidR3_GM.cello">
-            Sad quartet
-          </a>
-          {", "}
-          <a href="/sequence/songs/v4,60,1,p43p47p4cp24-j43j47j4cj24-p48p4cp51p29p45-j48j4cp4fj29j45-p41p45p4ap2e-j41j45j4aj2e-p46p4ap4fp33p43-j46j4ap4dj33j43-p38p43p48p3f-j38p48j43j3f-p3dp44p48p4dp41-j3dj44j48p4bj41-p45p4ap3ep41p48-j45j4aj41j48j3e-p47p4cp41p45p2b-j47j41j45j2bp4a">
-            4ths pattern
-          </a>
-          {", "}
-          <a href="/sequence/songs/v4,70,1,p28p3fp38p3b-j28p44j3fj38j3b-j28p49j3fj38j3bj44-j28p46j3fj38j3bj44j49-p27p3aj46p43p3e-j27p3aj46j43j3e-j27j3aj46j43j3ep3c-j27j3aj43j3ej3c-p3fp46p31p40-p47j31j40p3dj3f-j31p40j3fj3dj47p3b-p44j31j40p3aj3d-p3bp47p2fp37p42p3e-j3bj47j2fj37j42j3e-j47j3bj2fj37j42j3e-j3bj2fj37j42j47j3e">
-            Shoegaze progression
           </a>
         </p>
       </Content900>
@@ -359,33 +339,58 @@ export default function SequencePage(): JSX.Element {
         )}
       </Content900>
 
-      {editingText && (
-        <textarea
-          rows={editValue.split("\n").length}
-          style={{
-            width: "100%",
-            fontSize: "10px",
-            fontFamily: "monospace",
+      <div className="mb-5">
+        {editingText && (
+          <textarea
+            rows={editValue.split("\n").length}
+            style={{
+              width: "100%",
+              fontSize: "10px",
+              fontFamily: "monospace",
+            }}
+            value={editValue}
+            onChange={e => setEditValue(e.currentTarget.value)}
+          />
+        )}
+        <button
+          type="button"
+          className="btn"
+          onClick={() => {
+            if (editingText) {
+              sequencer.setStepsFromText(editValue);
+              share();
+            } else {
+              setEditValue(sequencer.toTextLines().join("\n"));
+            }
+            setEditingText(prev => !prev);
           }}
-          value={editValue}
-          onChange={e => setEditValue(e.currentTarget.value)}
-        />
-      )}
-      <button
-        type="button"
-        className="btn"
-        onClick={() => {
-          if (editingText) {
-            sequencer.setStepsFromText(editValue);
-            share();
-          } else {
-            setEditValue(sequencer.toTextLines().join("\n"));
-          }
-          setEditingText(prev => !prev);
-        }}
-      >
-        {editingText ? "Save" : "Edit as text"}
-      </button>
+        >
+          {editingText ? "Save" : "Edit as text"}
+        </button>
+      </div>
+
+      <p>
+        More examples:{" "}
+        <a href="/sequence/songs/v4,75,0p5,p26p3dp39p36-j26j3d-p2dj3d-p32p36p40-p26j36j40-j36j40p28-p39p3ep2bp34-j3ej39j2bj34p2d-p26p3dp39p36-j26j3d-p2dj3d-p32p36p40-j36j40p26-j36j40p28-p39p3ep2bp34-j3ej39j2bj34p2d-p3dp2fp3bp37-p3ej37j3bj2f-j3ej3bp32j37-p3bp37p2bj32-j3bp2dj37j32-j3bp2fj37j32-j3bp32j37j2f-j32p37p41j2f-p2ep35p39p40-j2ej35j39j40-p32j35p3aj39p41-p35j3aj39j32p3ep29-j3aj35p2ej32j3e-p3aj35j2ep30j32j3e-j3aj35j2ep32j3e-j3ap35j2ej3e">
+          Piano groove
+        </a>
+        {", "}
+        <a href="/sequence/songs/v4,110,0p5,p30p37p40p3c-p30j37j40j3c-p3ej37j40p2bj3c-j3ej37j40p2bj3c-p2ep35p39j3e-p2ej35j39j3e-p3aj35j39p29j3e-j35j3aj39p29j3e-p35p41p2dp39j3e-j35j41p2dj39j3e-p3ej35j41p2bj39-j3ej35j41p2bj39-p39p36p26-p3cj36j39p26-j3cj36j39p26-j3cj36p39p26">
+          Lilys
+        </a>
+        {", "}
+        <a href="/sequence/songs/v4,45,1,p36p47p40p39-j36j47p3dj40-p2fp3cp45p41-j2fj45p42j3c-p34p47p44p3f-j34p38p44p3b-p31p3dp40p38-j31j3dj40j38-p47p40p45p2a-j47p40p3dj2a-p3cp45p41p2f-j45p42j3cj2f-p3fp44p38p34-p38p49p3dp28-p40p4bp3cp25-j40p4cp3bj25?sf=FluidR3_GM.cello">
+          Sad quartet
+        </a>
+        {", "}
+        <a href="/sequence/songs/v4,60,1,p43p47p4cp24-j43j47j4cj24-p48p4cp51p29p45-j48j4cp4fj29j45-p41p45p4ap2e-j41j45j4aj2e-p46p4ap4fp33p43-j46j4ap4dj33j43-p38p43p48p3f-j38p48j43j3f-p3dp44p48p4dp41-j3dj44j48p4bj41-p45p4ap3ep41p48-j45j4aj41j48j3e-p47p4cp41p45p2b-j47j41j45j2bp4a">
+          4ths pattern
+        </a>
+        {", "}
+        <a href="/sequence/songs/v4,70,1,p28p3fp38p3b-j28p44j3fj38j3b-j28p49j3fj38j3bj44-j28p46j3fj38j3bj44j49-p27p3aj46p43p3e-j27p3aj46j43j3e-j27j3aj46j43j3ep3c-j27j3aj43j3ej3c-p3fp46p31p40-p47j31j40p3dj3f-j31p40j3fj3dj47p3b-p44j31j40p3aj3d-p3bp47p2fp37p42p3e-j3bj47j2fj37j42j3e-j47j3bj2fj37j42j3e-j3bj2fj37j42j47j3e">
+          Shoegaze progression
+        </a>
+      </p>
 
       <HrFinal />
     </>
