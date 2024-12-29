@@ -48,6 +48,13 @@ const bpsOptions = [
   { value: "4", label: "whole" },
 ];
 
+const rhythmOptions = [
+  { value: "1,1", label: "None" },
+  { value: "2,1", label: "Heavy" },
+  { value: "7,4", label: "Medium" },
+  { value: "3,2", label: "Light" },
+];
+
 export default function SequencePage(): JSX.Element {
   const { saveSf } = useSfStorage();
   const navigate = useNavigate();
@@ -86,17 +93,14 @@ export default function SequencePage(): JSX.Element {
     sequencer.start();
   }
 
+  function handleRewindPlay() {
+    sequencer.setStep(0);
+    sequencer.start();
+  }
+
   function handleStop() {
     piano.stopAll();
     sequencer.stop();
-    // setStep(0);
-    forceRender();
-  }
-
-  function handleFFBack() {
-    piano.stopAll();
-    sequencer.stop();
-    sequencer.setStep(0);
     forceRender();
   }
 
@@ -209,26 +213,29 @@ export default function SequencePage(): JSX.Element {
 
       <Content900>
         <div className="d-flex align-items-center">
-          <Preview
-            handlePlay={handleStart}
-            handleStop={handleStop}
-            isPlaying={sequencer.isPlaying()}
-            isWaiting={false}
-            progress={{
-              ratio: step / (numSteps - 1),
-              steps: [step, numSteps],
-            }}
-          />
-
-          <div className="btn-group" role="group">
+          <div className="btn-group me-2" role="group">
             <button
               type="button"
-              className="btn btn-outline-info med-btn text-nowrap"
-              onClick={handleFFBack}
+              className="btn btn-info med-btn text-nowrap"
+              onClick={handleRewindPlay}
+              title="Play from beginning"
             >
               <i className="fa fa-fast-backward" aria-hidden="true" />
             </button>
 
+            <Preview
+              handlePlay={handleStart}
+              handleStop={handleStop}
+              isPlaying={sequencer.isPlaying()}
+              isWaiting={false}
+              progress={{
+                ratio: step / (numSteps - 1),
+                steps: [step, numSteps],
+              }}
+            />
+          </div>
+
+          <div className="btn-group" role="group">
             <button
               type="button"
               className="btn btn-outline-info med-btn text-nowrap"
@@ -279,7 +286,7 @@ export default function SequencePage(): JSX.Element {
                 />
               </label>
 
-              <label>
+              <label className="me-3">
                 Steps{" "}
                 <input
                   style={{ width: "4em" }}
@@ -298,10 +305,31 @@ export default function SequencePage(): JSX.Element {
                   }}
                 />
               </label>
+
+              <label>
+                Swing{" "}
+                <select
+                  style={{ padding: "3px 0", width: "4rem" }}
+                  value={
+                    rhythmOptions.find(el => el.value === String(sequencer.bps))
+                      ?.value
+                  }
+                  onChange={e => {
+                    sequencer.rhythm = e.target.value.split(",").map(Number);
+                    forceRender();
+                  }}
+                >
+                  {rhythmOptions.map(({ value, label }) => (
+                    <option value={value} key={label}>
+                      {label}
+                    </option>
+                  ))}
+                </select>
+              </label>
             </div>
 
             <div className="mt-2 text-center">
-              <label className="me-3">
+              <label className="me-4">
                 Step ={" "}
                 <select
                   style={{ padding: "3px 0", width: "4rem" }}

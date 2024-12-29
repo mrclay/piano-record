@@ -28,6 +28,13 @@ export class Sequencer extends EventTarget<SequencerEvents> {
   #step = 0;
   #playing = false;
   #stepTimeout = 0;
+  rhythm = [1, 1];
+  #delaysCache = {
+    forRhythm: [] as number[],
+    forBpm: 0,
+    forBps: 0,
+    delays: [] as number[],
+  };
   piano: Piano;
   #plays = 0;
   activeKeys: ActiveKeys = new Set();
@@ -109,7 +116,28 @@ export class Sequencer extends EventTarget<SequencerEvents> {
     this.activeKeys = new Set(currentNotes);
 
     if (this.#playing) {
-      const delay = (60 / this.bpm) * this.bps * 1000;
+      // Identity check to check cache
+      if (
+        this.#delaysCache.forRhythm !== this.rhythm ||
+        this.#delaysCache.forBpm !== this.bpm ||
+        this.#delaysCache.forBps !== this.bps
+      ) {
+        // Rebuild cache
+        const fullDelay =
+          (60 / this.bpm) * this.bps * 1000 * this.rhythm.length;
+        const denomenator = this.rhythm.reduce((acc, curr) => acc + curr, 0);
+        this.#delaysCache.delays = this.rhythm.map(
+          numerator => fullDelay * (numerator / denomenator),
+        );
+
+        // For future checks
+        this.#delaysCache.forRhythm = this.rhythm;
+        this.#delaysCache.forBpm = this.bpm;
+        this.#delaysCache.forBps = this.bps;
+      }
+
+      const delay = this.#delaysCache.delays[this.#step % this.rhythm.length];
+
       this.#stepTimeout = window.setTimeout(this.#incPlay.bind(this), delay);
     }
 
@@ -130,6 +158,9 @@ export class Sequencer extends EventTarget<SequencerEvents> {
   }
 
   async start() {
+    if (this.#playing) {
+      this.stop();
+    }
     this.#playing = true;
     this.#plays = 0;
     this.send("start", null);
