@@ -44,7 +44,7 @@ const bpsOptions = [
   { value: "0.5", label: "1/8" },
   { value: "1", label: "1/4" },
   { value: "2", label: "1/2" },
-  { value: "3", label: "dotted 1/2" },
+  { value: "3", label: "3/4" },
   { value: "4", label: "whole" },
 ];
 
@@ -187,7 +187,7 @@ export default function SequencePage(): JSX.Element {
           </button>
         </div>
 
-        <p>
+        <p className="text-nowrap">
           Some examples:{" "}
           <a href="/sequence/songs/v4,196,1,p3fp2fp3bp3a-j3fj3bj3a-p2aj3f-p2ep3fp3ap38-j2ej3fj3aj38-j3fj2ej3aj38-j3fp29j3aj38-j3fp2ej3aj38-p46p33p3cp3ap3fp37-j46j3cj3aj3fj37-p27j46-p2cp37p3ap3cp3fj46-j2cj37j3aj3cj3fj46-j2cj37j3aj3cj3fj46-j37p25j3aj3cj3fj46-j37p29j3aj3cj3fj46-p42p3dp38p2a-j42j3dj38j2a-p25j42-p3fp3ap3bp36p28-j3fj3aj3bj36j28-j3fj3bj3aj36j28-j3fj3bj3aj36p2c-j3fj3bj3aj36p2e?sf=MusyngKite.electric_piano_1">
             Electric Relaxation
@@ -212,8 +212,8 @@ export default function SequencePage(): JSX.Element {
       </Content900>
 
       <Content900>
-        <div className="d-flex align-items-center">
-          <div className="btn-group me-2" role="group">
+        <div className="d-flex align-items-end" style={{ gap: "15px" }}>
+          <div className="btn-group" role="group">
             <button
               type="button"
               className="btn btn-info med-btn text-nowrap"
@@ -241,9 +241,7 @@ export default function SequencePage(): JSX.Element {
               className="btn btn-outline-info med-btn text-nowrap"
               onClick={() => handleStepInc(-1)}
             >
-              <span style={{ display: "inline-block", minWidth: "1em" }}>
-                <i className="fa fa-step-backward" aria-hidden="true" />
-              </span>
+              <i className="fa fa-step-backward" aria-hidden="true" />
             </button>
 
             <button
@@ -251,24 +249,22 @@ export default function SequencePage(): JSX.Element {
               className="btn btn-outline-info med-btn text-nowrap"
               onClick={() => handleStepInc(1)}
             >
-              <span style={{ display: "inline-block", minWidth: "1em" }}>
-                <i className="fa fa-step-forward" aria-hidden="true" />
-              </span>
+              <i className="fa fa-step-forward" aria-hidden="true" />
             </button>
           </div>
 
           <button
             type="button"
-            className="btn btn-primary med-btn text-nowrap mx-3"
+            className="btn btn-primary med-btn text-nowrap"
             onClick={share}
           >
             <i className="fa fa-floppy-o" aria-hidden="true" />{" "}
             <span>Save</span>
           </button>
 
-          <div>
+          <div className="d-flex flex-column" style={{ gap: "10px" }}>
             <div>
-              <label className="me-3">
+              <label className="text-nowrap">
                 BPM{" "}
                 <input
                   style={{ width: "4em" }}
@@ -285,11 +281,12 @@ export default function SequencePage(): JSX.Element {
                   }}
                 />
               </label>
-
-              <label className="me-3">
+            </div>
+            <div>
+              <label className="text-nowrap">
                 Steps{" "}
                 <input
-                  style={{ width: "4em" }}
+                  style={{ width: "3.5em" }}
                   type="text"
                   value={numStepsInput}
                   onFocus={e => e.target.select()}
@@ -303,34 +300,8 @@ export default function SequencePage(): JSX.Element {
                     setNumStepsInput(String(sequencer.getNumSteps()));
                     forceRender();
                   }}
-                />
-              </label>
-
-              <label>
-                Swing{" "}
-                <select
-                  style={{ padding: "3px 0", width: "4rem" }}
-                  value={
-                    rhythmOptions.find(el => el.value === String(sequencer.bps))
-                      ?.value
-                  }
-                  onChange={e => {
-                    sequencer.rhythm = e.target.value.split(",").map(Number);
-                    forceRender();
-                  }}
-                >
-                  {rhythmOptions.map(({ value, label }) => (
-                    <option value={value} key={label}>
-                      {label}
-                    </option>
-                  ))}
-                </select>
-              </label>
-            </div>
-
-            <div className="mt-2 text-center">
-              <label className="me-4">
-                Step ={" "}
+                />{" "}
+                &times;{" "}
                 <select
                   style={{ padding: "3px 0", width: "4rem" }}
                   value={
@@ -349,7 +320,33 @@ export default function SequencePage(): JSX.Element {
                   ))}
                 </select>
               </label>
+            </div>
+          </div>
 
+          <div className="d-flex flex-column" style={{ gap: "10px" }}>
+            <div className="text-end">
+              <label className="text-nowrap">
+                Swing{" "}
+                <select
+                  style={{ padding: "3px 0", width: "5rem" }}
+                  value={
+                    rhythmOptions.find(el => el.value === String(sequencer.bps))
+                      ?.value
+                  }
+                  onChange={e => {
+                    sequencer.rhythm = e.target.value.split(",").map(Number);
+                    forceRender();
+                  }}
+                >
+                  {rhythmOptions.map(({ value, label }) => (
+                    <option value={value} key={label}>
+                      {label}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            </div>
+            <div className="text-end">
               <Transpose
                 onChange={semitones => {
                   sequencer.stepData = sequencer.stepData.map(step =>

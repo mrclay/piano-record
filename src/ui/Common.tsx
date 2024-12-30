@@ -13,9 +13,7 @@ export const Content900 = ({
   children,
   className = "",
 }: PropsWithChildren<{ className?: string }>) => (
-  <div className={`mx-auto max-width-900 mt-5 mb-4 ${className}`}>
-    {children}
-  </div>
+  <div className={`mx-auto max-width-900 my-4 ${className}`}>{children}</div>
 );
 
 export const Container900 = ({
