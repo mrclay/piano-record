@@ -9,17 +9,15 @@ import { getEmbedUrl } from "../pages/EmbedPage";
 interface SaverProps {
   href: string;
   title?: string;
+  getMidi?: () => Promise<Blob>;
 }
 
-export default function Saver({ href, title = "" }: SaverProps) {
+export default function Saver({ href, getMidi, title = "" }: SaverProps) {
   const [saved, setSaved] = useState("");
 
   const url = Ops.encodeMoreURIComponents(href);
 
   const markdownLink = `[${escape(title || C.DEFAULT_TITLE)}](${escape(url)})`;
-  const htmlLink = `<a href="${escape(url)}">${escape(
-    title || C.DEFAULT_TITLE,
-  )}</a>`;
 
   const { embedHtml } = getEmbedUrl(url);
 
@@ -48,6 +46,31 @@ export default function Saver({ href, title = "" }: SaverProps) {
         <i className="fa fa-code" aria-hidden="true" /> Markdown link{" "}
         {saved === markdownLink && "copied!"}
       </Clipboard>
+      {getMidi ? (
+        <button
+          type="button"
+          className="btn btn-dark"
+          onClick={async () => {
+            const blob = await getMidi();
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = "mrclay-org-sequence.mid";
+
+            const clickHandler = () => {
+              setTimeout(() => {
+                URL.revokeObjectURL(url);
+                removeEventListener("click", clickHandler);
+              }, 150);
+            };
+
+            a.addEventListener("click", clickHandler, false);
+            a.click();
+          }}
+        >
+          <i className="fa fa-file-code-o" aria-hidden="true" /> MIDI file{" "}
+        </button>
+      ) : null}
     </span>
   );
 }

@@ -3,6 +3,7 @@ import * as C from "./constants";
 import { EventTarget } from "./dom-event-target";
 import Piano, { ActiveKeys } from "./Piano";
 import { midiFromNoteOctave, noteOctaveFromMidi } from "./music-theory/Note";
+import NullPlayer from "./players/NullPlayer";
 
 export interface SequencerEvents {
   repeat: { plays: number };
@@ -78,7 +79,9 @@ export class Sequencer extends EventTarget<SequencerEvents> {
     }
   }
 
-  playStep() {
+  playStep(injectedPiano: Piano | null = null) {
+    const piano = injectedPiano || this.piano;
+
     const currentNotes = this.stepData[this.#step];
     const currentJoins = this.joinData[this.#step];
 
@@ -89,7 +92,7 @@ export class Sequencer extends EventTarget<SequencerEvents> {
     // Why the new Set()? Because we need to play new notes in the
     // callback. But if we do so, activeKeys.forEach will get called
     // again for the new note, resulting in an infinite loop.
-    new Set(this.piano.activeKeys).forEach(note => {
+    new Set(piano.activeKeys).forEach(note => {
       const willJoin = currentJoins.includes(note);
       const willPlay = currentNotes.includes(note);
 
@@ -98,50 +101,56 @@ export class Sequencer extends EventTarget<SequencerEvents> {
         if (willJoin) {
           // Let it ring
         } else {
-          this.piano.stopNote(note);
-          this.piano.startNote(note);
+          piano.stopNote(note);
+          piano.startNote(note);
         }
       } else {
-        this.piano.stopNote(note);
+        piano.stopNote(note);
       }
     });
 
     // Start notes that still need starting
     currentNotes.forEach(note => {
       if (!bannedNotes.has(note)) {
-        this.piano.startNote(note);
+        piano.startNote(note);
       }
     });
+
+    if (injectedPiano) {
+      // Using injected piano for MIDI rendering. No need for more.
+      return;
+    }
 
     this.activeKeys = new Set(currentNotes);
 
     if (this.#playing) {
-      // Identity check to check cache
-      if (
-        this.#delaysCache.forRhythm !== this.rhythm ||
-        this.#delaysCache.forBpm !== this.bpm ||
-        this.#delaysCache.forBps !== this.bps
-      ) {
-        // Rebuild cache
-        const fullDelay =
-          (60 / this.bpm) * this.bps * 1000 * this.rhythm.length;
-        const denomenator = this.rhythm.reduce((acc, curr) => acc + curr, 0);
-        this.#delaysCache.delays = this.rhythm.map(
-          numerator => fullDelay * (numerator / denomenator),
-        );
-
-        // For future checks
-        this.#delaysCache.forRhythm = this.rhythm;
-        this.#delaysCache.forBpm = this.bpm;
-        this.#delaysCache.forBps = this.bps;
-      }
+      this.#manageDelaysCache();
 
       const delay = this.#delaysCache.delays[this.#step % this.rhythm.length];
-
       this.#stepTimeout = window.setTimeout(this.#incPlay.bind(this), delay);
     }
 
     this.send("step", { step: this.#step });
+  }
+
+  #manageDelaysCache() {
+    if (
+      this.#delaysCache.forRhythm !== this.rhythm ||
+      this.#delaysCache.forBpm !== this.bpm ||
+      this.#delaysCache.forBps !== this.bps
+    ) {
+      // Rebuild cache
+      const fullDelay = (60 / this.bpm) * this.bps * 1000 * this.rhythm.length;
+      const denomenator = this.rhythm.reduce((acc, curr) => acc + curr, 0);
+      this.#delaysCache.delays = this.rhythm.map(
+        numerator => fullDelay * (numerator / denomenator),
+      );
+
+      // For future checks
+      this.#delaysCache.forRhythm = this.rhythm;
+      this.#delaysCache.forBpm = this.bpm;
+      this.#delaysCache.forBps = this.bps;
+    }
   }
 
   #incPlay() {
@@ -241,6 +250,77 @@ export class Sequencer extends EventTarget<SequencerEvents> {
 
     this.stepData = stepData;
     this.joinData = joinData;
+  }
+
+  async toMidi() {
+    const [jzzModule, smfModule] = await Promise.all([
+      import("jzz"),
+      // @ts-ignore
+      import("jzz-midi-smf"),
+    ]);
+    const JZZ = jzzModule.default;
+    const SMF = smfModule.default;
+
+    // Add SMF as a JZZ.MIDI helper
+    SMF(JZZ);
+
+    interface SMFTrack {
+      add(tick: number, evt: ReturnType<typeof JZZ.MIDI.program>): this;
+    }
+    interface SMFInstance {
+      push(track: SMFTrack): void;
+      toInt8Array(rmiFormat: boolean): Int8Array;
+    }
+
+    // @ts-ignore
+    const smf: SMFInstance = new JZZ.MIDI.SMF(0, 96); // type 0, 96 ticks per quarter note
+    // @ts-ignore
+    const trk: SMFTrack = new JZZ.MIDI.SMF.MTrk();
+    smf.push(trk);
+
+    // https://en.wikipedia.org/wiki/General_MIDI
+    const program = 1;
+    const channel = 0;
+
+    // add contents:
+    trk
+      .add(0, JZZ.MIDI.program(channel, program))
+      .add(0, JZZ.MIDI.smfSeqName("Piano"))
+      .add(0, JZZ.MIDI.smfBPM(this.bpm));
+
+    let tick = 0;
+    const piano = new Piano({
+      keyDown({ midi }) {
+        trk.add(tick, JZZ.MIDI.noteOn(channel, midi, 127));
+      },
+      keyUp({ midi }) {
+        trk.add(tick, JZZ.MIDI.noteOff(channel, midi));
+      },
+      pedalDown: () => 0,
+      pedalUp: () => 0,
+      stopAll: () => 0,
+    });
+
+    [0, 1].forEach(() => {
+      for (let i = 0; i < this.stepData.length; i++) {
+        this.#step = i;
+        this.playStep(piano);
+        tick += 96;
+      }
+    });
+
+    trk.add(288, JZZ.MIDI.smfEndOfTrack());
+
+    // trk
+    //   // .add(96, JZZ.MIDI.noteOn(channel, "C6", 127))
+    //   // .add(96, JZZ.MIDI.noteOn(channel, "Eb6", 127))
+    //   // .add(96, JZZ.MIDI.noteOn(channel, "G6", 127))
+    //   // .add(192, JZZ.MIDI.noteOff(channel, "C6"))
+    //   // .add(192, JZZ.MIDI.noteOff(channel, "Eb6"))
+    //   // .add(192, JZZ.MIDI.noteOff(channel, "G6"))
+    //   .add(288, JZZ.MIDI.smfEndOfTrack());
+
+    return new Blob([smf.toInt8Array(false)]);
   }
 }
 
