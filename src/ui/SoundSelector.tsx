@@ -17,10 +17,18 @@ export default function SoundSelector() {
             onChange={e => {
               const newSf = e.target.value as SoundFont;
               const available = availableInstruments[newSf];
-              const newName = available!.includes(name)
-                ? playerSpec.name
-                : available![0];
-              setPlayerSpec({ sf: newSf, name: newName });
+              if (available?.includes(name)) {
+                const newName = available!.includes(name)
+                  ? playerSpec.name
+                  : available![0];
+                setPlayerSpec(prev => ({ ...prev, sf: newSf }));
+              } else {
+                setPlayerSpec(prev => ({
+                  sf: newSf,
+                  name: available![0],
+                  midiProgram: 1,
+                }));
+              }
             }}
           >
             {Object.keys(availableInstruments)
@@ -38,7 +46,10 @@ export default function SoundSelector() {
               value={name}
               onChange={e => {
                 const name = e.target.value;
-                setPlayerSpec({ sf, name });
+                const idx = availableInstruments[sf]?.indexOf(name);
+                if (typeof idx === "number" && idx !== -1) {
+                  setPlayerSpec({ sf, name, midiProgram: idx + 1 });
+                }
               }}
             >
               {availableInstruments[sf]!.map(name => (

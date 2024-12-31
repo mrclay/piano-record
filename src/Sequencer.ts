@@ -252,7 +252,8 @@ export class Sequencer extends EventTarget<SequencerEvents> {
     this.joinData = joinData;
   }
 
-  async toMidi() {
+  // https://en.wikipedia.org/wiki/General_MIDI
+  async toMidi({ program = 1 }: { program: number }) {
     const [jzzModule, smfModule] = await Promise.all([
       import("jzz"),
       // @ts-ignore
@@ -278,14 +279,11 @@ export class Sequencer extends EventTarget<SequencerEvents> {
     const trk: SMFTrack = new JZZ.MIDI.SMF.MTrk();
     smf.push(trk);
 
-    // https://en.wikipedia.org/wiki/General_MIDI
-    const program = 1;
     const channel = 0;
 
     // add contents:
     trk
       .add(0, JZZ.MIDI.program(channel, program))
-      .add(0, JZZ.MIDI.smfSeqName("Piano"))
       .add(0, JZZ.MIDI.smfBPM(this.bpm));
 
     let tick = 0;

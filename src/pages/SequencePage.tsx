@@ -63,6 +63,7 @@ export default function SequencePage(): JSX.Element {
   const offset = parseInt(searchParams.get("transpose") || "0");
 
   const [piano] = useStore.piano();
+  const [playerSpec] = useStore.playerSpec();
   const [sequencer] = useStore.sequencer();
 
   const [, setRenderNum] = useState(0);
@@ -402,7 +403,11 @@ export default function SequencePage(): JSX.Element {
               <Saver
                 href={window.location.href}
                 title=""
-                getMidi={() => sequencer.toMidi()}
+                getMidi={() =>
+                  sequencer.toMidi({
+                    program: playerSpec.midiProgram,
+                  })
+                }
               />
             </p>
           </section>

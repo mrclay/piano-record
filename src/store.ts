@@ -25,11 +25,13 @@ const defaultPiano = new Piano(nullPlayer);
 export interface PlayerSpec {
   sf: SoundFont;
   name: string;
+  midiProgram: number;
 }
 
 export const pianoSpec: PlayerSpec = {
   sf: SoundFont.TonePiano,
   name: availableInstruments[SoundFont.TonePiano]![0],
+  midiProgram: 1,
 };
 
 export function playerSpecFromUrl(): PlayerSpec | undefined {
@@ -45,8 +47,13 @@ export function playerSpecFromUrl(): PlayerSpec | undefined {
   const [sf, name] = (params.get("sf") || ".").split(".");
 
   const available = availableInstruments[sf as SoundFont];
-  if (available && available.includes(name)) {
-    return { sf: sf as SoundFont, name };
+  if (!available) {
+    return;
+  }
+
+  const idx = available.indexOf(name);
+  if (idx !== -1) {
+    return { sf: sf as SoundFont, name, midiProgram: idx + 1 };
   }
 }
 
