@@ -3,7 +3,6 @@ import * as C from "./constants";
 import { EventTarget } from "./dom-event-target";
 import Piano, { ActiveKeys } from "./Piano";
 import { midiFromNoteOctave, noteOctaveFromMidi } from "./music-theory/Note";
-import NullPlayer from "./players/NullPlayer";
 
 export interface SequencerEvents {
   repeat: { plays: number };
@@ -80,6 +79,13 @@ export class Sequencer extends EventTarget<SequencerEvents> {
   }
 
   playStep(injectedPiano: Piano | null = null) {
+    // Schedule this to be re-called, then do work.
+    if (this.#playing) {
+      this.#manageDelaysCache();
+      const delay = this.#delaysCache.delays[this.#step % this.rhythm.length];
+      this.#stepTimeout = window.setTimeout(this.#incPlay.bind(this), delay);
+    }
+
     const piano = injectedPiano || this.piano;
 
     const currentNotes = this.stepData[this.#step];
@@ -123,13 +129,6 @@ export class Sequencer extends EventTarget<SequencerEvents> {
 
     this.activeKeys = new Set(currentNotes);
 
-    if (this.#playing) {
-      this.#manageDelaysCache();
-
-      const delay = this.#delaysCache.delays[this.#step % this.rhythm.length];
-      this.#stepTimeout = window.setTimeout(this.#incPlay.bind(this), delay);
-    }
-
     this.send("step", { step: this.#step });
   }
 
@@ -163,6 +162,7 @@ export class Sequencer extends EventTarget<SequencerEvents> {
         return;
       }
     }
+
     this.playStep();
   }
 
