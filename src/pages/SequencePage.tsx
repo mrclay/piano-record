@@ -386,6 +386,7 @@ export default function SequencePage(): JSX.Element {
             sequencer.setStep(changedSteps[0]);
             play(newStepData[changedSteps[0]]);
           }
+          forceRender();
         }}
       />
       <Keyboard piano={sequencer.piano} />
