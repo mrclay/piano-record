@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import { useSearchParams } from "react-router-dom";
 import Head from "@uiw/react-head";
@@ -57,6 +57,7 @@ const rhythmOptions = [
 
 export default function SequencePage(): JSX.Element {
   const { saveSf } = useSfStorage();
+  const stopAllTimeoutRef = useRef(0);
   const navigate = useNavigate();
   const params = useParams();
   const [searchParams] = useSearchParams();
@@ -106,8 +107,6 @@ export default function SequencePage(): JSX.Element {
   }
 
   function handleStepInc(inc: number) {
-    piano.stopAll();
-    sequencer.stop();
     sequencer.setStep(sequencer.getStep() + inc);
     forceRender();
   }
@@ -118,10 +117,16 @@ export default function SequencePage(): JSX.Element {
     setBpmInput(String(sequencer.bpm));
   }
 
-  function play(currentNotes: number[]) {
+  function sampleStep(currentNotes: number[]) {
+    window.clearTimeout(stopAllTimeoutRef.current);
+    piano.stopAll();
     currentNotes.forEach(note => {
-      piano.startNote(note, 500);
+      piano.startNote(note);
     });
+
+    stopAllTimeoutRef.current = window.setTimeout(() => {
+      piano.stopAll();
+    }, 1000);
   }
 
   function share() {
@@ -384,7 +389,7 @@ export default function SequencePage(): JSX.Element {
           if (!sequencer.isPlaying()) {
             handleStop();
             sequencer.setStep(changedSteps[0]);
-            play(newStepData[changedSteps[0]]);
+            sampleStep(newStepData[changedSteps[0]]);
           }
           forceRender();
         }}

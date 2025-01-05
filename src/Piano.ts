@@ -39,7 +39,7 @@ export default class Piano extends EventTarget<PianoEvents> {
     this.player.stopAll();
   }
 
-  startNote(note: number, length = 0) {
+  startNote(note: number) {
     this.stopNote(note);
 
     const op = Ops.keyDownOperation(note);
@@ -48,17 +48,6 @@ export default class Piano extends EventTarget<PianoEvents> {
     }
 
     this.performOperation(op);
-
-    if (length) {
-      window.setTimeout(() => {
-        if (this.activeKeys.has(note)) {
-          const op = Ops.keyUpOperation(note);
-          if (op) {
-            this.performOperation(op);
-          }
-        }
-      }, length);
-    }
   }
 
   stopNote(note: number) {
