@@ -50,7 +50,7 @@ function tourReducer(state: TourState, action: TourAction): TourState {
 function shuffleArray<T>(array: T[]) {
   for (let i = array.length - 1; i >= 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
-    [array[i], array[j]] = [array[j], array[i]];
+    [array[i], array[j]] = [array[j]!, array[i]!];
   }
 }
 
@@ -59,7 +59,7 @@ function shuffleArray<T>(array: T[]) {
 export function pushTourItems(
   items: TourItem[],
   setKey: string,
-  chords: Chord[]
+  chords: Chord[],
 ) {
   if (items.some(item => item.setKey === setKey)) {
     // Already added.
@@ -67,7 +67,7 @@ export function pushTourItems(
   }
 
   items.push(
-    ...chords.filter(chord => chord.songUrl).map(chord => ({ setKey, chord }))
+    ...chords.filter(chord => chord.songUrl).map(chord => ({ setKey, chord })),
   );
 }
 
@@ -80,5 +80,5 @@ export function useTour() {
 export const TourContext = createContext({
   tourState: initState,
   activeItem: initState.active ? initState.items[0] : null,
-  tourDispatch(action: TourAction) {},
+  tourDispatch: (() => 0) as (action: TourAction) => void,
 });

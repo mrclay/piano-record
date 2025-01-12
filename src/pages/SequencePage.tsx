@@ -1,11 +1,11 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { ReactNode, useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import { useSearchParams } from "react-router-dom";
 import Head from "@uiw/react-head";
 
 import Paths from "../Paths";
 import Keyboard from "../ui/Keyboard";
-import SequencerUi from "../ui/Sequencer";
+import SequencerUI from "../ui/SequencerUI";
 import Preview from "../ui/Preview";
 import Saver from "../ui/Saver";
 import { useStore } from "../store";
@@ -36,7 +36,7 @@ const rhythmOptions = [
   { value: "3-2", label: "Light" },
 ];
 
-export default function SequencePage(): JSX.Element {
+export default function SequencePage(): ReactNode {
   const { saveSf } = useSfStorage();
   const stopAllTimeoutRef = useRef(0);
   const navigate = useNavigate();
@@ -63,13 +63,9 @@ export default function SequencePage(): JSX.Element {
   const [editValue, setEditValue] = useState("");
 
   useEffect(() => {
-    function stepHandler({ step }: SequencerEvents["step"]) {
-      forceRender();
-    }
+    sequencer.addEventListener("step", forceRender);
 
-    sequencer.addEventListener("step", stepHandler);
-
-    return () => sequencer.removeEventListener("step", stepHandler);
+    return () => sequencer.removeEventListener("step", forceRender);
   }, [sequencer]);
 
   async function handleStart() {
@@ -131,7 +127,7 @@ export default function SequencePage(): JSX.Element {
       sequencer.reset();
     }
 
-    const stream = params.stream;
+    const stream = params["stream"];
     if (typeof stream === "string") {
       const { bpm, bps, rhythm, newStepData, newJoinData } = sequenceFromStream(
         stream,
@@ -151,7 +147,7 @@ export default function SequencePage(): JSX.Element {
     }
 
     forceRender();
-  }, [params.stream, offset]);
+  }, [params["stream"], offset]);
 
   return (
     <>
@@ -338,7 +334,7 @@ export default function SequencePage(): JSX.Element {
         </div>
       </Content900>
 
-      <SequencerUi
+      <SequencerUI
         currentStepIndex={step}
         stepData={sequencer.stepData}
         joinData={sequencer.joinData}
@@ -351,8 +347,8 @@ export default function SequencePage(): JSX.Element {
 
           if (!sequencer.isPlaying()) {
             handleStop();
-            sequencer.setStep(changedSteps[0]);
-            sampleStep(newStepData[changedSteps[0]]);
+            sequencer.setStep(changedSteps[0]!);
+            sampleStep(newStepData[changedSteps[0]!]!);
           }
           forceRender();
         }}
@@ -364,7 +360,7 @@ export default function SequencePage(): JSX.Element {
       </Content900>
 
       <Content900>
-        {params.stream && (
+        {params["stream"] && (
           <section>
             <h3>Share it</h3>
             <p>

@@ -51,31 +51,32 @@ export default function Pie({ id, onClick, onHover, scores }: PieProps) {
     const scoresSum = reordered
       .map(el => el.total)
       .reduce((acc, curr) => acc + curr, 0);
-    return -((reordered[0].total / scoresSum) * 360) / 2;
+    return -((reordered[0]!.total / scoresSum) * 360) / 2;
   }, [reordered]);
 
-  const data: ChartData<"pie"> = useMemo(
-    () => ({
-      labels: reordered.map(({ key }) => key.toString(true)),
-      datasets: [
-        {
-          data: reordered.map(({ total }) => total),
-          backgroundColor: reordered.map(({ key }) => {
-            if (key.quality === ThirdQuality.MAJOR) {
-              return keyColors.get(key.getTonicNote().getChromatic())!;
-            }
+  const data = useMemo(
+    () =>
+      ({
+        labels: reordered.map(({ key }) => key.toString(true)),
+        datasets: [
+          {
+            data: reordered.map(({ total }) => total),
+            backgroundColor: reordered.map(({ key }) => {
+              if (key.quality === ThirdQuality.MAJOR) {
+                return keyColors.get(key.getTonicNote().getChromatic())!;
+              }
 
-            const relMajor = key.items[2].getChromatic();
-            const color = keyColors.get(relMajor)!;
-            return draw("diagonal-right-left", color, "#333", 7);
-          }),
-          hoverOffset: 20,
-          borderColor: "#000",
-          rotation,
-        },
-      ],
-    }),
-    [reordered]
+              const relMajor = key.items[2]!.getChromatic();
+              const color = keyColors.get(relMajor)!;
+              return draw("diagonal-right-left", color, "#333", 7);
+            }),
+            hoverOffset: 20,
+            borderColor: "#000",
+            rotation,
+          },
+        ],
+      }) satisfies ChartData<"pie">,
+    [reordered],
   );
 
   const options: ChartOptions<"pie"> = useMemo(() => {
@@ -98,7 +99,7 @@ export default function Pie({ id, onClick, onHover, scores }: PieProps) {
         if (onHover) {
           const idx = elements[0]?.index;
           if (typeof idx === "number") {
-            const val = reordered[idx];
+            const val = reordered[idx]!;
             if (lastHoverVal !== val) {
               onHover(val);
               lastHoverVal = val;

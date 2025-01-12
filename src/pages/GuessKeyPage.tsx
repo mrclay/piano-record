@@ -58,7 +58,7 @@ export default function GuessKeyPage() {
   }, [dValue]);
   const foundChords = useMemo(
     () => chords.filter((el): el is ParsedChord => typeof el === "object"),
-    [chords]
+    [chords],
   );
   // Savable representation
   const normalized = foundChords
@@ -67,7 +67,7 @@ export default function GuessKeyPage() {
 
   const updateDValue = useCallback(
     debounce(250, v => setDValue(v)),
-    [setDValue]
+    [setDValue],
   );
 
   useEffect(() => {
@@ -79,15 +79,15 @@ export default function GuessKeyPage() {
       .filter(
         el =>
           el.total >= 10 &&
-          el.boosts.overall.includes(Boosts.hasDiatonicOrDominant)
+          el.boosts.overall.includes(Boosts.hasDiatonicOrDominant),
       )
       .map(row => ({ ...row, hasTopScore: false }));
     if (rows.length) {
-      const top = rows[0].total;
+      const top = rows[0]!.total;
       rows.forEach(row => (row.hasTopScore = row.total === top));
     }
 
-    setHighlightedScore(rows[0]);
+    setHighlightedScore(rows[0]!);
     return rows;
   }, [foundChords]);
 
@@ -221,7 +221,7 @@ export default function GuessKeyPage() {
                 />
               </div>
 
-              <GuessKeyTable single scores={[highlightedScore || scores[0]]} />
+              <GuessKeyTable single scores={[highlightedScore || scores[0]!]} />
             </div>
 
             <section className="mt-4">

@@ -16,7 +16,7 @@ export function useRenderers(key: Key, offset: number) {
 
   // Does not allow removing sevenths
   const f7 = (str: string, songUrl = "", songChords?: ReactNode): Chord => {
-    const [func, type = "", three = ""] = str.split(" ");
+    const [func = "", type = "", three = ""] = str.split(" ");
     const root = majKey.getNoteFromRoman(func).toString();
     const bassNote = three
       ? majKey.getNoteFromRoman(three.replace("/", "")).toString()
@@ -29,8 +29,8 @@ export function useRenderers(key: Key, offset: number) {
 
     return {
       func: func
-        .replace(/^#/, unicodeAccidentalsMap[1])
-        .replace(/^b/, unicodeAccidentalsMap[-1]),
+        .replace(/^#/, unicodeAccidentalsMap[1]!)
+        .replace(/^b/, unicodeAccidentalsMap[-1]!),
       type,
       root,
       bassNote,

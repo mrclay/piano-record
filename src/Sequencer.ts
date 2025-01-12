@@ -48,7 +48,7 @@ export class Sequencer extends EventTarget<SequencerEvents> {
     this.piano = piano;
   }
 
-  reset() {
+  override reset() {
     this.stop();
     Object.assign(this, sequencerDefaults);
   }
@@ -90,8 +90,8 @@ export class Sequencer extends EventTarget<SequencerEvents> {
 
     const piano = injectedPiano || this.piano;
 
-    const currentNotes = this.stepData[this.#step];
-    const currentJoins = this.joinData[this.#step];
+    const currentNotes = this.stepData[this.#step]!;
+    const currentJoins = this.joinData[this.#step]!;
 
     // Keep track of which are started
     const bannedNotes: ActiveKeys = new Set();
@@ -193,7 +193,7 @@ export class Sequencer extends EventTarget<SequencerEvents> {
       let joinLine = "";
       let noteLine = "";
       for (let i = C.RANGE[0]; i <= C.RANGE[1]; i++) {
-        const joinSpace = this.joinData[step].includes(i) ? "|  " : "   ";
+        const joinSpace = this.joinData[step]!.includes(i) ? "|  " : "   ";
         let noteSpace;
         if (notes.includes(i)) {
           noteSpace = noteOctaveFromMidi(i);
@@ -207,7 +207,7 @@ export class Sequencer extends EventTarget<SequencerEvents> {
         noteLine += noteSpace;
       }
 
-      noteLine = noteLine.replace(/^(-+)(.*)/, (m, m1, m2) => {
+      noteLine = noteLine.replace(/^(-+)(.*)/, (_, m1, m2) => {
         return m1.replaceAll("-", " ") + m2;
       });
       noteLine = noteLine.replace(/-+$/, "");
@@ -227,7 +227,7 @@ export class Sequencer extends EventTarget<SequencerEvents> {
       const joinLine = lines.shift();
       if (typeof joinLine === "string" && joinLine.includes("/chord/")) {
         stepData.push(
-          joinLine.split("/chord/")[1].split("/")[0].split(",").map(Number),
+          joinLine.split("/chord/")[1]!.split("/")[0]!.split(",").map(Number),
         );
         joinData.push([]);
         continue;
@@ -239,9 +239,6 @@ export class Sequencer extends EventTarget<SequencerEvents> {
       }
 
       const found = Array.from(stepLine.matchAll(regex), m => {
-        if (typeof m.index !== "number") {
-          throw new Error();
-        }
         const midi = midiFromNoteOctave(m[0]);
         const isJoin = joinLine.charAt(m.index) === "|";
         return { midi, isJoin };
@@ -257,10 +254,12 @@ export class Sequencer extends EventTarget<SequencerEvents> {
   // https://en.wikipedia.org/wiki/General_MIDI
   async toMidi({ program = 1 }: { program: number }) {
     const [jzzModule, smfModule] = await Promise.all([
+      // @ts-ignore
       import("jzz"),
       // @ts-ignore
       import("jzz-midi-smf"),
     ]);
+    // @ts-ignore
     const JZZ = jzzModule.default;
     const SMF = smfModule.default;
 
@@ -330,51 +329,51 @@ function parseStream(stream: string) {
   m = stream.match(/^v5,([0-9-]+),(\d+),(0p\d+|[1-4]),(.+)$/);
   if (m) {
     return {
-      bpm: parseInt(m[2]),
-      bps: Number(m[3].replace("p", ".")),
-      rhythm: m[1].split("-").map(Number),
+      bpm: parseInt(m[2]!),
+      bps: Number(m[3]!.replace("p", ".")),
+      rhythm: m[1]!.split("-").map(Number),
       version: 5,
-      raw: m[4],
+      raw: m[4]!,
     };
   }
 
   m = stream.match(/^v4,(\d+),(0p\d+|[1-4]),(.+)$/);
   if (m) {
     return {
-      bpm: parseInt(m[1]),
-      bps: Number(m[2].replace("p", ".")),
+      bpm: parseInt(m[1]!),
+      bps: Number(m[2]!.replace("p", ".")),
       version: 4,
-      raw: m[3],
+      raw: m[3]!,
     };
   }
 
   m = stream.match(/^v3,(\d+),(.+)$/);
   if (m) {
     return {
-      bpm: parseInt(m[1]),
+      bpm: parseInt(m[1]!),
       bps: 1,
       version: 3,
-      raw: m[2],
+      raw: m[2]!,
     };
   }
 
   m = stream.match(/^v2,(\d+),([10]),([10]),(.+)$/);
   if (m) {
     return {
-      bpm: parseInt(m[1]),
+      bpm: parseInt(m[1]!),
       bps: 1,
       version: 2,
-      raw: m[4],
+      raw: m[4]!,
     };
   }
 
   m = stream.match(/^v1,(\d+),([10]),(.+)$/);
   if (m) {
     return {
-      bpm: parseInt(m[1]),
+      bpm: parseInt(m[1]!),
       bps: 1,
       version: 1,
-      raw: m[3],
+      raw: m[3]!,
     };
   }
 
@@ -467,7 +466,7 @@ export function streamFromSong(
         stepNotes
           .map(note => {
             const str = note.toString(16);
-            const j = joinData[stepIdx].includes(note) ? "j" : "p";
+            const j = joinData[stepIdx]!.includes(note) ? "j" : "p";
             return j + (str.length < 2 ? "0" + str : str);
           })
           .join("") || ".",

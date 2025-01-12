@@ -20,7 +20,6 @@ import Preview from "../ui/Preview";
 import Saver from "../ui/Saver";
 import PianoSpeed from "../ui/PianoSpeed";
 import { useStore } from "../store";
-import PianoShepardMode from "../ui/PianoShepardMode";
 import SoundSelector, { UseSfStorage, useSfStorage } from "../ui/SoundSelector";
 import {
   Container900,
@@ -59,7 +58,7 @@ interface PianoPageState {
 
 export default function Wrapper() {
   const navigate = useNavigate();
-  const params: MatchItems = useParams();
+  const params = useParams() as MatchItems;
   const { pathname } = useLocation();
   const [recorder] = useStore.recorder();
 
@@ -94,7 +93,7 @@ export default function Wrapper() {
 const example = Paths.pianoPrefix(
   "/songs/C320C3c30C3e3bC423hC454bD3c8gC448uC3b8xD4299D459cC40eaC3aedD44elD" +
     "3berD3ejnC42l8D3al9C39laD40lhD39ohC40oiC38oiD42p5C3eqtD40quC37tgD38thC" +
-    "40tlD3eu1C42wnD40x3D3713nC3613zC3e144D4214cD3e1fuD361gaD321gf/Hello%20World"
+    "40tlD3eu1C42wnD40x3D3713nC3613zC3e144D4214cD3e1fuD361gaD321gf/Hello%20World",
 );
 
 class PianoPage extends React.Component<PianoPageProps, PianoPageState> {
@@ -118,7 +117,7 @@ class PianoPage extends React.Component<PianoPageProps, PianoPageState> {
 
   static notesFromOps(ops: TimedOp[]) {
     return ops
-      .filter(([midiNote]) => midiNote[0] === C.OP_NOTE_DOWN)
+      .filter(timedOp => timedOp[0][0] === C.OP_NOTE_DOWN)
       .map(([midiNote]) => midiNote[1]);
   }
 
@@ -156,7 +155,7 @@ class PianoPage extends React.Component<PianoPageProps, PianoPageState> {
     };
   }
 
-  componentDidMount() {
+  override componentDidMount() {
     // legacy URLs
     if (window.location.hash) {
       const m = window.location.hash.match(/s=(\w+)(?:&t=(.*))?/);
@@ -179,7 +178,7 @@ class PianoPage extends React.Component<PianoPageProps, PianoPageState> {
     document.addEventListener("keyup", this.oneKeyPlay);
   }
 
-  componentWillUnmount() {
+  override componentWillUnmount() {
     document.removeEventListener("keydown", this.oneKeyPlay);
     document.removeEventListener("keyup", this.oneKeyPlay);
   }
@@ -296,14 +295,14 @@ class PianoPage extends React.Component<PianoPageProps, PianoPageState> {
         return;
       }
 
-      const note = this.notes[this.notesIndex];
+      const note = this.notes[this.notesIndex]!;
       this.notesByKey[keyCode] = note;
       piano.startNote(note);
       this.notesIndex++;
     }
   };
 
-  render() {
+  override render() {
     const { title, mode, activeKeys, progress, stream } = this.state;
 
     const recorderState = this.recorder.getState();
@@ -447,12 +446,12 @@ class PianoPage extends React.Component<PianoPageProps, PianoPageState> {
                       const [op, time] = timedOp;
                       const [comm, note] = op;
                       return [[comm, note + semitones], time] as TimedOp;
-                    })
+                    }),
                   );
                   const params = this.props.sfStorage.saveSf();
                   if (stream) {
                     this.props.navigate(
-                      Paths.pianoPrefix(`/songs/${stream}?${params}`)
+                      Paths.pianoPrefix(`/songs/${stream}?${params}`),
                     );
                   }
                 }}

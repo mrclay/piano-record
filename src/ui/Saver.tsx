@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { Fragment, useState } from "react";
 import Clipboard from "react-clipboard.js";
 import { escape } from "html-escaper";
 
@@ -28,30 +28,34 @@ export default function Saver({ href, getMidi, title = "" }: SaverProps) {
         data-clipboard-text={url}
         onSuccess={() => setSaved(url)}
       >
-        URL {saved === url && "copied!"}
+        <Fragment>URL {saved === url && "copied!"}</Fragment>
       </Clipboard>
       <Clipboard
         className="btn btn-dark"
         data-clipboard-text={embedHtml}
         onSuccess={() => setSaved(embedHtml)}
       >
-        <i className="fa fa-code" aria-hidden="true" /> Embed code{" "}
-        {saved === embedHtml && "copied!"}
+        <Fragment>
+          <i className="fa fa-code" aria-hidden="true" /> Embed code{" "}
+          {saved === embedHtml && "copied!"}
+        </Fragment>
       </Clipboard>
       <Clipboard
         className="btn btn-dark"
         data-clipboard-text={markdownLink}
         onSuccess={() => setSaved(markdownLink)}
       >
-        <i className="fa fa-code" aria-hidden="true" /> Markdown link{" "}
-        {saved === markdownLink && "copied!"}
+        <Fragment>
+          <i className="fa fa-code" aria-hidden="true" /> Markdown link{" "}
+          {saved === markdownLink && "copied!"}
+        </Fragment>
       </Clipboard>
       {getMidi ? (
         <button
           type="button"
           className="btn btn-dark"
           onClick={async () => {
-            const blob = await getMidi();
+            const blob = await getMidi!();
             const url = URL.createObjectURL(blob);
             const a = document.createElement("a");
             a.href = url;

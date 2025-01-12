@@ -31,19 +31,23 @@ export default function ScaleDegrees({
       e.preventDefault();
 
       const t = e.target;
-      if (!(t instanceof HTMLSpanElement) || !t.dataset.note || !onKeyClick) {
+      if (
+        !(t instanceof HTMLSpanElement) ||
+        !t.dataset["note"] ||
+        !onKeyClick
+      ) {
         return;
       }
 
-      const note = Number(t.dataset.note);
+      const note = Number(t.dataset["note"]);
       onKeyClick(note);
     },
-    [onKeyClick]
+    [onKeyClick],
   );
 
   const notes = useMemo(
     () => [...Array(range[1] - range[0]).keys()].map(idx => range[0] + idx),
-    [range]
+    [range],
   );
 
   return (

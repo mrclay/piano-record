@@ -3,11 +3,12 @@ import { NavigateFunction } from "react-router-dom";
 import { Command } from "./Ops";
 
 export const SAMPLES_URL =
+  // @ts-ignore
   process.env.NODE_ENV === "production"
     ? "//mrclay.org/piano/media/"
     : "/media/";
 
-export const RANGE = [29, 89];
+export const RANGE: [number, number] = [29, 89];
 export const TIME_RESOLUTION_DIVISOR = 4;
 export const ORD_A_UPPER = "A".charCodeAt(0);
 

@@ -27,11 +27,11 @@ interface StepNote {
 }
 
 function stepNoteFromId(id: string): StepNote {
-  const [step, note] = id.substring(2).split("-").map(Number);
+  const [step = 0, note = 0] = id.substring(2).split("-").map(Number);
   return { step, note };
 }
 
-export default function SequencerUi({
+export default function SequencerUI({
   currentStepIndex,
   onStepsChange,
   stepData,
@@ -49,11 +49,11 @@ export default function SequencerUi({
     e.preventDefault();
 
     const t = e.target;
-    if (!(t instanceof HTMLSpanElement) || !t.dataset.note) {
+    if (!(t instanceof HTMLSpanElement) || !t.dataset["note"]) {
       return;
     }
 
-    const note = Number(t.dataset.note);
+    const note = Number(t.dataset["note"]);
 
     const s = t.closest("[data-step]");
     if (!(s instanceof HTMLDivElement)) {
@@ -65,14 +65,14 @@ export default function SequencerUi({
     const newJoinData = [...joinData.map(vals => vals.slice())];
 
     // Step change or join
-    const stepIdx = Number(s.dataset.step);
-    let chord = newStepData[stepIdx];
-    let joins = newJoinData[stepIdx];
+    const stepIdx = Number(s.dataset["step"]);
+    let chord = newStepData[stepIdx]!;
+    let joins = newJoinData[stepIdx]!;
 
     if (chord.indexOf(note) === -1) {
       // Note not set
       chord.push(note);
-      if (stepIdx > 0 && stepData[stepIdx - 1].includes(note)) {
+      if (stepIdx > 0 && stepData[stepIdx - 1]!.includes(note)) {
         // Already playing, join note
         joins.push(note);
       }
@@ -105,7 +105,7 @@ export default function SequencerUi({
       return;
     }
 
-    const stepIdx = Number(t.dataset.removeStep);
+    const stepIdx = Number(t.dataset["removeStep"]);
     const newStepData = [...stepData];
     const newJoinData = [...joinData];
     newStepData.splice(stepIdx, 1);
@@ -119,22 +119,22 @@ export default function SequencerUi({
       return;
     }
 
-    const stepIdx = Number(t.dataset.copyStep);
+    const stepIdx = Number(t.dataset["copyStep"]);
     const newStepData = [
       ...stepData.slice(0, stepIdx),
-      stepData[stepIdx].slice(),
+      stepData[stepIdx]!.slice(),
       ...stepData.slice(stepIdx),
     ];
     const newJoinData = [
       ...joinData.slice(0, stepIdx + 1),
-      stepData[stepIdx].slice(),
+      stepData[stepIdx]!.slice(),
       ...joinData.slice(stepIdx + 1),
     ];
 
     // Don't add step unless it would be lossy
     if (
-      newJoinData[newJoinData.length - 1].length === 0 &&
-      newStepData[newStepData.length - 1].length === 0
+      newJoinData[newJoinData.length - 1]!.length === 0 &&
+      newStepData[newStepData.length - 1]!.length === 0
     ) {
       newJoinData.pop();
       newStepData.pop();
@@ -149,14 +149,14 @@ export default function SequencerUi({
     }
 
     const note = fromNote.note;
-    const fromIsActive = stepData[fromNote.step].includes(note);
+    const fromIsActive = stepData[fromNote.step]!.includes(note);
     const toNote = stepNoteFromId(e.target.id);
-    const toIsActive = stepData[toNote.step].includes(note);
+    const toIsActive = stepData[toNote.step]!.includes(note);
     const remove = fromIsActive && toIsActive;
 
     let changing = false;
     const stepsChanged = stepData
-      .map((notes, idx) => idx)
+      .map((_, idx) => idx)
       .filter(idx => {
         if (changing) {
           if (fromNote.step === idx || toNote.step === idx) {
@@ -178,17 +178,17 @@ export default function SequencerUi({
     let lastPresent = false;
     for (let i = 0; i < stepData.length; i++) {
       if (stepsChanged.includes(i)) {
-        newSteps[i] = newSteps[i].filter(el => el !== note);
-        newJoins[i] = newJoins[i].filter(el => el !== note);
+        newSteps[i] = newSteps[i]!.filter(el => el !== note);
+        newJoins[i] = newJoins[i]!.filter(el => el !== note);
         if (!remove) {
-          newSteps[i].push(note);
+          newSteps[i]!.push(note);
           if (lastPresent) {
-            newJoins[i].push(note);
+            newJoins[i]!.push(note);
           }
         }
       }
 
-      lastPresent = newSteps[i].includes(note);
+      lastPresent = newSteps[i]!.includes(note);
     }
 
     onStepsChange(newSteps, newJoins, stepsChanged);
@@ -238,7 +238,7 @@ export default function SequencerUi({
         >
           <div className="white">
             {whites.map(({ note }) => {
-              const isJoin = joinData[i].includes(note);
+              const isJoin = joinData[i]!.includes(note);
               return renderKey(
                 activeNotes.indexOf(note) !== -1,
                 i,
@@ -250,7 +250,7 @@ export default function SequencerUi({
           </div>
           <div className="black">
             {blacks.map(({ note, left }) => {
-              const isJoin = joinData[i].includes(note);
+              const isJoin = joinData[i]!.includes(note);
               return renderKey(
                 activeNotes.indexOf(note) !== -1,
                 i,

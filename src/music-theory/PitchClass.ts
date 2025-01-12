@@ -23,7 +23,7 @@ function makePitchClasses(): readonly PitchClass[] {
 
   diatonicOffsets.forEach((width, idx) => {
     pitchClasses.push({
-      letter: cMajorLetters[idx],
+      letter: cMajorLetters[idx]!,
       idx,
       width,
       chromatic,
@@ -43,7 +43,7 @@ const pitchClassMap = pitchClasses.reduce<Record<string, PitchClass>>(
     ...prev,
     [curr.letter]: curr,
   }),
-  {}
+  {},
 );
 
 export function getPitchClass(letter: string) {

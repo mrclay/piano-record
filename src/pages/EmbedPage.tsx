@@ -1,18 +1,24 @@
 import { useSearchParams } from "react-router-dom";
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, {
+  ReactNode,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { escape } from "html-escaper";
-import { pianoSpec, playerSpecFromUrl, useStore } from "../store";
+
+import { useStore } from "../store";
 import Keyboard from "../ui/Keyboard";
 import Play from "../ui/BigPlay";
 import { sequenceFromStream } from "../Sequencer";
 import Ops, { TimedOp } from "../Ops";
 import * as C from "../constants";
 import { ActiveKeys } from "../Piano";
-import { useRootSoundManager } from "../useRootSoundManager";
 
 const isolateSong = (songUrl: string) => songUrl.split("/").pop();
 
-export default function EmbedPage(): JSX.Element {
+export default function EmbedPage(): ReactNode {
   const [url, setUrl] = useState("");
   const [searchParams] = useSearchParams();
   const test = Boolean(searchParams.get("test"));
@@ -50,8 +56,8 @@ export default function EmbedPage(): JSX.Element {
 
     if (newUrl.includes("/chord/")) {
       const notes = newUrl
-        .split("/chord/")[1]
-        .split("/")[0]
+        .split("/chord/")[1]!
+        .split("/")[0]!
         .split(",")
         .map(Number);
       const timedOps = [
@@ -78,13 +84,13 @@ export default function EmbedPage(): JSX.Element {
       );
       setLowestNote(lowestNote);
     } else if (newUrl.includes("/sequence/songs/")) {
-      const [, streamAndName] = url.split(/\/piano\/(?:songs|record)\//);
+      const [, streamAndName = ""] = url.split(/\/piano\/(?:songs|record)\//);
       const stream = streamAndName.replace(/(\/|\?).*/, "");
       const ops = Ops.operationsFromStream(stream, 0);
 
       let lowestNote = C.RANGE[1];
       ops.forEach(timedOp => {
-        lowestNote = Math.min(lowestNote, timedOp[0][1]);
+        lowestNote = Math.min(lowestNote, timedOp[0]![1]!);
       });
       setLowestNote(lowestNote);
     }
@@ -131,7 +137,7 @@ export default function EmbedPage(): JSX.Element {
         setTimeout(() => sequencer.start(), 100);
       };
     } else {
-      const [, streamAndName] = url.split(/\/piano\/(?:songs|record)\//);
+      const [, streamAndName = ""] = url.split(/\/piano\/(?:songs|record)\//);
       stream = streamAndName.replace(/(\/|\?).*/, "");
 
       setup = () => {

@@ -13,7 +13,7 @@ export default class Key extends CircularSet<Note> {
   constructor(notes: readonly Note[]) {
     super(notes);
 
-    const third = getInterval(notes[0], notes[2]);
+    const third = getInterval(notes[0]!, notes[2]!);
     this.quality =
       third.deltaSemitones === 4 ? ThirdQuality.MAJOR : ThirdQuality.MINOR;
   }
@@ -23,7 +23,7 @@ export default class Key extends CircularSet<Note> {
     const degreeIdx = degreeFromRoman(degree).idx;
     const intervals = [...diatonicOffsets, ...diatonicOffsets].slice(
       degreeIdx,
-      degreeIdx + 6
+      degreeIdx + 6,
     );
     const scale = [rawTonic];
     let last = rawTonic;
@@ -62,7 +62,7 @@ export default class Key extends CircularSet<Note> {
   }
 
   getTonicNote(): Note {
-    return this.items[0];
+    return this.items[0]!;
   }
 
   getNoteFromRoman(expression: string): Note {
@@ -85,13 +85,13 @@ export default class Key extends CircularSet<Note> {
     if (!m) {
       throw new Error(`Could not parse degree "${expression}"`);
     }
-    const [, accidental = "", roman] = m;
+    const [, accidental = "", roman = ""] = m;
     const degree = degreeFromRoman(roman);
-    const note = this.items[degree.idx];
+    const note = this.items[degree.idx]!;
 
     return new Note(
       note.pitchClass,
-      note.sharps + readAccidentalsMap[accidental]
+      note.sharps + (readAccidentalsMap[accidental] || 0),
     );
   }
 
@@ -101,7 +101,7 @@ export default class Key extends CircularSet<Note> {
       throw new Error("You can't alter the tonic, silly");
     }
     const items = this.items.slice();
-    const note = items[rawDegree.idx];
+    const note = items[rawDegree.idx]!;
     items[rawDegree.idx] = new Note(note.pitchClass, note.sharps + sharps);
 
     return new Key(items);
@@ -119,7 +119,7 @@ export default class Key extends CircularSet<Note> {
     return this.items.some(note => note.getChromatic() === chromatic);
   }
 
-  toString(unicode = false) {
+  override toString(unicode = false) {
     return `${this.getTonicNote().toString(unicode)} ${this.quality}`;
   }
 }

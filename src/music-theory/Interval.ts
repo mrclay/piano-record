@@ -38,7 +38,7 @@ const nameIntervalmap: Record<string, string> = {
 };
 
 function nameInterval(letters: number, semitones: number): string {
-  return nameIntervalmap[`${letters} ${semitones}`];
+  return nameIntervalmap[`${letters} ${semitones}`] || "";
 }
 
 export function getInterval(one: FlexNote, two: FlexNote): Interval {
@@ -49,7 +49,7 @@ export function getInterval(one: FlexNote, two: FlexNote): Interval {
 
   const deltaPitchClasses = boundModulo(
     7,
-    rawTwo.pitchClass.idx - rawOne.pitchClass.idx
+    rawTwo.pitchClass.idx - rawOne.pitchClass.idx,
   );
   const deltaSemitones = boundModulo(12, b - a);
   const name = nameInterval(deltaPitchClasses, deltaSemitones);

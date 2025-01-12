@@ -11,7 +11,7 @@ type RecorderEvents = {
 };
 
 export type RecorderListener<K extends keyof RecorderEvents> = (
-  evt: RecorderEvents[K]
+  evt: RecorderEvents[K],
 ) => void;
 
 export enum RecorderState {
@@ -41,7 +41,7 @@ export default class Recorder extends EventTarget<RecorderEvents> {
       progressPeriod?: number;
       piano: Piano;
       operations?: TimedOp[];
-    } = Object.create(null)
+    } = Object.create(null),
   ) {
     super();
     this.progressPeriod = spec.progressPeriod || 40;
@@ -104,9 +104,9 @@ export default class Recorder extends EventTarget<RecorderEvents> {
   restartRecording() {
     this.piano.stopAll();
 
-    const [, time] = this.operations[this.operations.length - 1];
+    const [, time] = this.operations[this.operations.length - 1]!;
     const dividedTime = Math.round(
-      new Date().getTime() / C.TIME_RESOLUTION_DIVISOR
+      new Date().getTime() / C.TIME_RESOLUTION_DIVISOR,
     );
     this.firstTime = dividedTime - time;
 
@@ -147,7 +147,7 @@ export default class Recorder extends EventTarget<RecorderEvents> {
     }
 
     const lastTime =
-      this.operations[this.operations.length - 1][1] *
+      this.operations[this.operations.length - 1]![1] *
       C.TIME_RESOLUTION_DIVISOR;
 
     const startTime = new Date().getTime();
@@ -161,16 +161,19 @@ export default class Recorder extends EventTarget<RecorderEvents> {
     this.operations.forEach(el => {
       // relying on the timer is awful, but tone-piano's "time" arguments just don't work.
       this.playAllIntervals.push(
-        window.setTimeout(() => {
-          this.piano.performOperation(el[0], false);
-          numPerformed++;
-          if (numPerformed === numOperations) {
-            this.#plays += 1;
-            this.send("complete", { plays: this.#plays });
-            // No event handler stopped us
-            this.stop(true);
-          }
-        }, el[1] * C.TIME_RESOLUTION_DIVISOR * (1 / this.speed))
+        window.setTimeout(
+          () => {
+            this.piano.performOperation(el[0], false);
+            numPerformed++;
+            if (numPerformed === numOperations) {
+              this.#plays += 1;
+              this.send("complete", { plays: this.#plays });
+              // No event handler stopped us
+              this.stop(true);
+            }
+          },
+          el[1] * C.TIME_RESOLUTION_DIVISOR * (1 / this.speed),
+        ),
       );
     });
 
@@ -205,7 +208,7 @@ export default class Recorder extends EventTarget<RecorderEvents> {
     if (justCompleted && this.repeatAfterMs) {
       this.repeatTimeout = window.setTimeout(
         () => this.play(),
-        this.repeatAfterMs
+        this.repeatAfterMs,
       );
       return;
     }

@@ -23,11 +23,11 @@ export default function SoundSelector() {
                   : available![0];
                 setPlayerSpec(prev => ({ ...prev, sf: newSf }));
               } else {
-                setPlayerSpec(prev => ({
+                setPlayerSpec({
                   sf: newSf,
-                  name: available![0],
+                  name: available![0] || "",
                   midiProgram: 1,
-                }));
+                });
               }
             }}
           >

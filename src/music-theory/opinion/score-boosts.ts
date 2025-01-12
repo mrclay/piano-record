@@ -56,8 +56,8 @@ export function calculateChordBoosts(attrs: ScoringAttribute[]): ScoreBoost[] {
 }
 
 export function calculateProgressionBoosts(
-  key: Key,
-  progression: Array<ScoredChord>
+  _key: Key,
+  progression: Array<ScoredChord>,
 ): ScoreBoost[] {
   const ret: ScoreBoost[] = [];
 
@@ -73,7 +73,7 @@ export function calculateProgressionBoosts(
 
   if (
     !progression.some(
-      chord => chord.type === "match" && chord.attrs.includes("tonic")
+      chord => chord.type === "match" && chord.attrs.includes("tonic"),
     )
   ) {
     ret.push(Boosts.noTonic);

@@ -12,7 +12,7 @@ export default function GuessKeyTable({
   scores,
   single = false,
 }: GuessKeyTableProps) {
-  if (single) {
+  if (single && scores[0]) {
     return (
       <table className="table table-bordered GTK__table GTK__table--single">
         <tbody>
@@ -87,7 +87,7 @@ interface ContentProps {
 const KeyContent = ({ el }: ContentProps) => (
   <a
     href={Paths.commonChordsPrefix(
-      `/${el.key.toString(true).replace(" ", "-")}`
+      `/${el.key.toString(true).replace(" ", "-")}`,
     )}
     style={{ fontWeight: el.hasTopScore ? "600" : "inherit" }}
   >

@@ -15,7 +15,7 @@ const Ops = {
   },
 
   decodeOp(token: string, offset = 0): TimedOp {
-    const command = token[0].charCodeAt(0) - C.ORD_A_UPPER;
+    const command = token[0]!.charCodeAt(0) - C.ORD_A_UPPER;
     const note = parseInt(token.substr(1, 2), 16) + offset;
     const time = parseInt(token.substr(3), 36);
     const op: Op = [command, note];

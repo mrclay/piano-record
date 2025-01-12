@@ -7,6 +7,8 @@ import React, {
   useMemo,
   useRef,
 } from "react";
+import clsx from "clsx";
+
 import Ops from "../Ops";
 import { useStore } from "../store";
 import { useCommonChordsQuery } from "./useCommonChordsQuery";
@@ -14,7 +16,6 @@ import { sequenceFromStream, SequencerListener } from "../Sequencer";
 import { ChordSetKeyboard } from "./ChordSetKeyboard";
 import { pushTourItems, TourContext } from "../TourContext";
 import { RecorderListener, RecorderState } from "../Recorder";
-import clsx from "clsx";
 
 export interface Chord {
   func: string;
@@ -51,7 +52,7 @@ interface ChordSetRef {
   songChords?: ReactNode;
 }
 
-export function ChordSet({ desc = null, els }: ChordSetProps): JSX.Element {
+export function ChordSet({ desc = null, els }: ChordSetProps): ReactNode {
   const setKey = useMemo(
     () => els.map(el => `${el.func}${el.type}`).join(),
     [],
@@ -65,7 +66,7 @@ export function ChordSet({ desc = null, els }: ChordSetProps): JSX.Element {
     pushTourItems(tourState.items, setKey, els);
   }
 
-  const wrapperRef = useRef<HTMLDivElement>(null);
+  const wrapperRef = useRef<HTMLDivElement | null>(null);
   const songRef = useRef<ChordSetRef>({ song: "" }).current;
   const { sevenths } = useCommonChordsQuery();
   const [chordSet, setChordSet] = useStore.chordSet();
@@ -89,7 +90,9 @@ export function ChordSet({ desc = null, els }: ChordSetProps): JSX.Element {
       return;
     }
 
-    activateChord(activeItem.chord);
+    if (activeItem.chord) {
+      activateChord(activeItem.chord);
+    }
   }, [tourState]);
 
   useEffect(() => {
@@ -162,7 +165,7 @@ export function ChordSet({ desc = null, els }: ChordSetProps): JSX.Element {
         setTimeout(() => sequencer.start(), 100);
       };
     } else {
-      const [, streamAndName] = chord.songUrl.split(
+      const [, streamAndName = ""] = chord.songUrl.split(
         /\/piano\/(?:songs|record)\//,
       );
       stream = streamAndName.replace(/(\/|\?).*/, "");

@@ -62,7 +62,7 @@ function scoreChord(key: Key, given: Chord): ScoredChord {
 
   const candidates: MatchedChord[] = Object.entries(knownChords)
     .map(([name, usageScore]) => {
-      let [roman, type] = name.split(" ");
+      let [roman = "", type = ""] = name.split(" ");
       const root = rootFinderKey.getNoteFromRoman(roman).toString();
       const chordInKey = parseChord(`${root}${type}`);
       if (!chordInKey) {
@@ -176,7 +176,7 @@ export interface BoostCollection {
 export const scoreProgression = (chords: Chord[]) => {
   return allKeys
     .map(key => {
-      const progression = chords.map((chord, idx) => scoreChord(key, chord));
+      const progression = chords.map(chord => scoreChord(key, chord));
 
       // Scores with chord-specific boosts added in
       const chordScores = progression.map(chord => {
@@ -187,7 +187,7 @@ export const scoreProgression = (chords: Chord[]) => {
         byChord: progression
           .filter(
             (item): item is MatchedChord =>
-              item.boosts.length > 0 && item.type === "match"
+              item.boosts.length > 0 && item.type === "match",
           )
           .map(item => ({
             chord:

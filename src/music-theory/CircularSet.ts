@@ -15,6 +15,6 @@ export default class CircularSet<T> {
 
   get(idx: number): T {
     const bound = boundModulo(this.items.length, idx);
-    return this.items[bound];
+    return this.items[bound]!;
   }
 }

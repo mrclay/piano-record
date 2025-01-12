@@ -46,11 +46,15 @@ export default function Keyboard({
       e.preventDefault();
 
       const t = e.target;
-      if (!(t instanceof HTMLSpanElement) || !t.dataset.note || !onKeyClick) {
+      if (
+        !(t instanceof HTMLSpanElement) ||
+        !t.dataset["note"] ||
+        !onKeyClick
+      ) {
         return;
       }
 
-      const note = Number(t.dataset.note);
+      const note = Number(t.dataset["note"]);
       onKeyClick(note);
     },
     [onKeyClick],
@@ -81,15 +85,19 @@ const renderKey = (active: boolean, note: number, left = 0, isJoin = false) => (
   />
 );
 
+interface PhysicalKey {
+  note: number;
+  left?: number;
+}
+
 export function getPianoKeyLayout() {
-  const whites = [];
-  const blacks = [];
-  let note;
+  const whites: PhysicalKey[] = [];
+  const blacks: PhysicalKey[] = [];
   let mod;
   let left = 38;
   const whiteOffset = 34;
 
-  for (note = C.RANGE[0]; note <= C.RANGE[1]; note++) {
+  for (let note = C.RANGE[0]; note <= C.RANGE[1]; note++) {
     mod = note % 12;
     if (mod === 1 || mod === 3 || mod === 6 || mod === 8 || mod === 10) {
       blacks.push({ note, left });

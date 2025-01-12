@@ -30,7 +30,7 @@ export interface PlayerSpec {
 
 export const pianoSpec: PlayerSpec = {
   sf: SoundFont.TonePiano,
-  name: availableInstruments[SoundFont.TonePiano]![0],
+  name: availableInstruments[SoundFont.TonePiano]![0]!,
   midiProgram: 1,
 };
 
@@ -44,7 +44,7 @@ export function playerSpecFromUrl(): PlayerSpec | undefined {
     }
   }
 
-  const [sf, name] = (params.get("sf") || ".").split(".");
+  const [sf = "", name = ""] = (params.get("sf") || ".").split(".");
 
   const available = availableInstruments[sf as SoundFont];
   if (!available) {

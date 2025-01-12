@@ -43,11 +43,11 @@ export default class Note {
     if (!m) {
       throw new Error(`Could not parse note "${name}"`);
     }
-    const [, letter, accidental] = m;
+    const [, letter = "", accidental = ""] = m;
 
     const note = new Note(
       getPitchClass(letter),
-      readAccidentalsMap[accidental],
+      readAccidentalsMap[accidental] || 0,
     );
 
     noteCache.set(name, note);
@@ -71,7 +71,7 @@ export default class Note {
 
 export function noteOctaveFromMidi(midi: number) {
   const octave = Math.floor(midi / 12) - 1;
-  const note = midiClasses[midi % 12];
+  const note = midiClasses[midi % 12]!;
   return note + octave;
 }
 
@@ -80,10 +80,10 @@ export function midiFromNoteOctave(noteOctave: string) {
   const name_to_pc: Record<string, number> = {
     C: 0, D: 2, E: 4, F: 5, G: 7, A: 9, B: 11,
   };
-  const letter = noteOctave[0];
-  let pc = name_to_pc[letter.toUpperCase()];
+  const letter = String(noteOctave[0]);
+  let pc = name_to_pc[letter.toUpperCase()]!;
 
-  const mod = noteOctave[1];
+  const mod = String(noteOctave[1]);
   const trans = readAccidentalsMap[mod] || 0;
 
   pc += trans;

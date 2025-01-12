@@ -22,7 +22,6 @@ import Paths from "../Paths";
 import { ActiveKeys } from "../Piano";
 import Title from "../ui/Title";
 import Saver from "../ui/Saver";
-import PianoShepardMode from "../ui/PianoShepardMode";
 import { useStore } from "../store";
 import SoundSelector, { useSfStorage } from "../ui/SoundSelector";
 import {
@@ -51,7 +50,7 @@ export default function ChordPage() {
   const timeout = useRef<number | null>(null);
 
   const navigate = useNavigate();
-  const params: MatchItems = useParams();
+  const params = useParams() as MatchItems;
   const [searchParams] = useSearchParams();
   const transpose = searchParams.get("transpose") || "0";
 
@@ -90,7 +89,7 @@ export default function ChordPage() {
   }
 
   const save = useCallback(
-    (e: MouseEvent<HTMLButtonElement> | null, replaceUrl = false) => {
+    (_: MouseEvent<HTMLButtonElement> | null, replaceUrl = false) => {
       let notes: number[] = [];
       notes.push(...activeKeys.values());
 
@@ -108,7 +107,7 @@ export default function ChordPage() {
         replace: replaceUrl,
       });
     },
-    [activeKeys, navigate, title]
+    [activeKeys, navigate, title],
   );
 
   useEffect(() => {
@@ -223,7 +222,7 @@ export default function ChordPage() {
           className="chord-page-transpose py-2 px-2"
           onChange={semitones => {
             setActiveKeys(
-              new Set(Array.from(activeKeys).map(note => note + semitones))
+              new Set(Array.from(activeKeys).map(note => note + semitones)),
             );
             handlePlay();
           }}
