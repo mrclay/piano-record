@@ -18,28 +18,30 @@ export type SequencerListener<K extends keyof SequencerEvents> = (
 const sequencerDefaults = {
   bpm: 60,
   bps: 2,
+  rhythm: [1, 1],
   stepData: [1, 2, 3, 4, 5, 6, 7, 8].map(() => [] as number[]),
   joinData: [1, 2, 3, 4, 5, 6, 7, 8].map(() => [] as number[]),
 };
 
 export class Sequencer extends EventTarget<SequencerEvents> {
+  activeKeys: ActiveKeys = new Set();
   bpm = sequencerDefaults.bpm;
   bps = sequencerDefaults.bps;
-  #step = 0;
-  #playing = false;
-  #stepTimeout = 0;
-  rhythm = [1, 1];
+  rhythm = sequencerDefaults.rhythm;
+  piano: Piano;
+  stepData = sequencerDefaults.stepData;
+  joinData = sequencerDefaults.joinData;
+
   #delaysCache = {
     forRhythm: [] as number[],
     forBpm: 0,
     forBps: 0,
     delays: [] as number[],
   };
-  piano: Piano;
+  #playing = false;
   #plays = 0;
-  activeKeys: ActiveKeys = new Set();
-  stepData = sequencerDefaults.stepData;
-  joinData = sequencerDefaults.joinData;
+  #step = 0;
+  #stepTimeout = 0;
 
   constructor(piano: Piano) {
     super();
@@ -325,6 +327,17 @@ export class Sequencer extends EventTarget<SequencerEvents> {
 function parseStream(stream: string) {
   let m;
 
+  m = stream.match(/^v5,([0-9-]+),(\d+),(0p\d+|[1-4]),(.+)$/);
+  if (m) {
+    return {
+      bpm: parseInt(m[2]),
+      bps: Number(m[3].replace("p", ".")),
+      rhythm: m[1].split("-").map(Number),
+      version: 5,
+      raw: m[4],
+    };
+  }
+
   m = stream.match(/^v4,(\d+),(0p\d+|[1-4]),(.+)$/);
   if (m) {
     return {
@@ -379,13 +392,20 @@ export function sequenceFromStream(
 ): {
   bpm: number;
   bps: number;
+  rhythm: number[];
   newStepData: Array<number[]> | false;
   newJoinData: Array<number[]> | false;
 } {
-  let { bpm, bps, version, raw } = parseStream(stream);
+  let {
+    bpm,
+    bps,
+    rhythm = sequencerDefaults.rhythm,
+    version,
+    raw,
+  } = parseStream(stream);
 
   if (!raw) {
-    return { bpm, bps, newStepData: false, newJoinData: false };
+    return { bpm, bps, rhythm, newStepData: false, newJoinData: false };
   }
 
   const newJoinData: Array<number[]> = [];
@@ -421,5 +441,37 @@ export function sequenceFromStream(
     return notes;
   });
 
-  return { bpm, bps, newStepData, newJoinData };
+  return { bpm, bps, rhythm, newStepData, newJoinData };
+}
+
+export function streamFromSong(
+  bpm: number,
+  bps: number,
+  rhythm: number[],
+  stepData: Array<number[]>,
+  joinData: Array<number[]>,
+) {
+  let out = "";
+
+  if (JSON.stringify(rhythm) === "[1,1]") {
+    out += "v4,";
+  } else {
+    out += `v5,${rhythm.join("-")},`;
+  }
+
+  out += `${bpm},${String(bps).replace(".", "p")},`;
+
+  out += stepData
+    .map(
+      (stepNotes, stepIdx) =>
+        stepNotes
+          .map(note => {
+            const str = note.toString(16);
+            const j = joinData[stepIdx].includes(note) ? "j" : "p";
+            return j + (str.length < 2 ? "0" + str : str);
+          })
+          .join("") || ".",
+    )
+    .join("-");
+  return out;
 }
