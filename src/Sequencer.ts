@@ -25,7 +25,9 @@ const sequencerDefaults = {
 
 export class Sequencer extends EventTarget<SequencerEvents> {
   activeKeys: ActiveKeys = new Set();
+  /** Beats per minute */
   bpm = sequencerDefaults.bpm;
+  /** Beats per step */
   bps = sequencerDefaults.bps;
   rhythm = sequencerDefaults.rhythm;
   piano: Piano;
@@ -300,15 +302,13 @@ export class Sequencer extends EventTarget<SequencerEvents> {
       stopAll: () => 0,
     });
 
-    [0, 1].forEach(() => {
-      for (let i = 0; i < this.stepData.length; i++) {
-        this.#step = i;
-        this.playStep(piano);
-        tick += 96;
-      }
-    });
+    for (let i = 0; i < this.stepData.length; i++) {
+      this.#step = i;
+      this.playStep(piano);
+      tick += 96 * this.bps;
+    }
 
-    trk.add(288, JZZ.MIDI.smfEndOfTrack());
+    trk.add(tick, JZZ.MIDI.smfEndOfTrack());
 
     // trk
     //   // .add(96, JZZ.MIDI.noteOn(channel, "C6", 127))
