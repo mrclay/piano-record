@@ -118,7 +118,7 @@ export default function EmbedPage(): ReactNode {
       };
     } else if (url.includes("/sequence/songs/")) {
       stream = isolateSong(url) || "";
-      const { bpm, bps, newStepData, newJoinData } = sequenceFromStream(
+      const { bpm, bps, newStepData, newJoinData, groups } = sequenceFromStream(
         stream,
         offset,
       );
@@ -133,6 +133,7 @@ export default function EmbedPage(): ReactNode {
         stepData: newStepData,
         joinData: newJoinData,
       });
+      sequencer.setGroups(groups);
       setup = () => {
         setTimeout(() => sequencer.start(), 100);
       };

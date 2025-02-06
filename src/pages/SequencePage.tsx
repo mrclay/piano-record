@@ -51,7 +51,7 @@ export default function SequencePage(): ReactNode {
   const [, setRenderNum] = useState(0);
   const forceRender = () => setRenderNum(prev => prev + 1);
 
-  const step = sequencer.getStep();
+  const step = sequencer.getDataIdx();
   const numSteps = sequencer.getNumSteps();
 
   const [bpmInput, setBpmInput] = useState(String(sequencer.bpm));
@@ -116,6 +116,7 @@ export default function SequencePage(): ReactNode {
           sequencer.rhythm,
           sequencer.stepData,
           sequencer.joinData,
+          sequencer.getGroups(),
         )}?${params}`,
       ),
     );
@@ -129,10 +130,8 @@ export default function SequencePage(): ReactNode {
 
     const stream = params["stream"];
     if (typeof stream === "string") {
-      const { bpm, bps, rhythm, newStepData, newJoinData } = sequenceFromStream(
-        stream,
-        offset,
-      );
+      const { bpm, bps, rhythm, newStepData, newJoinData, groups } =
+        sequenceFromStream(stream, offset);
       if (newStepData && newJoinData) {
         Object.assign(sequencer, {
           bpm,
@@ -141,6 +140,7 @@ export default function SequencePage(): ReactNode {
           stepData: newStepData,
           joinData: newJoinData,
         });
+        sequencer.setGroups(groups);
         setBpmInput(String(sequencer.bpm));
         setNumStepsInput(String(newStepData.length));
       }

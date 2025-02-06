@@ -145,7 +145,7 @@ export function ChordSet({ desc = null, els }: ChordSetProps): ReactNode {
 
     if (chord.songUrl.includes("/sequence/songs/")) {
       stream = isolateSong(chord.songUrl) || "";
-      const { bpm, bps, newStepData, newJoinData } = sequenceFromStream(
+      const { bpm, bps, newStepData, newJoinData, groups } = sequenceFromStream(
         stream,
         offset,
       );
@@ -160,6 +160,7 @@ export function ChordSet({ desc = null, els }: ChordSetProps): ReactNode {
         stepData: newStepData,
         joinData: newJoinData,
       });
+      sequencer.setGroups(groups);
       sequencer.setStep(0);
       setup = () => {
         setTimeout(() => sequencer.start(), 100);

@@ -21,7 +21,17 @@ const sequencerDefaults = {
   rhythm: [1, 1],
   stepData: [1, 2, 3, 4, 5, 6, 7, 8].map(() => [] as number[]),
   joinData: [1, 2, 3, 4, 5, 6, 7, 8].map(() => [] as number[]),
+  groups: [{ start: 0, length: 8 }],
 };
+
+function allStepsFromGroups(groups: typeof sequencerDefaults.groups) {
+  return groups.reduce<number[]>((acc, curr) => {
+    for (let i = 0; i < curr.length; i++) {
+      acc.push(curr.start + i);
+    }
+    return acc;
+  }, []);
+}
 
 export class Sequencer extends EventTarget<SequencerEvents> {
   activeKeys: ActiveKeys = new Set();
@@ -34,12 +44,14 @@ export class Sequencer extends EventTarget<SequencerEvents> {
   stepData = sequencerDefaults.stepData;
   joinData = sequencerDefaults.joinData;
 
+  #allSteps = allStepsFromGroups(sequencerDefaults.groups);
   #delaysCache = {
     forRhythm: [] as number[],
     forBpm: 0,
     forBps: 0,
     delays: [] as number[],
   };
+  #groups = sequencerDefaults.groups;
   #playing = false;
   #plays = 0;
   #step = 0;
@@ -63,6 +75,10 @@ export class Sequencer extends EventTarget<SequencerEvents> {
     return this.#step;
   }
 
+  getDataIdx() {
+    return this.#allSteps[this.#step];
+  }
+
   setStep(step: number) {
     this.#step = (step + this.stepData.length) % this.stepData.length;
   }
@@ -73,13 +89,42 @@ export class Sequencer extends EventTarget<SequencerEvents> {
 
   setNumSteps(steps: number) {
     while (this.stepData.length < steps) {
+      const idx = this.stepData.length - 1;
+      this.#groups.forEach(group => {
+        // If the group contains the old index, extend its length
+        if (group.start <= idx && group.start + group.length >= idx) {
+          group.length += 1;
+        }
+      });
+
       this.stepData.push([]);
       this.joinData.push([]);
     }
     while (this.stepData.length > steps) {
+      const idx = this.stepData.length - 1;
+      this.#groups.forEach(group => {
+        // If the group contains the old index, reduce its length
+        if (group.start <= idx && group.start + group.length >= idx) {
+          group.length -= 1;
+        }
+      });
+      this.#groups = this.#groups.filter(el => el.length > 0);
+
       this.stepData.pop();
       this.joinData.pop();
     }
+
+    this.#allSteps = allStepsFromGroups(this.#groups);
+    console.log(this.#groups);
+  }
+
+  getGroups() {
+    return this.#groups;
+  }
+
+  setGroups(groups: typeof sequencerDefaults.groups) {
+    this.#groups = groups;
+    this.#allSteps = allStepsFromGroups(groups);
   }
 
   playStep(injectedPiano: Piano | null = null) {
@@ -92,8 +137,10 @@ export class Sequencer extends EventTarget<SequencerEvents> {
 
     const piano = injectedPiano || this.piano;
 
-    const currentNotes = this.stepData[this.#step]!;
-    const currentJoins = this.joinData[this.#step]!;
+    const dataStep = this.#allSteps[this.#step];
+
+    const currentNotes = this.stepData[dataStep]!;
+    const currentJoins = this.joinData[dataStep]!;
 
     // Keep track of which are started
     const bannedNotes: ActiveKeys = new Set();
@@ -133,7 +180,7 @@ export class Sequencer extends EventTarget<SequencerEvents> {
 
     this.activeKeys = new Set(currentNotes);
 
-    this.send("step", { step: this.#step });
+    this.send("step", { step: dataStep });
   }
 
   #manageDelaysCache() {
@@ -157,7 +204,7 @@ export class Sequencer extends EventTarget<SequencerEvents> {
   }
 
   #incPlay() {
-    this.#step = (this.#step + 1) % this.stepData.length;
+    this.#step = (this.#step + 1) % this.#allSteps.length;
     if (this.#step === 0) {
       this.#plays += 1;
       this.send("repeat", { plays: this.#plays });
@@ -251,6 +298,8 @@ export class Sequencer extends EventTarget<SequencerEvents> {
 
     this.stepData = stepData;
     this.joinData = joinData;
+    this.#groups = [{ start: 0, length: stepData.length }];
+    this.#allSteps = allStepsFromGroups(this.#groups);
   }
 
   // https://en.wikipedia.org/wiki/General_MIDI
@@ -302,22 +351,13 @@ export class Sequencer extends EventTarget<SequencerEvents> {
       stopAll: () => 0,
     });
 
-    for (let i = 0; i < this.stepData.length; i++) {
+    for (let i = 0; i < this.#allSteps.length; i++) {
       this.#step = i;
       this.playStep(piano);
       tick += 96 * this.bps;
     }
 
     trk.add(tick, JZZ.MIDI.smfEndOfTrack());
-
-    // trk
-    //   // .add(96, JZZ.MIDI.noteOn(channel, "C6", 127))
-    //   // .add(96, JZZ.MIDI.noteOn(channel, "Eb6", 127))
-    //   // .add(96, JZZ.MIDI.noteOn(channel, "G6", 127))
-    //   // .add(192, JZZ.MIDI.noteOff(channel, "C6"))
-    //   // .add(192, JZZ.MIDI.noteOff(channel, "Eb6"))
-    //   // .add(192, JZZ.MIDI.noteOff(channel, "G6"))
-    //   .add(288, JZZ.MIDI.smfEndOfTrack());
 
     return new Blob([smf.toInt8Array(false)]);
   }
@@ -333,7 +373,7 @@ function parseStream(stream: string) {
       bps: Number(m[3]!.replace("p", ".")),
       rhythm: m[1]!.split("-").map(Number),
       version: 5,
-      raw: m[4]!,
+      raw: m[4]! as string,
     };
   }
 
@@ -343,7 +383,7 @@ function parseStream(stream: string) {
       bpm: parseInt(m[1]!),
       bps: Number(m[2]!.replace("p", ".")),
       version: 4,
-      raw: m[3]!,
+      raw: m[3]! as string,
     };
   }
 
@@ -353,7 +393,7 @@ function parseStream(stream: string) {
       bpm: parseInt(m[1]!),
       bps: 1,
       version: 3,
-      raw: m[2]!,
+      raw: m[2]! as string,
     };
   }
 
@@ -363,7 +403,7 @@ function parseStream(stream: string) {
       bpm: parseInt(m[1]!),
       bps: 1,
       version: 2,
-      raw: m[4]!,
+      raw: m[4]! as string,
     };
   }
 
@@ -373,7 +413,7 @@ function parseStream(stream: string) {
       bpm: parseInt(m[1]!),
       bps: 1,
       version: 1,
-      raw: m[3]!,
+      raw: m[3]! as string,
     };
   }
 
@@ -394,6 +434,7 @@ export function sequenceFromStream(
   rhythm: number[];
   newStepData: Array<number[]> | false;
   newJoinData: Array<number[]> | false;
+  groups: typeof sequencerDefaults.groups;
 } {
   let {
     bpm,
@@ -403,8 +444,18 @@ export function sequenceFromStream(
     raw,
   } = parseStream(stream);
 
+  const groupPieces = (raw || "").split(",");
+  raw = groupPieces.shift() || null;
+
   if (!raw) {
-    return { bpm, bps, rhythm, newStepData: false, newJoinData: false };
+    return {
+      bpm,
+      bps,
+      rhythm,
+      newStepData: false,
+      newJoinData: false,
+      groups: [],
+    };
   }
 
   const newJoinData: Array<number[]> = [];
@@ -440,7 +491,24 @@ export function sequenceFromStream(
     return notes;
   });
 
-  return { bpm, bps, rhythm, newStepData, newJoinData };
+  const groups = groupPieces.length
+    ? groupPieces.map(piece => {
+        const m = piece.match(/^(\d+)\.(\d+)$/);
+        if (!m) {
+          throw new Error("Invalid group string");
+        }
+        return { start: parseInt(m[1]), length: parseInt(m[2]) };
+      })
+    : [{ start: 0, length: newStepData.length }];
+
+  return {
+    bpm,
+    bps,
+    rhythm,
+    newStepData,
+    newJoinData,
+    groups,
+  };
 }
 
 export function streamFromSong(
@@ -449,6 +517,7 @@ export function streamFromSong(
   rhythm: number[],
   stepData: Array<number[]>,
   joinData: Array<number[]>,
+  groups: typeof sequencerDefaults.groups,
 ) {
   let out = "";
 
@@ -472,5 +541,16 @@ export function streamFromSong(
           .join("") || ".",
     )
     .join("-");
+
+  if (
+    groups.length === 1 &&
+    groups[0]?.start === 0 &&
+    groups[0]?.length === stepData.length
+  ) {
+    // Can be rebuilt from stepData, no need in URL.
+  } else {
+    out += "," + groups.map(el => `${el.start}.${el.length}`).join(",");
+  }
+
   return out;
 }
