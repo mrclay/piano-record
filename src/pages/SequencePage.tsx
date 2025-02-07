@@ -459,7 +459,7 @@ export default function SequencePage(): ReactNode {
                     e.target.value.replace(/\D+/g, "") || "0",
                   );
                   sequencer.setGroups(
-                    groups.map((el, i) => {
+                    groups.map(el => {
                       if (el === group) {
                         el.length = num;
                       }
