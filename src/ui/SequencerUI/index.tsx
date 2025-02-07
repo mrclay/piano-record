@@ -7,16 +7,12 @@ import React, {
 
 import "./index.scss";
 import { getPianoKeyLayout } from "../Keyboard";
+import { Sequencer } from "../../Sequencer";
 
 interface SequencerProps {
+  sequencer: Sequencer;
   currentStepIndex: number;
-  onStepsChange(
-    stepData: Array<number[]>,
-    joinData: Array<number[]>,
-    changedSteps: number[],
-  ): void;
-  stepData: Array<number[]>;
-  joinData: Array<number[]>;
+  onStepsChange(changedSteps: number[]): void;
 }
 
 const { whites, blacks } = getPianoKeyLayout();
@@ -32,10 +28,9 @@ function stepNoteFromId(id: string): StepNote {
 }
 
 export default function SequencerUI({
+  sequencer,
   currentStepIndex,
   onStepsChange,
-  stepData,
-  joinData,
 }: SequencerProps) {
   const [fromNote, setFromNote] = useState<StepNote | null>(null);
 
@@ -61,18 +56,18 @@ export default function SequencerUI({
     }
 
     // Clone data
-    const newStepData = [...stepData.map(vals => vals.slice())];
-    const newJoinData = [...joinData.map(vals => vals.slice())];
+    sequencer.stepData = [...sequencer.stepData.map(vals => vals.slice())];
+    sequencer.joinData = [...sequencer.joinData.map(vals => vals.slice())];
 
     // Step change or join
     const stepIdx = Number(s.dataset["step"]);
-    let chord = newStepData[stepIdx]!;
-    let joins = newJoinData[stepIdx]!;
+    let chord = sequencer.stepData[stepIdx]!;
+    let joins = sequencer.joinData[stepIdx]!;
 
     if (chord.indexOf(note) === -1) {
       // Note not set
       chord.push(note);
-      if (stepIdx > 0 && stepData[stepIdx - 1]!.includes(note)) {
+      if (stepIdx > 0 && sequencer.stepData[stepIdx - 1]!.includes(note)) {
         // Already playing, join note
         joins.push(note);
       }
@@ -85,18 +80,18 @@ export default function SequencerUI({
         chord = chord.filter(el => el !== note);
 
         // If a joined note follows, remove the join
-        let nextStepJoins = newJoinData[stepIdx + 1] || [];
+        let nextStepJoins = sequencer.joinData[stepIdx + 1] || [];
         if (nextStepJoins.includes(note)) {
           nextStepJoins = nextStepJoins.filter(el => el !== note);
-          newJoinData[stepIdx + 1] = nextStepJoins;
+          sequencer.joinData[stepIdx + 1] = nextStepJoins;
         }
       }
     }
 
-    newStepData[stepIdx] = chord;
-    newJoinData[stepIdx] = joins;
+    sequencer.stepData[stepIdx] = chord;
+    sequencer.joinData[stepIdx] = joins;
 
-    onStepsChange(newStepData, newJoinData, [stepIdx]);
+    onStepsChange([stepIdx]);
   };
 
   const handleRemoveStep: MouseEventHandler<HTMLButtonElement> = e => {
@@ -106,11 +101,8 @@ export default function SequencerUI({
     }
 
     const stepIdx = Number(t.dataset["removeStep"]);
-    const newStepData = [...stepData];
-    const newJoinData = [...joinData];
-    newStepData.splice(stepIdx, 1);
-    newJoinData.splice(stepIdx, 1);
-    onStepsChange(newStepData, newJoinData, [Math.max(0, stepIdx - 1)]);
+    const changed = sequencer.removeStep(stepIdx);
+    onStepsChange(changed);
   };
 
   const handleCopyStep: MouseEventHandler<HTMLButtonElement> = e => {
@@ -120,27 +112,8 @@ export default function SequencerUI({
     }
 
     const stepIdx = Number(t.dataset["copyStep"]);
-    const newStepData = [
-      ...stepData.slice(0, stepIdx),
-      stepData[stepIdx]!.slice(),
-      ...stepData.slice(stepIdx),
-    ];
-    const newJoinData = [
-      ...joinData.slice(0, stepIdx + 1),
-      stepData[stepIdx]!.slice(),
-      ...joinData.slice(stepIdx + 1),
-    ];
-
-    // Don't add step unless it would be lossy
-    if (
-      newJoinData[newJoinData.length - 1]!.length === 0 &&
-      newStepData[newStepData.length - 1]!.length === 0
-    ) {
-      newJoinData.pop();
-      newStepData.pop();
-    }
-
-    onStepsChange(newStepData, newJoinData, [stepIdx + 1]);
+    const changed = sequencer.copyStep(stepIdx);
+    onStepsChange(changed);
   };
 
   const handleDrop: DragEventHandler = e => {
@@ -149,13 +122,13 @@ export default function SequencerUI({
     }
 
     const note = fromNote.note;
-    const fromIsActive = stepData[fromNote.step]!.includes(note);
+    const fromIsActive = sequencer.stepData[fromNote.step]!.includes(note);
     const toNote = stepNoteFromId(e.target.id);
-    const toIsActive = stepData[toNote.step]!.includes(note);
+    const toIsActive = sequencer.stepData[toNote.step]!.includes(note);
     const remove = fromIsActive && toIsActive;
 
     let changing = false;
-    const stepsChanged = stepData
+    const stepsChanged = sequencer.stepData
       .map((_, idx) => idx)
       .filter(idx => {
         if (changing) {
@@ -172,26 +145,27 @@ export default function SequencerUI({
         }
       });
 
-    const newSteps = structuredClone(stepData);
-    const newJoins = structuredClone(joinData);
-
     let lastPresent = false;
-    for (let i = 0; i < stepData.length; i++) {
+    for (let i = 0; i < sequencer.stepData.length; i++) {
       if (stepsChanged.includes(i)) {
-        newSteps[i] = newSteps[i]!.filter(el => el !== note);
-        newJoins[i] = newJoins[i]!.filter(el => el !== note);
+        sequencer.stepData[i] = sequencer.stepData[i]!.filter(
+          el => el !== note,
+        );
+        sequencer.joinData[i] = sequencer.joinData[i]!.filter(
+          el => el !== note,
+        );
         if (!remove) {
-          newSteps[i]!.push(note);
+          sequencer.stepData[i]!.push(note);
           if (lastPresent) {
-            newJoins[i]!.push(note);
+            sequencer.joinData[i]!.push(note);
           }
         }
       }
 
-      lastPresent = newSteps[i]!.includes(note);
+      lastPresent = sequencer.stepData[i]!.includes(note);
     }
 
-    onStepsChange(newSteps, newJoins, stepsChanged);
+    onStepsChange(stepsChanged);
   };
 
   const onEnterOver: DragEventHandler = e => {
@@ -230,7 +204,7 @@ export default function SequencerUI({
       onDragOver={onEnterOver}
       onDrop={handleDrop}
     >
-      {stepData.map((activeNotes, i) => (
+      {sequencer.stepData.map((activeNotes, i) => (
         <div
           key={i}
           className={`stepRow ${i === currentStepIndex ? "active" : ""}`}
@@ -238,7 +212,7 @@ export default function SequencerUI({
         >
           <div className="white">
             {whites.map(({ note }) => {
-              const isJoin = joinData[i]!.includes(note);
+              const isJoin = sequencer.joinData[i]!.includes(note);
               return renderKey(
                 activeNotes.indexOf(note) !== -1,
                 i,
@@ -250,7 +224,7 @@ export default function SequencerUI({
           </div>
           <div className="black">
             {blacks.map(({ note, left }) => {
-              const isJoin = joinData[i]!.includes(note);
+              const isJoin = sequencer.joinData[i]!.includes(note);
               return renderKey(
                 activeNotes.indexOf(note) !== -1,
                 i,

@@ -79,6 +79,21 @@ export class Sequencer extends EventTarget<SequencerEvents> {
     return this.#allSteps[this.#step];
   }
 
+  getActiveGroupIdx() {
+    let offset = 0;
+    for (let i = 0; i < this.#groups.length; i++) {
+      const group = this.#groups[i];
+      if (this.#step < group.length + offset) {
+        return i;
+      }
+
+      offset += group.length;
+    }
+
+    // Never reached.
+    return 0;
+  }
+
   setStep(step: number) {
     this.#step = (step + this.stepData.length) % this.stepData.length;
   }
@@ -123,8 +138,80 @@ export class Sequencer extends EventTarget<SequencerEvents> {
   }
 
   setGroups(groups: typeof sequencerDefaults.groups) {
-    this.#groups = groups;
-    this.#allSteps = allStepsFromGroups(groups);
+    const max = this.stepData.length - 1;
+    this.#groups = groups.map(el => ({
+      start: Math.min(Math.max(el.start, 0), max),
+      length: Math.min(Math.max(el.length, 1), this.stepData.length),
+    }));
+    this.#allSteps = allStepsFromGroups(this.#groups);
+  }
+
+  // Returns changed data index
+  copyStep(dataIdx: number) {
+    this.stepData = [
+      ...this.stepData.slice(0, dataIdx),
+      this.stepData[dataIdx]!.slice(),
+      ...this.stepData.slice(dataIdx),
+    ];
+    this.joinData = [
+      ...this.joinData.slice(0, dataIdx + 1),
+      this.stepData[dataIdx]!.slice(),
+      ...this.joinData.slice(dataIdx + 1),
+    ];
+
+    // Update groups.
+    this.#groups.forEach(group => {
+      // If the group contains the index, increase its length
+      if (group.start <= dataIdx && group.start + group.length >= dataIdx) {
+        group.length += 1;
+      }
+    });
+    this.#allSteps = allStepsFromGroups(this.#groups);
+
+    // If it would add an empty step, chop off one to maintain the length.
+    if (
+      this.joinData[this.joinData.length - 1]!.length === 0 &&
+      this.stepData[this.stepData.length - 1]!.length === 0
+    ) {
+      const removedIdx = this.stepData.length;
+      this.joinData.pop();
+      this.stepData.pop();
+
+      // Update groups.
+      this.#groups.forEach(group => {
+        // If the group contains the last index (removed), decrease its length
+        if (
+          group.start <= this.stepData.length &&
+          group.start + group.length >= this.stepData.length
+        ) {
+          group.length -= 1;
+        }
+      });
+      this.#groups = this.#groups.filter(el => el.length > 0);
+      this.#allSteps = allStepsFromGroups(this.#groups);
+    }
+
+    return [dataIdx + 1];
+  }
+
+  // Returns changed data index
+  removeStep(dataIdx: number) {
+    this.stepData = [...this.stepData];
+    this.joinData = [...this.joinData];
+    this.stepData.splice(dataIdx, 1);
+    this.joinData.splice(dataIdx, 1);
+
+    // Update groups.
+    this.#groups.forEach(group => {
+      // If the group contains the old index, reduce its length
+      if (group.start <= dataIdx && group.start + group.length >= dataIdx) {
+        group.length -= 1;
+      }
+    });
+    this.#groups = this.#groups.filter(el => el.length > 0);
+    this.#allSteps = allStepsFromGroups(this.#groups);
+
+    return [Math.max(0, dataIdx - 1)];
   }
 
   playStep(injectedPiano: Piano | null = null) {

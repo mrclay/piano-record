@@ -47,6 +47,10 @@ export default function SequencePage(): ReactNode {
   const [piano] = useStore.piano();
   const [playerSpec] = useStore.playerSpec();
   const [sequencer] = useStore.sequencer();
+  const groups = sequencer.getGroups();
+  const activeGroupIdx = sequencer.isPlaying()
+    ? sequencer.getActiveGroupIdx()
+    : 0;
 
   const [, setRenderNum] = useState(0);
   const forceRender = () => setRenderNum(prev => prev + 1);
@@ -336,19 +340,15 @@ export default function SequencePage(): ReactNode {
 
       <SequencerUI
         currentStepIndex={step}
-        stepData={sequencer.stepData}
-        joinData={sequencer.joinData}
-        onStepsChange={(newStepData, newJoinData, changedSteps) => {
+        sequencer={sequencer}
+        onStepsChange={changedSteps => {
           // console.log(JSON.stringify([newStepData, newJoinData]));
 
-          sequencer.stepData = newStepData;
-          sequencer.joinData = newJoinData;
           setNumStepsInput(String(sequencer.getNumSteps()));
-
           if (!sequencer.isPlaying()) {
             handleStop();
             sequencer.setStep(changedSteps[0]!);
-            sampleStep(newStepData[changedSteps[0]!]!);
+            sampleStep(sequencer.stepData[changedSteps[0]!]!);
           }
           forceRender();
         }}
@@ -377,6 +377,117 @@ export default function SequencePage(): ReactNode {
             </p>
           </section>
         )}
+      </Content900>
+
+      <Content900>
+        <div>Song Sections</div>
+        {groups.map((group, groupIdx) => (
+          <div
+            key={groupIdx}
+            className="sequencer-section"
+            data-active={groupIdx === activeGroupIdx ? "" : undefined}
+          >
+            <button
+              className="group-action-button"
+              type="button"
+              onClick={() => {
+                groups.splice(groupIdx, 0, { ...groups[groupIdx] });
+                sequencer.setGroups(groups);
+                forceRender();
+              }}
+              title="Copy section"
+            >
+              c
+            </button>
+            <button
+              className="group-action-button"
+              type="button"
+              onClick={() => {
+                const tmp = groups[groupIdx + 1];
+                groups[groupIdx + 1] = groups[groupIdx];
+                groups[groupIdx] = tmp;
+                sequencer.setGroups(groups);
+                forceRender();
+              }}
+              disabled={groupIdx === groups.length - 1}
+              title="Move later"
+            >
+              &darr;
+            </button>
+            <button
+              className="group-action-button"
+              type="button"
+              onClick={() => {
+                const tmp = groups[groupIdx - 1];
+                groups[groupIdx - 1] = groups[groupIdx];
+                groups[groupIdx] = tmp;
+                sequencer.setGroups(groups);
+                forceRender();
+              }}
+              disabled={groupIdx === 0}
+              title="Move earlier"
+            >
+              &uarr;
+            </button>
+            <label>
+              Start{" "}
+              <input
+                type="text"
+                value={group.start + 1}
+                onChange={e => {
+                  const num =
+                    parseInt(e.target.value.replace(/\D+/g, "") || "0") - 1;
+                  sequencer.setGroups(
+                    groups.map(el => {
+                      if (el === group) {
+                        el.start = num;
+                      }
+                      return { ...el };
+                    }),
+                  );
+                  forceRender();
+                }}
+              />
+            </label>
+            <label>
+              Length{" "}
+              <input
+                type="text"
+                value={group.length}
+                onChange={e => {
+                  const num = parseInt(
+                    e.target.value.replace(/\D+/g, "") || "0",
+                  );
+                  sequencer.setGroups(
+                    groups.map((el, i) => {
+                      if (el === group) {
+                        el.length = num;
+                      }
+                      return { ...el };
+                    }),
+                  );
+                  forceRender();
+                }}
+              />
+            </label>
+            <button
+              className="group-action-button"
+              type="button"
+              onClick={() => {
+                sequencer.setGroups(
+                  groups.filter(el => el !== group).map(el => ({ ...el })),
+                );
+                forceRender();
+              }}
+              disabled={sequencer.getGroups().length === 1}
+              title="Remove section"
+            >
+              &times;
+            </button>
+            {groupIdx !== activeGroupIdx && <span>○</span>}
+            {groupIdx === activeGroupIdx && <span data-active>●</span>}
+          </div>
+        ))}
       </Content900>
 
       <div className="mb-5">
