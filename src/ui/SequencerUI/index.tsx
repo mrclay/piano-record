@@ -264,7 +264,7 @@ export default function SequencerUI({
             c
           </button>
           <div className={`step-num color-${stepColor.get(i) || "no-group"}`}>
-            {i + 1}
+            {i}
           </div>
         </div>
       ))}

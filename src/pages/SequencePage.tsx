@@ -11,11 +11,7 @@ import Saver from "../ui/Saver";
 import { useStore } from "../store";
 import SoundSelector, { useSfStorage } from "../ui/SoundSelector";
 import { Content900, H1, HeadingNav, HrFinal } from "../ui/Common";
-import {
-  sequenceFromStream,
-  SequencerEvents,
-  streamFromSong,
-} from "../Sequencer";
+import { sequenceFromStream, streamFromSong } from "../Sequencer";
 import Transpose from "../ui/Transpose";
 
 let resetDuringNextEffect = true;
@@ -70,7 +66,12 @@ export default function SequencePage(): ReactNode {
   const [fixedControls, setFixedControls] = useState(false);
 
   useEffect(() => {
-    // Define the intersection observer callback function
+    const fixedObserver = fixedObserverRef.current;
+    if (fixedObserver) {
+      fixedObserver.style.minHeight =
+        fixedObserver.getBoundingClientRect().height + "px";
+    }
+
     const handleIntersection = (entries: IntersectionObserverEntry[]) => {
       entries.forEach(entry => {
         if (!entry.isIntersecting && entry.boundingClientRect.top <= 0) {
@@ -83,7 +84,7 @@ export default function SequencePage(): ReactNode {
 
     const observer = new IntersectionObserver(handleIntersection, {
       rootMargin: "0px",
-      threshold: 0,
+      threshold: 1,
     });
 
     if (fixedObserverRef.current) {
@@ -210,171 +211,169 @@ export default function SequencePage(): ReactNode {
         {examples}
       </Content900>
 
-      <div ref={fixedObserverRef} />
-      <div
-        className="sequence-controls"
-        data-fixed={fixedControls ? "" : undefined}
-      >
-        <div className="d-flex align-items-end" style={{ gap: "15px" }}>
-          <div className="btn-group" role="group">
-            <button
-              type="button"
-              className="btn btn-info med-btn text-nowrap"
-              onClick={handleRewindPlay}
-              title="Play from beginning"
-            >
-              <i className="fa fa-fast-backward" aria-hidden="true" />
-            </button>
+      <div ref={fixedObserverRef}>
+        <div
+          className="sequence-controls"
+          data-fixed={fixedControls ? "" : undefined}
+        >
+          <div className="d-flex align-items-end" style={{ gap: "15px" }}>
+            <div className="btn-group" role="group">
+              <button
+                type="button"
+                className="btn btn-info med-btn text-nowrap"
+                onClick={handleRewindPlay}
+                title="Play from beginning"
+              >
+                <i className="fa fa-fast-backward" aria-hidden="true" />
+              </button>
 
-            <Preview
-              handlePlay={handleStart}
-              handleStop={handleStop}
-              isPlaying={sequencer.isPlaying()}
-              isWaiting={false}
-              progress={{
-                ratio: step / (numSteps - 1),
-                steps: [step, numSteps],
-              }}
-            />
-          </div>
-
-          <div className="btn-group" role="group">
-            <button
-              type="button"
-              className="btn btn-outline-info med-btn text-nowrap"
-              onClick={() => handleStepInc(-1)}
-            >
-              <i className="fa fa-step-backward" aria-hidden="true" />
-            </button>
-
-            <button
-              type="button"
-              className="btn btn-outline-info med-btn text-nowrap"
-              onClick={() => handleStepInc(1)}
-            >
-              <i className="fa fa-step-forward" aria-hidden="true" />
-            </button>
-          </div>
-
-          <button
-            type="button"
-            className="btn btn-primary med-btn text-nowrap"
-            onClick={share}
-          >
-            <i className="fa fa-floppy-o" aria-hidden="true" />{" "}
-            <span>Save</span>
-          </button>
-
-          <div className="d-flex flex-column" style={{ gap: "10px" }}>
-            <div>
-              <label className="text-nowrap">
-                BPM{" "}
-                <input
-                  style={{ width: "4em" }}
-                  type="text"
-                  value={bpmInput}
-                  onFocus={e => e.target.select()}
-                  onChange={e => setBpmInput(e.target.value)}
-                  onBlur={e => {
-                    const num = parseInt(e.target.value);
-                    if (!isNaN(num) && num >= 1 && num <= 400) {
-                      sequencer.bpm = num;
-                    }
-                    setBpmInput(String(sequencer.bpm));
-                  }}
-                />
-              </label>
-            </div>
-            <div>
-              <label className="text-nowrap">
-                Steps{" "}
-                <input
-                  style={{ width: "3.5em" }}
-                  type="text"
-                  value={numStepsInput}
-                  onFocus={e => e.target.select()}
-                  onChange={e => setNumStepsInput(e.target.value)}
-                  onBlur={e => {
-                    const num = parseInt(e.target.value);
-                    if (!isNaN(num) && num >= 2) {
-                      sequencer.setNumSteps(num);
-                    }
-
-                    setNumStepsInput(String(sequencer.getNumSteps()));
-                    forceRender();
-                  }}
-                />{" "}
-                &times;{" "}
-                <select
-                  style={{ padding: "3px 0", width: "4rem" }}
-                  value={
-                    bpsOptions.find(el => el.value === String(sequencer.bps))
-                      ?.value
-                  }
-                  onChange={e => {
-                    sequencer.bps = Number(e.target.value);
-                    forceRender();
-                  }}
-                >
-                  {bpsOptions.map(({ value, label }) => (
-                    <option value={value} key={label}>
-                      {label}
-                    </option>
-                  ))}
-                </select>
-              </label>
-            </div>
-          </div>
-
-          <div className="d-flex flex-column" style={{ gap: "10px" }}>
-            <div className="text-end">
-              <label className="text-nowrap">
-                Swing{" "}
-                <select
-                  style={{ padding: "3px 0", width: "5rem" }}
-                  value={
-                    rhythmOptions.find(
-                      el => el.value === sequencer.rhythm.join("-"),
-                    )?.value
-                  }
-                  onChange={e => {
-                    sequencer.rhythm = e.target.value.split("-").map(Number);
-                    forceRender();
-                  }}
-                >
-                  {rhythmOptions.map(({ value, label }) => (
-                    <option value={value} key={label}>
-                      {label}
-                    </option>
-                  ))}
-                </select>
-              </label>
-            </div>
-            <div className="text-end">
-              <Transpose
-                onChange={semitones => {
-                  sequencer.stepData = sequencer.stepData.map(step =>
-                    step.map(note => note + semitones),
-                  );
-                  sequencer.joinData = sequencer.joinData.map(step =>
-                    step.map(note => note + semitones),
-                  );
-
-                  // Don't reset the sequencer during the next few effects
-                  resetDuringNextEffect = false;
-                  setTimeout(() => {
-                    resetDuringNextEffect = true;
-                  }, 500);
-                  share();
+              <Preview
+                handlePlay={handleStart}
+                handleStop={handleStop}
+                isPlaying={sequencer.isPlaying()}
+                isWaiting={false}
+                progress={{
+                  ratio: step / (numSteps - 1),
+                  steps: [step, numSteps],
                 }}
               />
+            </div>
+
+            <div className="btn-group" role="group">
+              <button
+                type="button"
+                className="btn btn-outline-info med-btn text-nowrap"
+                onClick={() => handleStepInc(-1)}
+              >
+                <i className="fa fa-step-backward" aria-hidden="true" />
+              </button>
+
+              <button
+                type="button"
+                className="btn btn-outline-info med-btn text-nowrap"
+                onClick={() => handleStepInc(1)}
+              >
+                <i className="fa fa-step-forward" aria-hidden="true" />
+              </button>
+            </div>
+
+            <button
+              type="button"
+              className="btn btn-primary med-btn text-nowrap"
+              onClick={share}
+            >
+              <i className="fa fa-floppy-o" aria-hidden="true" />{" "}
+              <span>Save</span>
+            </button>
+
+            <div className="d-flex flex-column" style={{ gap: "10px" }}>
+              <div>
+                <label className="text-nowrap">
+                  BPM{" "}
+                  <input
+                    style={{ width: "4em" }}
+                    type="text"
+                    value={bpmInput}
+                    onFocus={e => e.target.select()}
+                    onChange={e => setBpmInput(e.target.value)}
+                    onBlur={e => {
+                      const num = parseInt(e.target.value);
+                      if (!isNaN(num) && num >= 1 && num <= 400) {
+                        sequencer.bpm = num;
+                      }
+                      setBpmInput(String(sequencer.bpm));
+                    }}
+                  />
+                </label>
+              </div>
+              <div>
+                <label className="text-nowrap">
+                  Steps{" "}
+                  <input
+                    style={{ width: "3.5em" }}
+                    type="text"
+                    value={numStepsInput}
+                    onFocus={e => e.target.select()}
+                    onChange={e => setNumStepsInput(e.target.value)}
+                    onBlur={e => {
+                      const num = parseInt(e.target.value);
+                      if (!isNaN(num) && num >= 2) {
+                        sequencer.setNumSteps(num);
+                      }
+
+                      setNumStepsInput(String(sequencer.getNumSteps()));
+                      forceRender();
+                    }}
+                  />{" "}
+                  &times;{" "}
+                  <select
+                    style={{ padding: "3px 0", width: "4rem" }}
+                    value={
+                      bpsOptions.find(el => el.value === String(sequencer.bps))
+                        ?.value
+                    }
+                    onChange={e => {
+                      sequencer.bps = Number(e.target.value);
+                      forceRender();
+                    }}
+                  >
+                    {bpsOptions.map(({ value, label }) => (
+                      <option value={value} key={label}>
+                        {label}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+              </div>
+            </div>
+
+            <div className="d-flex flex-column" style={{ gap: "10px" }}>
+              <div className="text-end">
+                <label className="text-nowrap">
+                  Swing{" "}
+                  <select
+                    style={{ padding: "3px 0", width: "5rem" }}
+                    value={
+                      rhythmOptions.find(
+                        el => el.value === sequencer.rhythm.join("-"),
+                      )?.value
+                    }
+                    onChange={e => {
+                      sequencer.rhythm = e.target.value.split("-").map(Number);
+                      forceRender();
+                    }}
+                  >
+                    {rhythmOptions.map(({ value, label }) => (
+                      <option value={value} key={label}>
+                        {label}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+              </div>
+              <div className="text-end">
+                <Transpose
+                  onChange={semitones => {
+                    sequencer.stepData = sequencer.stepData.map(step =>
+                      step.map(note => note + semitones),
+                    );
+                    sequencer.joinData = sequencer.joinData.map(step =>
+                      step.map(note => note + semitones),
+                    );
+
+                    // Don't reset the sequencer during the next few effects
+                    resetDuringNextEffect = false;
+                    setTimeout(() => {
+                      resetDuringNextEffect = true;
+                    }, 500);
+                    share();
+                  }}
+                />
+              </div>
             </div>
           </div>
         </div>
       </div>
-
-      {/* Do not remove */}
-      <div />
 
       <SequencerUI
         currentStepIndex={step}
@@ -392,30 +391,6 @@ export default function SequencePage(): ReactNode {
         }}
       />
       <Keyboard piano={sequencer.piano} />
-
-      <Content900>
-        <SoundSelector />
-      </Content900>
-
-      <Content900>
-        {params["stream"] && (
-          <section>
-            <h3>Share it</h3>
-            <p>
-              Copy to clipboard:{" "}
-              <Saver
-                href={window.location.href}
-                title=""
-                getMidi={() =>
-                  sequencer.toMidi({
-                    program: playerSpec.midiProgram,
-                  })
-                }
-              />
-            </p>
-          </section>
-        )}
-      </Content900>
 
       <Content900>
         <div>Song Sections</div>
@@ -471,10 +446,11 @@ export default function SequencePage(): ReactNode {
               Start{" "}
               <input
                 type="text"
-                value={group.start + 1}
+                value={group.start}
                 onChange={e => {
-                  const num =
-                    parseInt(e.target.value.replace(/\D+/g, "") || "0") - 1;
+                  const num = parseInt(
+                    e.target.value.replace(/\D+/g, "") || "0",
+                  );
                   sequencer.setGroups(
                     groups.map(el => {
                       if (el === group) {
@@ -525,6 +501,30 @@ export default function SequencePage(): ReactNode {
             <span>{groupIdx === activeGroupIdx ? "◀" : ""}</span>
           </div>
         ))}
+      </Content900>
+
+      <Content900>
+        <SoundSelector />
+      </Content900>
+
+      <Content900>
+        {params["stream"] && (
+          <section>
+            <h3>Share it</h3>
+            <p>
+              Copy to clipboard:{" "}
+              <Saver
+                href={window.location.href}
+                title=""
+                getMidi={() =>
+                  sequencer.toMidi({
+                    program: playerSpec.midiProgram,
+                  })
+                }
+              />
+            </p>
+          </section>
+        )}
       </Content900>
 
       <div className="mb-5">
