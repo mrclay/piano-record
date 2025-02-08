@@ -181,9 +181,11 @@ button .progress {
 
 .sequencer-section {
   align-items: center;
-  border: 1px solid #ccc;
+  border: 1px solid currentColor;
+  border-left-width: 10px;
   display: flex;
   gap: 1rem;
+  margin-bottom: 2px;
   padding: 5px 10px;
   position: relative;
   width: max-content;
@@ -192,32 +194,65 @@ button .progress {
     width: 2rem;
   }
 
+  label {
+    color: #fff;
+  }
+
   > span {
-    color: #666;
     font-size: 20px;
     position: absolute;
     left: calc(100% + 10px);
-
-    &[data-active] {
-      color: #33baf8;
-    }
   }
 }
+
+.sequence-header {
+  margin-bottom: 0 !important;
+}
+
+.sequence-controls {
+  background: var(--bs-body-bg);
+  margin: 0 !important;
+  padding: 1rem;
+  max-width: none;
+  z-index: 100;
+
+  > div {
+    margin: 0 auto;
+    max-width: 900px;
+  }
+
+  &[data-fixed] {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+  }
+}
+
+.color-0 { color: #ffffff }
+.color-1 { color: #33baf8 }
+.color-2 { color: #ffda6a }
+.color-3 { color: #ea868f }
+.color-4 { color: #75b798 }
+.color-5 { color: #AFB2B6 }
+.color-6 { color: #0D6EFC }
+.color-no-group { color: #666 }
 
 .group-action-button {
   background: #ccc;
   border: 0;
   border-radius: 50%;
-  color: #fff;
+  color: #000;
   line-height: 1ex;
   padding: 6px 6px 7px;
   z-index: 1;
 
   &:disabled {
-    opacity: 0.7;
+    opacity: 0.5;
   }
 
   &:hover:not(:disabled) {
+    color: #fff;
     background: #333;
   }
 }

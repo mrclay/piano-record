@@ -80,7 +80,7 @@
   background: #ccc;
   border: 0;
   border-radius: 50%;
-  color: #fff;
+  color: #000;
   line-height: 1ex;
   padding: 6px 6px 7px;
   position: absolute;
@@ -90,6 +90,13 @@
   &:hover {
     background: #333;
   }
+}
+
+.step-num {
+  line-height: 31px;
+  position: absolute;
+  top: 0;
+  left: calc(100% + 1.5rem);
 }
 
 [data-remove-step] {

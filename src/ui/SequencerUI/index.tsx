@@ -2,6 +2,7 @@ import React, {
   DragEventHandler,
   MouseEventHandler,
   useEffect,
+  useMemo,
   useState,
 } from "react";
 
@@ -32,7 +33,19 @@ export default function SequencerUI({
   currentStepIndex,
   onStepsChange,
 }: SequencerProps) {
+  const groups = sequencer.getGroups();
+
   const [fromNote, setFromNote] = useState<StepNote | null>(null);
+  const stepColor = useMemo(() => {
+    const map = new Map<number, string>();
+    for (let i = 0; i < groups.length; i++) {
+      const g = groups[i];
+      for (let j = g.start; j < g.start + g.length; j++) {
+        map.set(j, String(i % 7));
+      }
+    }
+    return map;
+  }, [groups]);
 
   const onDragStart: DragEventHandler = e => {
     if (e.target instanceof HTMLElement) {
@@ -250,6 +263,9 @@ export default function SequencerUI({
           >
             c
           </button>
+          <div className={`step-num color-${stepColor.get(i) || "no-group"}`}>
+            {i + 1}
+          </div>
         </div>
       ))}
     </div>

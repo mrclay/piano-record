@@ -1,4 +1,4 @@
-import React, { ReactNode, useEffect, useRef, useState } from "react";
+import React, { ReactNode, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import { useSearchParams } from "react-router-dom";
 import Head from "@uiw/react-head";
@@ -65,6 +65,37 @@ export default function SequencePage(): ReactNode {
 
   const [editingText, setEditingText] = useState(false);
   const [editValue, setEditValue] = useState("");
+
+  const fixedObserverRef = useRef<HTMLDivElement | null>(null);
+  const [fixedControls, setFixedControls] = useState(false);
+
+  useEffect(() => {
+    // Define the intersection observer callback function
+    const handleIntersection = (entries: IntersectionObserverEntry[]) => {
+      entries.forEach(entry => {
+        if (!entry.isIntersecting && entry.boundingClientRect.top <= 0) {
+          setFixedControls(true);
+        } else {
+          setFixedControls(false);
+        }
+      });
+    };
+
+    const observer = new IntersectionObserver(handleIntersection, {
+      rootMargin: "0px",
+      threshold: 0,
+    });
+
+    if (fixedObserverRef.current) {
+      observer.observe(fixedObserverRef.current!);
+    }
+
+    return () => {
+      if (fixedObserverRef.current) {
+        observer.unobserve(fixedObserverRef.current!);
+      }
+    };
+  }, []);
 
   useEffect(() => {
     sequencer.addEventListener("step", forceRender);
@@ -157,7 +188,7 @@ export default function SequencePage(): ReactNode {
     <>
       <HeadingNav />
 
-      <Content900>
+      <Content900 className="sequence-header">
         <div className="d-flex justify-content-between">
           <H1>Sequence</H1>
           <Head>
@@ -179,7 +210,11 @@ export default function SequencePage(): ReactNode {
         {examples}
       </Content900>
 
-      <Content900>
+      <div ref={fixedObserverRef} />
+      <div
+        className="sequence-controls"
+        data-fixed={fixedControls ? "" : undefined}
+      >
         <div className="d-flex align-items-end" style={{ gap: "15px" }}>
           <div className="btn-group" role="group">
             <button
@@ -336,7 +371,10 @@ export default function SequencePage(): ReactNode {
             </div>
           </div>
         </div>
-      </Content900>
+      </div>
+
+      {/* Do not remove */}
+      <div />
 
       <SequencerUI
         currentStepIndex={step}
@@ -384,7 +422,7 @@ export default function SequencePage(): ReactNode {
         {groups.map((group, groupIdx) => (
           <div
             key={groupIdx}
-            className="sequencer-section"
+            className={`sequencer-section color-${groupIdx % 7}`}
             data-active={groupIdx === activeGroupIdx ? "" : undefined}
           >
             <button
@@ -484,8 +522,7 @@ export default function SequencePage(): ReactNode {
             >
               &times;
             </button>
-            {groupIdx !== activeGroupIdx && <span>○</span>}
-            {groupIdx === activeGroupIdx && <span data-active>●</span>}
+            <span>{groupIdx === activeGroupIdx ? "◀" : ""}</span>
           </div>
         ))}
       </Content900>
@@ -528,7 +565,7 @@ export default function SequencePage(): ReactNode {
 }
 
 const examples = (
-  <p className="text-nowrap">
+  <p className="text-nowrap mb-0">
     Some examples:{" "}
     <a href="/sequence/songs/v4,196,1,p3fp2fp3bp3a-j3fj3bj3a-p2aj3f-p2ep3fp3ap38-j2ej3fj3aj38-j3fj2ej3aj38-j3fp29j3aj38-j3fp2ej3aj38-p46p33p3cp3ap3fp37-j46j3cj3aj3fj37-p27j46-p2cp37p3ap3cp3fj46-j2cj37j3aj3cj3fj46-j2cj37j3aj3cj3fj46-j37p25j3aj3cj3fj46-j37p29j3aj3cj3fj46-p42p3dp38p2a-j42j3dj38j2a-p25j42-p3fp3ap3bp36p28-j3fj3aj3bj36j28-j3fj3bj3aj36j28-j3fj3bj3aj36p2c-j3fj3bj3aj36p2e?sf=MusyngKite.electric_piano_1">
       Electric Relaxation
