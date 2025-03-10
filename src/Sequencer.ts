@@ -11,6 +11,12 @@ export interface SequencerEvents {
   stop: null;
 }
 
+export interface SequencerGroup {
+  start: number;
+  length: number;
+  colorIdx: number;
+}
+
 export type SequencerListener<K extends keyof SequencerEvents> = (
   evt: SequencerEvents[K],
 ) => void;
@@ -21,10 +27,10 @@ const sequencerDefaults = {
   rhythm: [1, 1],
   stepData: [1, 2, 3, 4, 5, 6, 7, 8].map(() => [] as number[]),
   joinData: [1, 2, 3, 4, 5, 6, 7, 8].map(() => [] as number[]),
-  groups: [{ start: 0, length: 8 }],
+  groups: [{ start: 0, length: 8, colorIdx: 0 }],
 };
 
-function allStepsFromGroups(groups: typeof sequencerDefaults.groups) {
+function allStepsFromGroups(groups: SequencerGroup[]) {
   return groups.reduce<number[]>((acc, curr) => {
     for (let i = 0; i < curr.length; i++) {
       acc.push(curr.start + i);
@@ -95,7 +101,7 @@ export class Sequencer extends EventTarget<SequencerEvents> {
   }
 
   setStep(step: number) {
-    this.#step = (step + this.stepData.length) % this.stepData.length;
+    this.#step = step % this.#allSteps.length;
   }
 
   getNumSteps() {
@@ -137,12 +143,24 @@ export class Sequencer extends EventTarget<SequencerEvents> {
     return this.#groups;
   }
 
-  setGroups(groups: typeof sequencerDefaults.groups) {
+  setGroups(groups: SequencerGroup[]) {
     const max = this.stepData.length - 1;
-    this.#groups = groups.map(el => ({
-      start: Math.min(Math.max(el.start, 0), max),
-      length: Math.min(Math.max(el.length, 1), this.stepData.length),
-    }));
+    const colorMap = new Map<string, number>();
+    let nextColorIdx = 0;
+
+    this.#groups = groups.map(el => {
+      const start = Math.min(Math.max(el.start, 0), max);
+      const length = Math.min(Math.max(el.length, 1), this.stepData.length);
+      const key = `${start}-${length}`;
+
+      let colorIdx = colorMap.get(key);
+      if (typeof colorIdx === "undefined") {
+        colorIdx = nextColorIdx++;
+        colorMap.set(key, colorIdx);
+      }
+
+      return { start, length, colorIdx };
+    });
     this.#allSteps = allStepsFromGroups(this.#groups);
   }
 
@@ -385,7 +403,7 @@ export class Sequencer extends EventTarget<SequencerEvents> {
 
     this.stepData = stepData;
     this.joinData = joinData;
-    this.#groups = [{ start: 0, length: stepData.length }];
+    this.#groups = [{ start: 0, length: stepData.length, colorIdx: 0 }];
     this.#allSteps = allStepsFromGroups(this.#groups);
   }
 
@@ -521,7 +539,7 @@ export function sequenceFromStream(
   rhythm: number[];
   newStepData: Array<number[]> | false;
   newJoinData: Array<number[]> | false;
-  groups: typeof sequencerDefaults.groups;
+  groups: SequencerGroup[];
 } {
   let {
     bpm,
@@ -578,15 +596,25 @@ export function sequenceFromStream(
     return notes;
   });
 
-  const groups = groupPieces.length
+  const colorMap = new Map<string, number>();
+  let nextColorIdx = 0;
+
+  const groups: SequencerGroup[] = groupPieces.length
     ? groupPieces.map(piece => {
         const m = piece.match(/^(\d+)\.(\d+)$/);
         if (!m) {
           throw new Error("Invalid group string");
         }
-        return { start: parseInt(m[1]), length: parseInt(m[2]) };
+
+        let colorIdx = colorMap.get(m[0]);
+        if (typeof colorIdx === "undefined") {
+          colorIdx = nextColorIdx++;
+          colorMap.set(m[0], colorIdx);
+        }
+
+        return { start: parseInt(m[1]), length: parseInt(m[2]), colorIdx };
       })
-    : [{ start: 0, length: newStepData.length }];
+    : [{ start: 0, length: newStepData.length, colorIdx: 0 }];
 
   return {
     bpm,
@@ -604,7 +632,7 @@ export function streamFromSong(
   rhythm: number[],
   stepData: Array<number[]>,
   joinData: Array<number[]>,
-  groups: typeof sequencerDefaults.groups,
+  groups: SequencerGroup[],
 ) {
   let out = "";
 

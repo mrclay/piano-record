@@ -41,7 +41,7 @@ export default function SequencerUI({
     for (let i = 0; i < groups.length; i++) {
       const g = groups[i];
       for (let j = g.start; j < g.start + g.length; j++) {
-        map.set(j, String(i % 7));
+        map.set(j, String(g.colorIdx % 7));
       }
     }
     return map;

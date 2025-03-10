@@ -44,6 +44,16 @@ export default function SequencePage(): ReactNode {
   const [playerSpec] = useStore.playerSpec();
   const [sequencer] = useStore.sequencer();
   const groups = sequencer.getGroups();
+  const groupFirstSteps = useMemo(() => {
+    const map = new Map<number, number>();
+    let step = 0;
+    for (let i = 0; i < groups.length; i++) {
+      const g = groups[i];
+      map.set(i, step);
+      step += g.length;
+    }
+    return map;
+  }, [groups]);
   const activeGroupIdx = sequencer.isPlaying()
     ? sequencer.getActiveGroupIdx()
     : 0;
@@ -397,7 +407,7 @@ export default function SequencePage(): ReactNode {
         {groups.map((group, groupIdx) => (
           <div
             key={groupIdx}
-            className={`sequencer-section color-${groupIdx % 7}`}
+            className={`sequencer-section color-${group.colorIdx % 7}`}
             data-active={groupIdx === activeGroupIdx ? "" : undefined}
           >
             <button
@@ -497,6 +507,19 @@ export default function SequencePage(): ReactNode {
               title="Remove section"
             >
               &times;
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                const firstStep = groupFirstSteps.get(groupIdx);
+                if (typeof firstStep === "number") {
+                  sequencer.stop();
+                  sequencer.setStep(firstStep);
+                  sequencer.start();
+                }
+              }}
+            >
+              Play
             </button>
             <span>{groupIdx === activeGroupIdx ? "◀" : ""}</span>
           </div>
