@@ -10,17 +10,20 @@ import Piano, { ActiveKeys, PianoListener } from "../../Piano";
 
 import "./index.scss";
 import * as C from "../../constants";
+import { ActiveScaleDegrees } from "../../music-theory/ScaleDegree";
 
 interface KeyboardProps {
   activeKeys?: ActiveKeys;
-  piano?: Piano;
   onKeyClick?(note: number): void;
+  piano?: Piano;
+  scaleDegrees?: ActiveScaleDegrees;
 }
 
 export default function Keyboard({
   activeKeys,
-  piano,
   onKeyClick,
+  piano,
+  scaleDegrees,
 }: KeyboardProps) {
   const { whites, blacks } = useMemo(() => getPianoKeyLayout(), []);
   const [localActiveKeys, setActiveKeys] = useState<ActiveKeys>(
@@ -64,11 +67,13 @@ export default function Keyboard({
     <div className={`Keyboard Keyboard--traditional`} onMouseDown={handleKey}>
       <div className={onKeyClick ? "piano" : "piano noinput"}>
         <div className="white">
-          {whites.map(({ note }) => renderKey(localActiveKeys.has(note), note))}
+          {whites.map(({ note }) =>
+            renderKey(scaleDegrees, localActiveKeys.has(note), note),
+          )}
         </div>
         <div className="black">
           {blacks.map(({ note, left }) =>
-            renderKey(localActiveKeys.has(note), note, left),
+            renderKey(scaleDegrees, localActiveKeys.has(note), note, left),
           )}
         </div>
       </div>
@@ -76,14 +81,25 @@ export default function Keyboard({
   );
 }
 
-const renderKey = (active: boolean, note: number, left = 0, isJoin = false) => (
-  <span
-    key={note}
-    data-note={note}
-    className={(active ? "active " : " ") + (isJoin ? "joined " : " ")}
-    style={{ left: left + "px" }}
-  />
-);
+const renderKey = (
+  scaleDegrees: ActiveScaleDegrees | undefined,
+  active: boolean,
+  note: number,
+  left = 0,
+  isJoin = false,
+) => {
+  const degree = scaleDegrees?.get(note) || false;
+  return (
+    <span
+      key={note}
+      data-note={note}
+      className={(active ? "active " : " ") + (isJoin ? "joined " : " ")}
+      style={{ left: left + "px" }}
+    >
+      {degree && <span>{degree}</span>}
+    </span>
+  );
+};
 
 interface PhysicalKey {
   note: number;

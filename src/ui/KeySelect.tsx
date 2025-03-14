@@ -36,7 +36,7 @@ export default function KeySelect(props: KeySelectProps) {
       }}
       defaultValue={props.musicKey?.toString() || ""}
     >
-      {props.allowEmpty && <option value="">(none)</option>}
+      {props.allowEmpty && <option value="">(select key)</option>}
       <optgroup label="major">
         {keys
           .filter(key => key.getQuality() === ThirdQuality.MAJOR)

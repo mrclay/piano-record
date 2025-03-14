@@ -2,6 +2,8 @@ import { ActiveKeys } from "../Piano";
 import Key from "./Key";
 import { ThirdQuality } from "./constants";
 
+export type ActiveScaleDegrees = Map<number, string>;
+
 const scaleDegrees = [
   "1", //      0
   "#1/b2", //  1
@@ -23,7 +25,10 @@ let lastCache = null as null | {
   prevChromatics: Set<number>;
 };
 
-export function scaleDegreesForKeys(key: Key, activeKeys: ActiveKeys) {
+export function scaleDegreesForKeys(
+  key: Key,
+  activeKeys: ActiveKeys,
+): ActiveScaleDegrees {
   const chromaticBase = key.items[0].getChromatic();
   const foundDegrees = new Set<string>();
   const foundChromatics = new Set<number>();
@@ -41,7 +46,7 @@ export function scaleDegreesForKeys(key: Key, activeKeys: ActiveKeys) {
   if (lastCache && lastCache.prevKey === key) {
     const hasNewNote =
       foundChromatics.union(lastCache.prevChromatics).size >
-      foundChromatics.size;
+      lastCache.prevChromatics.size;
     if (!hasNewNote) {
       // Use last set of scale degrees
       const out = new Map<number, string>();
@@ -89,6 +94,15 @@ export function scaleDegreesForKeys(key: Key, activeKeys: ActiveKeys) {
   while (modified) {
     modified = false;
 
+    if (some("#5/b6")) {
+      if (some(4, 11)) {
+        replaceAll("#5/b6", "#5");
+        replaceAll("#4/b5", "#4");
+      } else {
+        useMinorAccidentals();
+      }
+    }
+
     if (every("#1/b2", "#4/b5", "#6/b7")) {
       useMinorAccidentals();
       replaceAll("#4/b5", "b5");
@@ -127,21 +141,8 @@ export function scaleDegreesForKeys(key: Key, activeKeys: ActiveKeys) {
       }
     }
 
-    if (some("#5/b6")) {
-      if (some(4, 11)) {
-        replaceAll("#5/b6", "#5");
-        replaceAll("#4/b5", "#4");
-      } else {
-        useMinorAccidentals();
-      }
-    }
-
     if (some("#6/b7")) {
-      if (every(10, 1)) {
-        replaceAll("#6/b7", "#6");
-      } else {
-        useMinorAccidentals();
-      }
+      useMinorAccidentals();
     }
   }
 
@@ -152,7 +153,7 @@ export function scaleDegreesForKeys(key: Key, activeKeys: ActiveKeys) {
     prevScaleDegrees: outScaleDegrees,
   };
 
-  const out = new Map<number, string>();
+  const out: ActiveScaleDegrees = new Map();
 
   // Second pass, write output
   for (const midi of activeKeys.values()) {

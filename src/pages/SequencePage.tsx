@@ -13,6 +13,8 @@ import SoundSelector, { useSfStorage } from "../ui/SoundSelector";
 import { Content900, H1, HeadingNav, HrFinal } from "../ui/Common";
 import { sequenceFromStream, streamFromSong } from "../Sequencer";
 import Transpose from "../ui/Transpose";
+import KeySelector, { useKeyStorage } from "../ui/KeySelector";
+import { scaleDegreesForKeys } from "../music-theory/ScaleDegree";
 
 let resetDuringNextEffect = true;
 
@@ -34,6 +36,7 @@ const rhythmOptions = [
 
 export default function SequencePage(): ReactNode {
   const { saveSf } = useSfStorage();
+  const { saveKey } = useKeyStorage();
   const stopAllTimeoutRef = useRef(0);
   const navigate = useNavigate();
   const params = useParams();
@@ -43,6 +46,8 @@ export default function SequencePage(): ReactNode {
   const [piano] = useStore.piano();
   const [playerSpec] = useStore.playerSpec();
   const [sequencer] = useStore.sequencer();
+  const [key, setKey] = useStore.key();
+
   const groups = sequencer.getGroups();
   const groupFirstSteps = useMemo(() => {
     const map = new Map<number, number>();
@@ -137,6 +142,7 @@ export default function SequencePage(): ReactNode {
   function reset() {
     handleStop();
     sequencer.reset();
+    setKey(null);
     setBpmInput(String(sequencer.bpm));
   }
 
@@ -153,7 +159,7 @@ export default function SequencePage(): ReactNode {
   }
 
   function share() {
-    const params = saveSf();
+    const params = saveKey(saveSf());
     navigate(
       Paths.sequencePrefix(
         `/songs/${streamFromSong(
@@ -400,7 +406,12 @@ export default function SequencePage(): ReactNode {
           forceRender();
         }}
       />
-      <Keyboard piano={sequencer.piano} />
+      <Keyboard
+        piano={sequencer.piano}
+        scaleDegrees={
+          key ? scaleDegreesForKeys(key, sequencer.activeKeys) : undefined
+        }
+      />
 
       <Content900>
         <div>Song Sections</div>
@@ -528,6 +539,9 @@ export default function SequencePage(): ReactNode {
 
       <Content900>
         <SoundSelector />
+        <div style={{ width: "fit-content" }}>
+          Show scale degrees <KeySelector />
+        </div>
       </Content900>
 
       <Content900>

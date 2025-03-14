@@ -64,6 +64,18 @@
   [data-note] {
     text-align: center;
     text-decoration: none;
+
+    > span {
+      background: rgb(var(--bs-info-rgb));
+      border-radius: 100%;
+      color: white;
+      display: inline-block;
+      font-size: 15px;
+      line-height: 30px;
+      width: 30px;
+      position: relative;
+      left: 0;
+    }
   }
 
   .black {
@@ -80,9 +92,14 @@
       line-height: 1;
       background: #000;
       border: 2px solid #000;
+      color: #fff;
       height: 100px;
-      padding-top: 58px;
+      padding-top: 60px;
       width: 16px;
+
+      > span {
+        left: -10px;
+      }
     }
   }
   .white {
@@ -100,10 +117,11 @@
       flex-shrink: 0;
       font-weight: 300;
       line-height: 1;
-      cursor: pointer;
       background: #eee;
+      color: #000;
+      cursor: pointer;
       height: 160px;
-      padding-top: 100px;
+      padding-top: 110px;
       width: 32px;
     }
   }
