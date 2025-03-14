@@ -6,6 +6,8 @@ import Piano from "./Piano";
 import NullPlayer from "./players/NullPlayer";
 import { availableInstruments, Playable, SoundFont } from "./players";
 import { Sequencer } from "./Sequencer";
+import Key from "./music-theory/Key";
+import Note from "./music-theory/Note";
 
 const SPEED_KEY = "CC-speed";
 
@@ -33,6 +35,23 @@ export const pianoSpec: PlayerSpec = {
   name: availableInstruments[SoundFont.TonePiano]![0]!,
   midiProgram: 1,
 };
+
+export function keyFromUrl(): Key | null {
+  let keyStr = new URLSearchParams(window.location.search).get("key");
+  if (!keyStr) {
+    return null;
+  }
+
+  let minor = false;
+  if (keyStr.endsWith("m")) {
+    minor = true;
+    keyStr = keyStr.substring(0, keyStr.length - 1);
+  }
+
+  const note = Note.fromName(keyStr);
+
+  return minor ? Key.minor(note) : Key.major(note);
+}
 
 export function playerSpecFromUrl(): PlayerSpec | undefined {
   let params = new URLSearchParams(window.location.search);
@@ -63,6 +82,7 @@ export const atoms = {
   piano: atom(defaultPiano),
   recorder: atom(new Recorder({ piano: defaultPiano })),
   chordSet: atom({} as object),
+  key: atom(keyFromUrl()),
   sequencer: atom(new Sequencer(defaultPiano)),
   song: atom(""),
   songChords: atom(undefined as ReactNode | undefined),

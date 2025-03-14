@@ -11,14 +11,15 @@ import {
 import Note from "../music-theory/Note";
 import Paths from "../Paths";
 import { pianoSpec, useStore } from "../store";
-import "./CommonChordsPage.scss";
 import { getInterval } from "../music-theory/Interval";
 import { useCommonChordsQuery } from "../common-chords/useCommonChordsQuery";
 import { Intro } from "../common-chords/Intro";
 import MajorKeyChords from "../common-chords/MajorKeyChords";
 import MinorKeyChords from "../common-chords/MinorKeyChords";
 import { Content900, H1, HeadingNav, HrFinal } from "../ui/Common";
+import KeySelect from "../ui/KeySelect";
 import { TourContext, useTour } from "../TourContext";
+import "./CommonChordsPage.scss";
 
 Note.unicodeAccidentals = true;
 
@@ -54,7 +55,7 @@ function CommonChordsPage() {
   );
 
   const navigate = useNavigate();
-  const { urlKey = "" }: ParamsMatch = useParams();
+  const urlKey = (useParams() as ParamsMatch).urlKey || "";
   const musicKey = keys.find(el => {
     const name = el.toString(true).replace(" ", "-");
     return name === urlKey;
@@ -118,40 +119,18 @@ function CommonChordsPage() {
               The Common Chords of {musicKey.toString()} : mrclay.org
             </Head.Title>
           </Head>
-          <form className="form-inline ms-4">
-            <select
-              className="form-control"
-              onChange={e => {
-                const newKey = keys.find(
-                  el => el.toString() === e.target.value,
-                );
-                if (newKey) {
-                  navigate(
-                    Paths.commonChordsPrefix(
-                      `/${newKey.toString(true).replace(" ", "-")}${qs}`,
-                    ),
-                  );
-                }
-              }}
-              defaultValue={musicKey.toString()}
-            >
-              <optgroup label="major">
-                {keys
-                  .filter(key => key.getQuality() === ThirdQuality.MAJOR)
-                  .map(key => key + "")
-                  .map(name => (
-                    <option key={name}>{name}</option>
-                  ))}
-              </optgroup>
-              <optgroup label="minor">
-                {keys
-                  .filter(key => key.getQuality() === ThirdQuality.MINOR)
-                  .map(key => key + "")
-                  .map(name => (
-                    <option key={name}>{name}</option>
-                  ))}
-              </optgroup>
-            </select>
+          <form className="ms-4">
+            <KeySelect
+              allowEmpty={false}
+              onChange={newKey =>
+                navigate(
+                  Paths.commonChordsPrefix(
+                    `/${newKey.toString(true).replace(" ", "-")}${qs}`,
+                  ),
+                )
+              }
+              musicKey={musicKey}
+            />
           </form>
         </div>
       </Content900>
