@@ -121,6 +121,7 @@ const knownChords = [
   "D# [F#] [G] [A] B",
   "D# [F#] [G] G# A B",
   // Cases with F#
+  "F# Ab C [D] [Eb]",
   "F# [A] C D F",
   "F# [G] [A] [B] [C] [D] [E]",
   "F# [G#] A [B] [C] [D] Eb [F]",
@@ -132,7 +133,6 @@ const knownChords = [
   "C# [D] [E] [F] [G] [A] [Bb] [B]",
   "C# [E] F# G A [Bb] [B]", // A13
   // Cases with G#/Ab
-  "Ab C [D] [Eb] F#",
   "G# B D F#",
   "G# [B] [C] D E [F] [G]",
   "G# [B] D E G",
