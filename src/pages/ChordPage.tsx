@@ -32,6 +32,8 @@ import {
   HrFinal,
 } from "../ui/Common";
 import Transpose from "../ui/Transpose";
+import KeySelector, { useKeyStorage } from "../ui/KeySelector";
+import { scaleDegreesForKeys } from "../music-theory/ScaleDegree";
 
 interface MatchItems {
   notes?: string;
@@ -46,6 +48,7 @@ const example = Paths.chordPrefix("/43,56,60,62,65/G7b9sus");
 export default function ChordPage() {
   const [piano] = useStore.piano();
   const { saveSf } = useSfStorage();
+  const { saveKey } = useKeyStorage();
 
   const timeout = useRef<number | null>(null);
 
@@ -54,6 +57,7 @@ export default function ChordPage() {
   const [searchParams] = useSearchParams();
   const transpose = searchParams.get("transpose") || "0";
 
+  const [key] = useStore.key();
   const [activeKeys, setActiveKeys] = useState<ActiveKeys>(new Set());
   const [title, setTitle] = useState("");
   const [action, setAction] = useState<Action>("stop");
@@ -102,7 +106,7 @@ export default function ChordPage() {
         path += "/" + Ops.fixedEncodeURIComponent(title);
       }
 
-      const url = Paths.chordPrefix(path) + `?${saveSf()}`;
+      const url = Paths.chordPrefix(path) + `?${saveSf(saveKey())}`;
       navigate(url, {
         replace: replaceUrl,
       });
@@ -194,7 +198,13 @@ export default function ChordPage() {
         </p>
       </Content900>
 
-      <Keyboard activeKeys={activeKeys} onKeyClick={onKeyClick} />
+      <Keyboard
+        activeKeys={activeKeys}
+        onKeyClick={onKeyClick}
+        scaleDegrees={
+          key ? scaleDegreesForKeys(key, activeKeys, false) : undefined
+        }
+      />
 
       <Container900 className="mt-3">
         <BigPlay
@@ -231,6 +241,9 @@ export default function ChordPage() {
 
       <Content900>
         <SoundSelector />
+        <div style={{ width: "fit-content" }}>
+          Show scale degrees <KeySelector />
+        </div>
       </Content900>
 
       <Content900>

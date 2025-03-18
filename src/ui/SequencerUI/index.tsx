@@ -1,7 +1,6 @@
 import React, {
   DragEventHandler,
   MouseEventHandler,
-  useEffect,
   useMemo,
   useState,
 } from "react";
@@ -9,11 +8,14 @@ import React, {
 import "./index.scss";
 import { getPianoKeyLayout } from "../Keyboard";
 import { Sequencer } from "../../Sequencer";
+import Key from "../../music-theory/Key";
+import { scaleDegreesForKeys } from "../../music-theory/ScaleDegree";
 
 interface SequencerProps {
-  sequencer: Sequencer;
   currentStepIndex: number;
+  musicKey?: Key;
   onStepsChange(changedSteps: number[]): void;
+  sequencer: Sequencer;
 }
 
 const { whites, blacks } = getPianoKeyLayout();
@@ -29,9 +31,10 @@ function stepNoteFromId(id: string): StepNote {
 }
 
 export default function SequencerUI({
-  sequencer,
   currentStepIndex,
+  musicKey,
   onStepsChange,
+  sequencer,
 }: SequencerProps) {
   const groups = sequencer.getGroups();
 
@@ -195,6 +198,7 @@ export default function SequencerUI({
     active: boolean,
     step: number,
     note: number,
+    scaleDegree: string,
     left = 0,
     isJoin = false,
   ) => (
@@ -207,7 +211,11 @@ export default function SequencerUI({
       onClick={handleKey}
       className={(active ? "active " : " ") + (isJoin ? "joined " : " ")}
       style={{ left: left + "px" }}
-    />
+    >
+      {active && scaleDegree ? (
+        <span data-c12={note % 12}>{scaleDegree}</span>
+      ) : null}
+    </span>
   );
 
   return (
@@ -217,57 +225,65 @@ export default function SequencerUI({
       onDragOver={onEnterOver}
       onDrop={handleDrop}
     >
-      {sequencer.stepData.map((activeNotes, i) => (
-        <div
-          key={i}
-          className={`stepRow ${i === currentStepIndex ? "active" : ""}`}
-          data-step={i}
-        >
-          <div className="white">
-            {whites.map(({ note }) => {
-              const isJoin = sequencer.joinData[i]!.includes(note);
-              return renderKey(
-                activeNotes.indexOf(note) !== -1,
-                i,
-                note,
-                0,
-                isJoin,
-              );
-            })}
-          </div>
-          <div className="black">
-            {blacks.map(({ note, left }) => {
-              const isJoin = sequencer.joinData[i]!.includes(note);
-              return renderKey(
-                activeNotes.indexOf(note) !== -1,
-                i,
-                note,
-                left,
-                isJoin,
-              );
-            })}
-          </div>
-          <button
-            type="button"
-            data-remove-step={i}
-            onClick={handleRemoveStep}
-            title="Remove"
+      {sequencer.stepData.map((activeNotes, i) => {
+        const map = musicKey
+          ? scaleDegreesForKeys(musicKey, new Set(activeNotes), false)
+          : new Map<number, string>();
+
+        return (
+          <div
+            key={i}
+            className={`stepRow ${i === currentStepIndex ? "active" : ""}`}
+            data-step={i}
           >
-            &times;
-          </button>
-          <button
-            type="button"
-            data-copy-step={i}
-            onClick={handleCopyStep}
-            title="Copy"
-          >
-            c
-          </button>
-          <div className={`step-num color-${stepColor.get(i) || "no-group"}`}>
-            {i}
+            <div className="white">
+              {whites.map(({ note }) => {
+                const isJoin = sequencer.joinData[i]!.includes(note);
+                return renderKey(
+                  activeNotes.indexOf(note) !== -1,
+                  i,
+                  note,
+                  map.get(note) || "",
+                  0,
+                  isJoin,
+                );
+              })}
+            </div>
+            <div className="black">
+              {blacks.map(({ note, left }) => {
+                const isJoin = sequencer.joinData[i]!.includes(note);
+                return renderKey(
+                  activeNotes.indexOf(note) !== -1,
+                  i,
+                  note,
+                  map.get(note) || "",
+                  left,
+                  isJoin,
+                );
+              })}
+            </div>
+            <button
+              type="button"
+              data-remove-step={i}
+              onClick={handleRemoveStep}
+              title="Remove"
+            >
+              &times;
+            </button>
+            <button
+              type="button"
+              data-copy-step={i}
+              onClick={handleCopyStep}
+              title="Copy"
+            >
+              c
+            </button>
+            <div className={`step-num color-${stepColor.get(i) || "no-group"}`}>
+              {i}
+            </div>
           </div>
-        </div>
-      ))}
+        );
+      })}
     </div>
   );
 }

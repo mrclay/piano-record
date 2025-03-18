@@ -68,12 +68,14 @@
     > span {
       background: rgb(var(--bs-info-rgb));
       border-radius: 100%;
-      color: white;
+      color: #000;
       display: inline-block;
       font-size: 15px;
       line-height: 30px;
+      font-weight: 600;
       width: 30px;
       position: relative;
+      pointer-events: none;
       left: 0;
     }
   }

@@ -5,18 +5,18 @@ import { ThirdQuality } from "./constants";
 export type ActiveScaleDegrees = Map<number, string>;
 
 const scaleDegrees = [
-  "1", //      0
-  "#1/b2", //  1
-  "2", //      2
-  "#2/b3", //  3
-  "3", //      4
-  "4", //      5
-  "#4/b5", //  6
-  "5", //      7
-  "#5/b6", //  8
-  "6", //      9
-  "#6/b7", // 10
-  "7", //     11
+  "1", //   0
+  "b2", //  1
+  "2", //   2
+  "b3", //  3
+  "3", //   4
+  "4", //   5
+  "b5", //  6
+  "5", //   7
+  "b6", //  8
+  "6", //   9
+  "b7", // 10
+  "7", //  11
 ];
 
 let lastCache = null as null | {
@@ -28,6 +28,7 @@ let lastCache = null as null | {
 export function scaleDegreesForKeys(
   key: Key,
   activeKeys: ActiveKeys,
+  cache: "hold" | false = "hold",
 ): ActiveScaleDegrees {
   const chromaticBase = key.items[0].getChromatic();
   const foundDegrees = new Set<string>();
@@ -43,7 +44,7 @@ export function scaleDegreesForKeys(
 
   // If the key is the same and no new notes are played, use the last
   // computed set of scale degrees.
-  if (lastCache && lastCache.prevKey === key) {
+  if (cache !== false && lastCache && lastCache.prevKey === key) {
     const hasNewNote =
       foundChromatics.union(lastCache.prevChromatics).size >
       lastCache.prevChromatics.size;
@@ -58,91 +59,40 @@ export function scaleDegreesForKeys(
     }
   }
 
-  const some = (...degrees: Array<number | string>) =>
-    degrees.some(el =>
-      typeof el === "number" ? foundChromatics.has(el) : foundDegrees.has(el),
-    );
   const every = (...degrees: Array<number | string>) =>
     degrees.every(el =>
       typeof el === "number" ? foundChromatics.has(el) : foundDegrees.has(el),
     );
 
   let outScaleDegrees = scaleDegrees.slice();
-  let modified: boolean;
-  const replaceAll = (str1: string, str2: string) => {
-    foundDegrees.delete(str1);
-    foundDegrees.add(str2);
 
-    const idx = outScaleDegrees.indexOf(str1);
-    if (idx !== -1) {
-      outScaleDegrees[idx] = str2;
-    }
-  };
-
-  function useMinorAccidentals() {
-    replaceAll("#1/b2", "b2");
-    replaceAll("#2/b3", "b3");
-    replaceAll("#5/b6", "b6");
-    replaceAll("#6/b7", "b7");
-  }
-
-  if (key.getQuality() === ThirdQuality.MINOR) {
-    useMinorAccidentals();
-  }
-
-  modified = true;
-  while (modified) {
-    modified = false;
-
-    if (some("#5/b6")) {
-      if (some(4, 11)) {
-        replaceAll("#5/b6", "#5");
-        replaceAll("#4/b5", "#4");
-      } else {
-        useMinorAccidentals();
+  if (key.getQuality() === ThirdQuality.MINOR && every(11, 3, 6)) {
+    // b1 chord!
+    outScaleDegrees[11] = "b1";
+  } else {
+    // Use known chords to find sharps
+    for (const chord of knownChords) {
+      const allowedChromatics = new Set(chord.notes.map(el => el.chromatic));
+      if (!foundChromatics.isSubsetOf(allowedChromatics)) {
+        // Non-match
+        continue;
       }
-    }
-
-    if (every("#1/b2", "#4/b5", "#6/b7")) {
-      useMinorAccidentals();
-      replaceAll("#4/b5", "b5");
-
-      if (every(3, 6, 11)) {
-        replaceAll("7", "b1");
+      const requireChromatics = new Set(
+        chord.notes.filter(el => el.required).map(el => el.chromatic),
+      );
+      if (!foundChromatics.isSupersetOf(requireChromatics)) {
+        // Non-match
+        continue;
       }
-    }
 
-    if (some("#1/b2")) {
-      if (some(4, 6, 7, 9)) {
-        replaceAll("#1/b2", "#1");
-        replaceAll("#6/b7", "b7");
-      } else if (some(5, 6, 8, 10)) {
-        useMinorAccidentals();
-        replaceAll("#4/b5", "b5");
-      }
-    }
-
-    if (some("#2/b3")) {
-      if (some(11, 6, 9)) {
-        replaceAll("#2/b3", "#2");
-        replaceAll("#4/b5", "#4");
-      } else {
-        useMinorAccidentals();
-      }
-    }
-
-    if (some("#4/b5")) {
-      if (some(2, 9, 0)) {
-        replaceAll("#4/b5", "#4");
-        replaceAll("#5/b6", "#5");
-      } else {
-        replaceAll("#4/b5", "b5");
-        replaceAll("#6/b7", "b7");
-      }
-    }
-
-    if (some("#6/b7")) {
-      useMinorAccidentals();
+      // Set sharps
+      chord.notes
+        .filter(el => el.sharps === 1)
+        .forEach(el => {
+          outScaleDegrees[el.chromatic] = `#${el.degree}`;
+        });
+      // console.log(`Chord: ${chord.str}`);
+      break;
     }
   }
 
@@ -163,3 +113,50 @@ export function scaleDegreesForKeys(
 
   return out;
 }
+
+// Exact matches. Use the accidentals in these matches, then assume
+// flats for everything else.
+const knownChords = [
+  // Cases with D#
+  "D# [F#] [G] [A] B",
+  "D# [F#] [G] G# A B",
+  // Cases with F#
+  "F# [A] C D F",
+  "F# [G] [A] [B] [C] [D] [E]",
+  "F# [G#] A [B] [C] [D] Eb [F]",
+  "Ab [Bb] C [D] [Eb] [F] Gb",
+  "F# [G#] [A] [B] C [D] Eb [F]",
+  // Cases with C#/Db
+  "Db F [G] [Bb]",
+  "C# [E] G A C",
+  "C# [D] [E] [F] [G] [A] [Bb] [B]",
+  "C# [E] F# G A [Bb] [B]", // A13
+  // Cases with G#/Ab
+  "Ab C [D] [Eb] F#",
+  "G# B D F#",
+  "G# [B] [C] D E [F] [G]",
+  "G# [B] D E G",
+  "Ab [Bb] C [D] F [G]",
+  "Ab [Bb] C [D] E F [G]",
+  "Ab [Bb] C [D] Eb [F] [G]",
+  "Ab B [D] [E] [F] G", // G7b9
+  "G# [A] [B] [C] [D] E [F] [F#] [G]",
+  "G# [B] C# D E [F] [F#]", // E13
+  "G# [A] [B] D [E] F",
+  "G# B [D] F",
+  // A# (we'll say none)
+].map(chord => ({
+  str: chord,
+  notes: chord.split(" ").map(str => {
+    const required = str[0] !== "[";
+    const note = required ? str : str.substring(1, str.length - 1);
+    const letter = note[0];
+    const accidental = note[1];
+    const sharps = accidental === "#" ? 1 : accidental === "b" ? -1 : 0;
+    const degree = "CDEFGAB".indexOf(letter) + 1;
+    const chromatic = Number(
+      ({ C: 0, D: 2, E: 4, F: 5, G: 7, A: 9, B: 11 }[letter] || 0) + sharps,
+    );
+    return { degree, chromatic, sharps, required };
+  }),
+}));

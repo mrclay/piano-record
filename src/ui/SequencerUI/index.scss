@@ -24,12 +24,35 @@
     }
   }
 
+  [data-note] > span {
+    color: #000;
+    display: block;
+    font-size: 11px;
+    font-weight: 600;
+    text-align: center;
+    line-height: 28px;
+    pointer-events: none;
+    position: absolute;
+    left: 0;
+    right: 0;
+    width: auto;
+    z-index: 2;
+
+    &[data-c12="0"] { left: 0; right: 6px; }
+    &[data-c12="2"] { left: 9px; right: 6px; }
+    &[data-c12="4"] { left: 9px; right: 0; }
+    &[data-c12="5"] { left: 0; right: 6px; }
+    &[data-c12="7"] { left: 9px; right: 6px; }
+    &[data-c12="9"] { left: 9px; right: 6px; }
+    &[data-c12="11"] { left: 9px; right: 0; }
+  }
+
   .white {
     z-index: 1;
     padding-left: 10px;
     display: flex;
 
-    span {
+    > span {
       background: #777;
       border: 0;
       border-radius: 0;
@@ -39,6 +62,7 @@
       font-weight: 700;
       margin-left: 1px;
       padding-top: 0;
+      position: relative;
       width: 33px;
 
       &.joined {
@@ -52,7 +76,7 @@
     top: 0;
     left: 0;
 
-    span {
+    > span {
       background: #555;
       border: 1px solid #fff;
       border-top: 0;

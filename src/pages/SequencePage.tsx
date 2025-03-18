@@ -393,7 +393,7 @@ export default function SequencePage(): ReactNode {
 
       <SequencerUI
         currentStepIndex={step}
-        sequencer={sequencer}
+        musicKey={key || undefined}
         onStepsChange={changedSteps => {
           // console.log(JSON.stringify([newStepData, newJoinData]));
 
@@ -405,6 +405,7 @@ export default function SequencePage(): ReactNode {
           }
           forceRender();
         }}
+        sequencer={sequencer}
       />
       <Keyboard
         piano={sequencer.piano}
