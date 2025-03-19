@@ -212,7 +212,7 @@ export default function SequencerUI({
       className={(active ? "active " : " ") + (isJoin ? "joined " : " ")}
       style={{ left: left + "px" }}
     >
-      {active && scaleDegree ? (
+      {scaleDegree && active && !isJoin ? (
         <span data-c12={note % 12}>{scaleDegree}</span>
       ) : null}
     </span>
