@@ -43,7 +43,7 @@ export const unicodeAccidentalsMap: Record<string, string> = {
 export const diatonicOffsets = [2, 2, 1, 2, 2, 2, 1];
 export const cMajorLetters = "CDEFGAB".split("");
 export const majorKeys = "C C# Db D Eb E F F# Gb G G# Ab A Bb B".split(" ");
-export const minorKeys = "C C# D D# Eb E F F# G G# A Bb B".split(" ");
+export const minorKeys = "C C# D Eb E F F# G G# A Bb B".split(" ");
 export const midiClasses = "C C# D D# E F F# G G# A A# B".split(" ");
 
 export enum ThirdQuality {

@@ -20,7 +20,7 @@ export const commonChords = {
     "V/IV 7": 5,
     "V/V 7": 5,
     "V/vi 7": 5,
-    "V/ii 7": 4,
+    "V/ii 7": 5,
     "IV 7": 5,
     "bVI 7": 2,
     "#iv m7b5": 3,
