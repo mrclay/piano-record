@@ -6,11 +6,12 @@
   "scripts": {
     "dev": "vite",
     "tsc": "tsgo -p tsconfig.app.json",
-    "build": "tsc && vite build",
-    "build:local": "tsc && LOCAL=1 vite build",
+    "build": "npm run tsc && npm run test && vite build",
+    "build:local": "npm run tsc && npm run test && LOCAL=1 vite build && npx serve dist",
     "preview": "vite preview",
     "fmt": "oxfmt",
     "fmt:check": "oxfmt --check",
+    "test": "vitest run",
     "deploy": "scripts/deploy.sh"
   },
   "dependencies": {
@@ -43,6 +44,8 @@
     "oxfmt": "^0.42.0",
     "oxlint": "^1.57.0",
     "sass-embedded": "^1.98.0",
-    "vite": "^8.0.1"
+    "serve": "^14.2.6",
+    "vite": "^8.0.1",
+    "vitest": "^4.1.2"
   }
 }

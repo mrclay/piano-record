@@ -1,3 +1,4 @@
+import { expect, test, it } from "vitest";
 import { getInterval } from "./Interval";
 
 test.each([
