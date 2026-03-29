@@ -1,5 +1,5 @@
 import Key from "../Key";
-import { ScoredChord, ScoringAttribute } from "./scoring";
+import { type ScoredChord, type ScoringAttribute } from "./scoring";
 
 export interface ScoreBoost {
   readonly boost: number;

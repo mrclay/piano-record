@@ -1,6 +1,5 @@
-import { NavigateFunction } from "react-router-dom";
-
-import { Command } from "./Ops";
+import { type NavigateFunction } from "react-router";
+import { type Command } from "./Ops";
 
 export const SAMPLES_URL =
   // @ts-ignore

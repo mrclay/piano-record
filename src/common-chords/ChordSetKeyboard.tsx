@@ -1,5 +1,5 @@
 import { useStore } from "../store";
-import React, { CSSProperties, useEffect, useState } from "react";
+import React, { type CSSProperties, useEffect, useState } from "react";
 import Keyboard from "../ui/Keyboard";
 import PianoSpeed from "../ui/PianoSpeed";
 import SongChords from "../ui/SongChords";

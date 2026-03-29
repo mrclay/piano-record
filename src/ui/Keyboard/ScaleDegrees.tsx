@@ -1,15 +1,11 @@
 import React, {
-  MouseEventHandler,
-  ReactNode,
+  type MouseEventHandler,
+  type ReactNode,
   useCallback,
   useMemo,
 } from "react";
-
-import { ActiveKeys } from "../../Piano";
-
+import { type ActiveKeys } from "../../Piano";
 import "./index.scss";
-import * as C from "../../constants";
-import { Char } from "../../music-theory/constants";
 
 export const scaleDegRange = [48, 72] as const;
 

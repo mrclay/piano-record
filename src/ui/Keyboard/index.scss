@@ -48,7 +48,9 @@
       pointer-events: none;
     }
     i {
-      font: 0.5em normal Georgia, serif;
+      font:
+        0.5em normal Georgia,
+        serif;
       position: relative;
       top: -0.7em;
       pointer-events: none;
@@ -128,7 +130,8 @@
     }
   }
 
-  .white, .black {
+  .white,
+  .black {
     > span.active {
       background: rgb(var(--bs-info-rgb));
     }

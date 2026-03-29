@@ -38,13 +38,34 @@
     width: auto;
     z-index: 2;
 
-    &[data-c12="0"] { left: 0; right: 6px; }
-    &[data-c12="2"] { left: 9px; right: 6px; }
-    &[data-c12="4"] { left: 9px; right: 0; }
-    &[data-c12="5"] { left: 0; right: 6px; }
-    &[data-c12="7"] { left: 9px; right: 6px; }
-    &[data-c12="9"] { left: 9px; right: 6px; }
-    &[data-c12="11"] { left: 9px; right: 0; }
+    &[data-c12="0"] {
+      left: 0;
+      right: 6px;
+    }
+    &[data-c12="2"] {
+      left: 9px;
+      right: 6px;
+    }
+    &[data-c12="4"] {
+      left: 9px;
+      right: 0;
+    }
+    &[data-c12="5"] {
+      left: 0;
+      right: 6px;
+    }
+    &[data-c12="7"] {
+      left: 9px;
+      right: 6px;
+    }
+    &[data-c12="9"] {
+      left: 9px;
+      right: 6px;
+    }
+    &[data-c12="11"] {
+      left: 9px;
+      right: 0;
+    }
   }
 
   .white {

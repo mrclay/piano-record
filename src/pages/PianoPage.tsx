@@ -6,21 +6,24 @@ import {
   useNavigate,
   useParams,
   useSearchParams,
-} from "react-router-dom";
+} from "react-router";
 import Head from "@uiw/react-head";
 
 import * as C from "../constants";
 import Keyboard from "../ui/Keyboard";
-import Ops, { TimedOp } from "../Ops";
+import Ops, { type TimedOp } from "../Ops";
 import Paths from "../Paths";
-import { ActiveKeys, PianoListener } from "../Piano";
-import Recorder, { RecorderListener, RecorderState } from "../Recorder";
+import { type ActiveKeys, type PianoListener } from "../Piano";
+import Recorder, { type RecorderListener, RecorderState } from "../Recorder";
 import Title from "../ui/Title";
 import Preview from "../ui/Preview";
 import Saver from "../ui/Saver";
 import PianoSpeed from "../ui/PianoSpeed";
 import { useStore } from "../store";
-import SoundSelector, { UseSfStorage, useSfStorage } from "../ui/SoundSelector";
+import SoundSelector, {
+  type UseSfStorage,
+  useSfStorage,
+} from "../ui/SoundSelector";
 import {
   Container900,
   Content900,

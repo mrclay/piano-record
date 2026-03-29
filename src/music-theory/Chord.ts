@@ -1,7 +1,7 @@
 import Note from "./Note";
 import { readNotePattern } from "./constants";
 import { boundModulo } from "./CircularSet";
-import { ChordType, ChordTypes } from "./ChordType";
+import { type ChordType, ChordTypes } from "./ChordType";
 
 export interface Chord {
   root: Note;
@@ -57,7 +57,7 @@ export function getChordPitches(chord: Chord) {
   const chromaticRoot = chord.root.getChromatic();
 
   const chordNotes = [0, ...chord.type.intervals].map(offset =>
-    boundModulo(12, chromaticRoot + offset)
+    boundModulo(12, chromaticRoot + offset),
   );
   const triad = chordNotes.slice(0, 3).sort().join(",");
   let seventh = "";

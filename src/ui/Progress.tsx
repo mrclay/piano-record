@@ -7,7 +7,7 @@ export interface ProgressProps {
 
 export default function Progress({ ratio, steps }: ProgressProps) {
   const percentage = Math.round(
-    (steps ? (steps[0] + 1) / steps[1] : ratio) * 100
+    (steps ? (steps[0] + 1) / steps[1] : ratio) * 100,
   );
   const style = {
     transition: "width 250ms",

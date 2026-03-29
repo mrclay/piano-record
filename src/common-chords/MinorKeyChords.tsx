@@ -1,6 +1,6 @@
 import React from "react";
 import { ChordSet } from "./ChordSet";
-import { Keyed } from "./Intro";
+import { type Keyed } from "./Intro";
 import { useRenderers } from "./renderers";
 import { ClickToPlay } from "./ClickToPlay";
 
@@ -35,7 +35,7 @@ function MinorKeyChords({ musicKey, offset }: Keyed) {
             "https://mrclay.org/sequence/songs/v4,110,0p5,p43p30p3f-j43p33j30j3f-p37j30j33-p43p3cj30j33j37p3f-p43p2bp3bp3e-p41j2bp35j3ej3b-j41j2bp32j3ej3bj35-p3fp3cp24p30p37-j3fj3cj24j30j37-j3fj3cj24j30j37-j3fj3cj24j30j37-j3fj3cj24j30j37",
             <>
               {note("i")}m - <b>{note("V")}7</b> - {note("i")}m
-            </>
+            </>,
           ),
           f7(
             "vii dim7",
@@ -47,7 +47,7 @@ function MinorKeyChords({ musicKey, offset }: Keyed) {
               </b>{" "}
               - {note("i")}m/
               {note("biii")}
-            </>
+            </>,
           ),
         ]}
         desc={
@@ -72,14 +72,14 @@ function MinorKeyChords({ musicKey, offset }: Keyed) {
             "https://mrclay.org/sequence/songs/v4,80,0p5,p3cp33p37p30-j3cj33j37j30-j3cj33j37j30-p3bj33j37p30-p3cp2bj33j37-p3ej2bj33j37-p3fj33j37p24-p41j33j37j24-p43p26p35p39p30-j43j26j35j39j30-j43j26j35j39j30-j43p26j35j39j30-j43p2bp3bp35p37-j43j2bj3bj35j37-j43j3bj35p2fj37-j35j3bj43j2fj37",
             <>
               {note("i")}m - <b>{note("ii")}m7</b> - {note("V")}7
-            </>
+            </>,
           ),
           f(
             "IV 7",
             "https://mrclay.org/sequence/songs/v4,90,0p5,p30p3fp3cp3a-j30p4aj3fj3cj3a-j30p48j3fj3cj3a-j30p46j3fj3cj3aj48-p29p45p39p3cp3fj48-j29p46j39j3cj3fj48-j29p41j39j3cj3fj48-p43p3ap37j48p33p30-j43j3aj37j48j33j30-j43j3aj37j48j33j30-p24j43j3aj37j48j33-j3aj37j33",
             <>
               {note("i")}m7 - <b>{note("IV")}7</b> - {note("i")}m7
-            </>
+            </>,
           ),
         ]}
         desc={
@@ -97,7 +97,7 @@ function MinorKeyChords({ musicKey, offset }: Keyed) {
             <>
               {note("i")}7 - <b>{note("bII")}maj7</b> - {note("V")}7 -{" "}
               {note("i")}m
-            </>
+            </>,
           ),
           f(
             "bvii m7",
@@ -105,7 +105,7 @@ function MinorKeyChords({ musicKey, offset }: Keyed) {
             <>
               {note("i")}m - <b>{note("bvii")}m</b> - {note("bVI")}maj7 -{" "}
               {note("V")}sus {note("V")}
-            </>
+            </>,
           ),
         ]}
         desc={<p>Two more borrowed chords from the phrygian mode.</p>}
@@ -122,7 +122,7 @@ function MinorKeyChords({ musicKey, offset }: Keyed) {
                 {note("ii")}ø/{note("iv")}
               </b>{" "}
               - {note("V")} - {note("i")}m
-            </>
+            </>,
           ),
         ]}
         desc={
@@ -140,21 +140,21 @@ function MinorKeyChords({ musicKey, offset }: Keyed) {
             "https://mrclay.org/sequence/songs/v4,40,0p25,p43p30p40p3ap37-j43j30j40j3aj37-j43j30j40j3aj37-p42j30j40j3aj37-p43p26j40p37p3cp3a-p46j26j40j37j3cj3a-p44p28j40j37j3aj3c-p43j28j40j37j3aj3c-p41p29p38p35-j41j29j38j35-j41j29j38j35-j41j29j38j35--",
             <>
               <b>{note("I")}7</b> - {note("iv")}m
-            </>
+            </>,
           ),
           f(
             "V/V 7",
             "https://mrclay.org/sequence/songs/v4,45,0p25,p3f-p42p24-j42j24-p43j24p33p37p3c-j43j24j33j37j3c-j43j24j33j37j3c-p47j24j33j37j3c-p48p26-j26-j26p36p39p3c-j26j36j39j3c-j26j36j39j3c-j26j36j39j3cp4a-p2bp47j4a-j2bj47j4a-j2bp35p3bp3ej47j4a-j2bj35j3bj3ej47j4a-j2bj35j3bj3ej47j4ap41-j2bj35j3bj3ej41j47j4a-p3fp24-j3fj24-j3fj24-j3fj24-",
             <>
               {note("i")}m - <b>{note("II")}7</b> - {note("V")}7 - {note("i")}m
-            </>
+            </>,
           ),
           f7(
             "V/bVI 7",
             "https://mrclay.org/piano/songs/C300C3c7C3ffC43pD432aC432tD3cc1D3fc4D30c8D43drC27e8C37edC3aelC3dexC48mtC46opD48ouC43qlD46qmD43skC41slD27twD3au2D3du4D37u5D41v2C2cv3C33vaC3cvcC3fvfD2c16jD3c16sD3f16sD3316u",
             <>
               {note("i")}m - <b>{note("bIII")}7</b> - {note("bVI")}
-            </>
+            </>,
           ),
         ]}
         desc={
@@ -173,7 +173,7 @@ function MinorKeyChords({ musicKey, offset }: Keyed) {
             <>
               {note("bVI")}maj7 - {note("bVII")}6 - {note("I")}7sus -{" "}
               <b>{note("I")}7</b>
-            </>
+            </>,
           ),
           f(
             "I maj7",
@@ -181,7 +181,7 @@ function MinorKeyChords({ musicKey, offset }: Keyed) {
             <>
               {note("i")}m7 - {note("bVII")} - {note("bVI")}maj7 -{" "}
               <b>{note("I")}maj7</b> - {note("bVII")}add9 - {note("iv")}m(add9)
-            </>
+            </>,
           ),
         ]}
         desc={
@@ -203,7 +203,7 @@ function MinorKeyChords({ musicKey, offset }: Keyed) {
                 {note("V")}+/{note("vii")}
               </b>{" "}
               - {note("bIII")}/{note("bVII")} - {note("IV")}
-            </>
+            </>,
           ),
         ]}
         desc={
@@ -223,14 +223,14 @@ function MinorKeyChords({ musicKey, offset }: Keyed) {
             <>
               <b>{note("i")}m6</b> - {note("V")}7sus/{note("i")} - {note("V")}7/
               {note("vii")} - <b>{note("i")}m6</b>
-            </>
+            </>,
           ),
           f7(
             "i m(maj7)",
             "https://mrclay.org/sequence/songs/v4,55,0p5,p47p30p3bp37p33-j47j30j37j3bj33-p48j30j37j3bj33-p41j37j3bj33p2ej48-p43p2cp3fp38p3cj48-j43p2bj38j3cj3fj48-j43p29j38j3cj3f-j43j29j38j3cj3f-",
             <>
               <b>{note("i")}m(maj7)</b> - {note("bVI")}maj7 - {note("iv")}m9
-            </>
+            </>,
           ),
           f(
             "i m6 VI",
@@ -241,7 +241,7 @@ function MinorKeyChords({ musicKey, offset }: Keyed) {
                 {note("i")}m6/{note("vi")}
               </b>{" "}
               - {note("iv")}m9
-            </>
+            </>,
           ),
         ]}
         desc={
@@ -261,14 +261,14 @@ function MinorKeyChords({ musicKey, offset }: Keyed) {
               {note("i")}m - {note("i")}m/
               {note("biii")} - <b>{note("#iv")}°7</b> - {note("i")}m/{note("V")}{" "}
               - {note("V")}
-            </>
+            </>,
           ),
           f7(
             "vii/iv dim7",
             "https://mrclay.org/sequence/songs/v4,70,0p5,p24p3cp33-j24j3cj33-j24p48p37j3c-j24j48j37j3c-p28p46p3ap3dj37-j28p44j3aj3dj37-j28p43j3aj3dj37-j28p41j3aj3dj37-p29p44p3cp38-j29j44j3cj38-j29j44j3cj38-j29j44j3cj38--",
             <>
               {note("i")}m - <b>{note("iii")}°7</b> - {note("iv")}m
-            </>
+            </>,
           ),
         ]}
         desc={
@@ -290,14 +290,14 @@ function MinorKeyChords({ musicKey, offset }: Keyed) {
                 {note("bVI")}7/{note("i")}
               </b>{" "}
               - {note("V")}
-            </>
+            </>,
           ),
           f7(
             "subV 7",
             "https://mrclay.org/sequence/songs/v4,50,0p5,p26p41p3cp35-j26p44j41j3cj35-j26p48j41j44j3cj35-p25p43p3bp3fp35-j25p47j43j3bj3fj35-j25p4bj43j47j3bj3fj35-p24p48p3fp43p3cp33-j24j48j43j3fj3cj33-",
             <>
               {note("ii")}m7b5 - <b>{note("bII")}9b5</b> - {note("i")}m
-            </>
+            </>,
           ),
         ]}
         desc={
@@ -317,7 +317,7 @@ function MinorKeyChords({ musicKey, offset }: Keyed) {
             "https://mrclay.org/piano/songs/C300C3f2rC432sC482sD3069D3f69D486aD436jC2b85C3b87C4188C4688D46d6C44dwD44gxC43i3D2bkoD3bl1D41l3D43l5C2bm9C30maC33mcD3010mD3310oD2b113",
             <>
               {note("i")}m - <b>{note("V")}7#9</b> - {note("i")}m/{note("v")}
-            </>
+            </>,
           ),
           f7(
             "subV 7b5",
@@ -325,7 +325,7 @@ function MinorKeyChords({ musicKey, offset }: Keyed) {
             <>
               {note("i")}m - {note("ii")}ø7 - <b>{note("bII")}7b5</b> -{" "}
               {note("i")}m(maj9)
-            </>
+            </>,
           ),
         ]}
         desc={
@@ -344,7 +344,7 @@ function MinorKeyChords({ musicKey, offset }: Keyed) {
             "https://mrclay.org/piano/songs/C240C37zC3c1dC3f1vC432fD437fC438rD43asC44bgD44e6C43ezD43hdC41iqD24koD37l9D3cm8C23mgD3fmkD41n7C36n9C3bniC3fogD3612tD3b13dD3f13hD2313o",
             <>
               {note("i")}m - <b>{note("bI")}</b>
-            </>
+            </>,
           ),
         ]}
         desc={

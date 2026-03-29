@@ -138,7 +138,7 @@ button .progress {
 
 .chord-page-transpose {
   background: inherit;
-  border-radius: .375rem;
+  border-radius: 0.375rem;
   font-size: 1.5em;
 }
 
@@ -229,14 +229,30 @@ button .progress {
   }
 }
 
-.color-0 { color: #ffffff }
-.color-1 { color: #33baf8 }
-.color-2 { color: #ffda6a }
-.color-3 { color: #ea868f }
-.color-4 { color: #75b798 }
-.color-5 { color: #AFB2B6 }
-.color-6 { color: #0D6EFC }
-.color-no-group { color: #666 }
+.color-0 {
+  color: #ffffff;
+}
+.color-1 {
+  color: #33baf8;
+}
+.color-2 {
+  color: #ffda6a;
+}
+.color-3 {
+  color: #ea868f;
+}
+.color-4 {
+  color: #75b798;
+}
+.color-5 {
+  color: #afb2b6;
+}
+.color-6 {
+  color: #0d6efc;
+}
+.color-no-group {
+  color: #666;
+}
 
 .group-action-button {
   background: #ccc;

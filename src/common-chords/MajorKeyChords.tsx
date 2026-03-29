@@ -1,6 +1,6 @@
 import React from "react";
 import { ChordSet } from "./ChordSet";
-import { Keyed } from "./Intro";
+import { type Keyed } from "./Intro";
 import { useRenderers } from "./renderers";
 import { SeventhTeaser } from "./SeventhTeaser";
 import { ClickToPlay } from "./ClickToPlay";

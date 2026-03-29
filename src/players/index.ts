@@ -1,4 +1,7 @@
-import { InstrumentName, instrument as getInstrument } from "soundfont-player";
+import {
+  type InstrumentName,
+  instrument as getInstrument,
+} from "soundfont-player";
 
 import * as C from "../constants";
 import FatBoy_names from "../sf/FatBoy/names.json";
@@ -6,18 +9,20 @@ import FluidR3_GM_names from "../sf/FluidR3_GM/names.json";
 import MusyngKite_names from "../sf/MusyngKite/names.json";
 import Mellotron_names from "../sf/Mellotron/names.json";
 import TonePiano_names from "../sf/TonePiano/names.json";
-import { ActiveKeys } from "../Piano";
+import { type ActiveKeys } from "../Piano";
 import NullPlayer from "./NullPlayer";
 import { SAMPLES_URL } from "../constants";
 
-export enum SoundFont {
-  FatBoy = "FatBoy",
-  FluidR3_GM = "FluidR3_GM",
-  MusyngKite = "MusyngKite",
-  TonePiano = "TonePiano",
-  Mellotron = "Mellotron",
-  Null = "Null",
-}
+export const SoundFont = {
+  FatBoy: "FatBoy",
+  FluidR3_GM: "FluidR3_GM",
+  MusyngKite: "MusyngKite",
+  TonePiano: "TonePiano",
+  Mellotron: "Mellotron",
+  Null: "Null",
+} as const;
+
+export type TSoundFont = (typeof SoundFont)[keyof typeof SoundFont];
 
 export interface Playable {
   keyDown(args: { midi: number; velocity: number }): void;
@@ -28,7 +33,7 @@ export interface Playable {
 }
 
 export const availableInstruments: Record<
-  SoundFont,
+  TSoundFont,
   ReadonlyArray<string> | undefined
 > = {
   [SoundFont.FatBoy]: FatBoy_names,
@@ -56,8 +61,8 @@ const simpleUrls: Record<
 };
 
 export async function createPlayer(
-  soundfont: SoundFont,
-  instrument: string
+  soundfont: TSoundFont,
+  instrument: string,
 ): Promise<Playable | null> {
   if (soundfont === "Null") {
     return new NullPlayer();

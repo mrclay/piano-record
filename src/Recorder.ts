@@ -1,5 +1,5 @@
 import * as C from "./constants";
-import { TimedOp, Op } from "./Ops";
+import { type TimedOp, type Op } from "./Ops";
 import Piano from "./Piano";
 import { EventTarget } from "./dom-event-target";
 

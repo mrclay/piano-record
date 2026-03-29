@@ -1,16 +1,16 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams } from "react-router";
 import { debounce } from "throttle-debounce";
 
 import { Content900, H1, HeadingNav, HrFinal } from "../ui/Common";
 import GuessKeyTable from "../ui/GuessKeyTable";
 import Pie from "../ui/Pie";
 import Saver from "../ui/Saver";
-import { parseChord, ParsedChord } from "../music-theory/Chord";
+import { parseChord, type ParsedChord } from "../music-theory/Chord";
 import Key from "../music-theory/Key";
 import {
-  BoostCollection,
-  ScoredChord,
+  type BoostCollection,
+  type ScoredChord,
   scoreProgression,
 } from "../music-theory/opinion/scoring";
 import { Boosts } from "../music-theory/opinion/score-boosts";
@@ -135,7 +135,7 @@ export default function GuessKeyPage() {
               if (canSave && e.key === "Enter") {
                 if (allValid) {
                   save();
-                  scrollDataIntoView();
+                  void scrollDataIntoView();
                 } else {
                   setInitMode(false);
                 }
@@ -169,7 +169,7 @@ export default function GuessKeyPage() {
             onClick={() => {
               if (allValid) {
                 save();
-                scrollDataIntoView();
+                void scrollDataIntoView();
               } else {
                 setInitMode(false);
               }
@@ -209,7 +209,7 @@ export default function GuessKeyPage() {
                   onClick={score => {
                     if (score) {
                       setHighlightedScore(score);
-                      scrollDataIntoView();
+                      void scrollDataIntoView();
                     }
                   }}
                   onHover={score => {

@@ -1,4 +1,4 @@
-import { ActiveKeys } from "../Piano";
+import { type ActiveKeys } from "../Piano";
 import Key from "./Key";
 import { ThirdQuality } from "./constants";
 
@@ -30,7 +30,7 @@ export function scaleDegreesForKeys(
   activeKeys: ActiveKeys,
   cache: "hold" | false = "hold",
 ): ActiveScaleDegrees {
-  const chromaticBase = key.items[0].getChromatic();
+  const chromaticBase = key.items[0]!.getChromatic();
   const foundDegrees = new Set<string>();
   const foundChromatics = new Set<number>();
 
@@ -38,7 +38,7 @@ export function scaleDegreesForKeys(
   for (const midi of activeKeys.values()) {
     const chromatic = (12 + midi - chromaticBase) % 12;
     foundChromatics.add(chromatic);
-    const degree = scaleDegrees[chromatic];
+    const degree = scaleDegrees[chromatic]!;
     foundDegrees.add(degree);
   }
 
@@ -53,7 +53,7 @@ export function scaleDegreesForKeys(
       const out = new Map<number, string>();
       for (const midi of activeKeys.values()) {
         const chromatic = (12 + midi - chromaticBase) % 12;
-        out.set(midi, lastCache.prevScaleDegrees[chromatic]);
+        out.set(midi, lastCache.prevScaleDegrees[chromatic]!);
       }
       return out;
     }
@@ -108,7 +108,7 @@ export function scaleDegreesForKeys(
   // Second pass, write output
   for (const midi of activeKeys.values()) {
     const chromatic = (12 + midi - chromaticBase) % 12;
-    out.set(midi, outScaleDegrees[chromatic]);
+    out.set(midi, outScaleDegrees[chromatic]!);
   }
 
   return out;
@@ -150,7 +150,7 @@ const knownChords = [
   notes: chord.split(" ").map(str => {
     const required = str[0] !== "[";
     const note = required ? str : str.substring(1, str.length - 1);
-    const letter = note[0];
+    const letter = note[0]!;
     const accidental = note[1];
     const sharps = accidental === "#" ? 1 : accidental === "b" ? -1 : 0;
     const degree = "CDEFGAB".indexOf(letter) + 1;

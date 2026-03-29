@@ -1,5 +1,5 @@
 import { useStore } from "../store";
-import { availableInstruments, SoundFont } from "../players";
+import { availableInstruments, SoundFont, type TSoundFont } from "../players";
 
 export default function SoundSelector() {
   const [playerSpec, setPlayerSpec] = useStore.playerSpec();
@@ -15,12 +15,9 @@ export default function SoundSelector() {
             className="form-select"
             value={sf}
             onChange={e => {
-              const newSf = e.target.value as SoundFont;
+              const newSf = e.target.value as TSoundFont;
               const available = availableInstruments[newSf];
               if (available?.includes(name)) {
-                const newName = available!.includes(name)
-                  ? playerSpec.name
-                  : available![0];
                 setPlayerSpec(prev => ({ ...prev, sf: newSf }));
               } else {
                 setPlayerSpec({

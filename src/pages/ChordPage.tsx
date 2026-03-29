@@ -1,5 +1,5 @@
 import React, {
-  MouseEvent,
+  type MouseEvent,
   useCallback,
   useEffect,
   useRef,
@@ -11,7 +11,7 @@ import {
   useParams,
   useNavigate,
   useSearchParams,
-} from "react-router-dom";
+} from "react-router";
 import * as Tone from "tone";
 import Head from "@uiw/react-head";
 
@@ -19,7 +19,7 @@ import BigPlay from "../ui/BigPlay";
 import Keyboard from "../ui/Keyboard";
 import Ops from "../Ops";
 import Paths from "../Paths";
-import { ActiveKeys } from "../Piano";
+import { type ActiveKeys } from "../Piano";
 import Title from "../ui/Title";
 import Saver from "../ui/Saver";
 import { useStore } from "../store";
@@ -234,7 +234,7 @@ export default function ChordPage() {
             setActiveKeys(
               new Set(Array.from(activeKeys).map(note => note + semitones)),
             );
-            handlePlay();
+            void handlePlay();
           }}
         />
       </Container900>

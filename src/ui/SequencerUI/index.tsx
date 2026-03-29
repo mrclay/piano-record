@@ -1,6 +1,6 @@
 import React, {
-  DragEventHandler,
-  MouseEventHandler,
+  type DragEventHandler,
+  type MouseEventHandler,
   useMemo,
   useState,
 } from "react";
@@ -41,8 +41,7 @@ export default function SequencerUI({
   const [fromNote, setFromNote] = useState<StepNote | null>(null);
   const stepColor = useMemo(() => {
     const map = new Map<number, string>();
-    for (let i = 0; i < groups.length; i++) {
-      const g = groups[i];
+    for (const g of groups) {
       for (let j = g.start; j < g.start + g.length; j++) {
         map.set(j, String(g.colorIdx % 7));
       }

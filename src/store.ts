@@ -1,10 +1,15 @@
-import { ReactNode } from "react";
-import { atom, useAtom, Atom } from "jotai";
+import { type ReactNode } from "react";
+import { atom, useAtom, type Atom } from "jotai";
 import { atomWithStorage } from "jotai/utils";
 import Recorder from "./Recorder";
 import Piano from "./Piano";
 import NullPlayer from "./players/NullPlayer";
-import { availableInstruments, Playable, SoundFont } from "./players";
+import {
+  availableInstruments,
+  type Playable,
+  SoundFont,
+  type TSoundFont,
+} from "./players";
 import { Sequencer } from "./Sequencer";
 import Key from "./music-theory/Key";
 import Note from "./music-theory/Note";
@@ -25,7 +30,7 @@ const nullPlayer: Playable = new NullPlayer();
 const defaultPiano = new Piano(nullPlayer);
 
 export interface PlayerSpec {
-  sf: SoundFont;
+  sf: TSoundFont;
   name: string;
   midiProgram: number;
 }
@@ -65,14 +70,14 @@ export function playerSpecFromUrl(): PlayerSpec | undefined {
 
   const [sf = "", name = ""] = (params.get("sf") || ".").split(".");
 
-  const available = availableInstruments[sf as SoundFont];
+  const available = availableInstruments[sf as TSoundFont];
   if (!available) {
     return;
   }
 
   const idx = available.indexOf(name);
   if (idx !== -1) {
-    return { sf: sf as SoundFont, name, midiProgram: idx + 1 };
+    return { sf: sf as TSoundFont, name, midiProgram: idx + 1 };
   }
 }
 

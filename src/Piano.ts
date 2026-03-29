@@ -1,8 +1,7 @@
 import { EventTarget } from "./dom-event-target";
 import * as C from "./constants";
-import Ops, { MidiOp, Op } from "./Ops";
-import { getShepardTones, isShepardToneActive, Playable } from "./players";
-import { act } from "react-dom/test-utils";
+import Ops, { type MidiOp, type Op } from "./Ops";
+import { getShepardTones, isShepardToneActive, type Playable } from "./players";
 
 export type ActiveKeys = Set<number>;
 
@@ -122,7 +121,7 @@ export default class Piano extends EventTarget<PianoEvents> {
 
           // window.logMidi && console.log(e.data);
 
-          if (e.data[0] === C.MIDI0_L1) {
+          if (e.data?.[0] === C.MIDI0_L1) {
             this.send("reset", null);
             return;
           }

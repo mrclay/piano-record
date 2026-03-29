@@ -1,5 +1,5 @@
-import React, { FC, HTMLAttributes, PropsWithChildren } from "react";
-import { NavLink, useLocation } from "react-router-dom";
+import React, { type FC, type PropsWithChildren } from "react";
+import { NavLink, useLocation } from "react-router";
 import Paths from "../Paths";
 
 export const H1 = ({

@@ -3,13 +3,10 @@ import react from "@vitejs/plugin-react";
 
 const localBuild = process.env.LOCAL === "1";
 
-// https://vitejs.dev/config/
-export default defineConfig(({ command }) => {
-  return {
-    plugins: [react()],
-    base: command === "serve" || localBuild ? "/" : "/piano/",
-    server: {
-      open: true,
-    },
-  };
-});
+export default defineConfig(({ command }) => ({
+  plugins: [react()],
+  base: command === "serve" || localBuild ? "/" : "/piano/",
+  server: {
+    open: true,
+  },
+}));

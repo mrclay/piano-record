@@ -1,5 +1,5 @@
-import React, { ComponentType, lazy, Suspense } from "react";
-import { Route, Routes, Navigate, useLocation } from "react-router-dom";
+import { type ComponentType, lazy, Suspense } from "react";
+import { Route, Routes, Navigate, useLocation } from "react-router";
 
 import Paths from "./Paths";
 import { useRootSoundManager } from "./useRootSoundManager";

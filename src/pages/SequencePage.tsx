@@ -1,6 +1,11 @@
-import React, { ReactNode, useEffect, useMemo, useRef, useState } from "react";
-import { useNavigate, useParams } from "react-router";
-import { useSearchParams } from "react-router-dom";
+import React, {
+  type ReactNode,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
+import { useNavigate, useParams, useSearchParams } from "react-router";
 import Head from "@uiw/react-head";
 
 import Paths from "../Paths";
@@ -52,8 +57,7 @@ export default function SequencePage(): ReactNode {
   const groupFirstSteps = useMemo(() => {
     const map = new Map<number, number>();
     let step = 0;
-    for (let i = 0; i < groups.length; i++) {
-      const g = groups[i];
+    for (const [i, g] of groups.entries()) {
       map.set(i, step);
       step += g.length;
     }
@@ -120,12 +124,12 @@ export default function SequencePage(): ReactNode {
   }, [sequencer]);
 
   async function handleStart() {
-    sequencer.start();
+    void sequencer.start();
   }
 
   function handleRewindPlay() {
     sequencer.setStep(0);
-    sequencer.start();
+    void sequencer.start();
   }
 
   function handleStop() {
@@ -426,7 +430,7 @@ export default function SequencePage(): ReactNode {
               className="group-action-button"
               type="button"
               onClick={() => {
-                groups.splice(groupIdx, 0, { ...groups[groupIdx] });
+                groups.splice(groupIdx, 0, { ...groups[groupIdx]! });
                 sequencer.setGroups(groups);
                 forceRender();
               }}
@@ -438,8 +442,8 @@ export default function SequencePage(): ReactNode {
               className="group-action-button"
               type="button"
               onClick={() => {
-                const tmp = groups[groupIdx + 1];
-                groups[groupIdx + 1] = groups[groupIdx];
+                const tmp = groups[groupIdx + 1]!;
+                groups[groupIdx + 1] = groups[groupIdx]!;
                 groups[groupIdx] = tmp;
                 sequencer.setGroups(groups);
                 forceRender();
@@ -453,8 +457,8 @@ export default function SequencePage(): ReactNode {
               className="group-action-button"
               type="button"
               onClick={() => {
-                const tmp = groups[groupIdx - 1];
-                groups[groupIdx - 1] = groups[groupIdx];
+                const tmp = groups[groupIdx - 1]!;
+                groups[groupIdx - 1] = groups[groupIdx]!;
                 groups[groupIdx] = tmp;
                 sequencer.setGroups(groups);
                 forceRender();
@@ -527,7 +531,7 @@ export default function SequencePage(): ReactNode {
                 if (typeof firstStep === "number") {
                   sequencer.stop();
                   sequencer.setStep(firstStep);
-                  sequencer.start();
+                  void sequencer.start();
                 }
               }}
             >

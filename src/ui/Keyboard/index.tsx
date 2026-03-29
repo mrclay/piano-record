@@ -1,16 +1,16 @@
 import React, {
-  MouseEventHandler,
+  type MouseEventHandler,
   useCallback,
   useEffect,
   useMemo,
   useState,
 } from "react";
 
-import Piano, { ActiveKeys, PianoListener } from "../../Piano";
+import Piano, { type ActiveKeys, type PianoListener } from "../../Piano";
 
 import "./index.scss";
 import * as C from "../../constants";
-import { ActiveScaleDegrees } from "../../music-theory/ScaleDegree";
+import { type ActiveScaleDegrees } from "../../music-theory/ScaleDegree";
 
 interface KeyboardProps {
   activeKeys?: ActiveKeys;

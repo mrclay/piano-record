@@ -1,6 +1,6 @@
 import React from "react";
 
-import Progress, { ProgressProps } from "./Progress";
+import Progress, { type ProgressProps } from "./Progress";
 
 interface PreviewProps {
   handlePlay(): void;

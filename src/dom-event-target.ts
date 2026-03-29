@@ -5,7 +5,7 @@ export class EventTarget<T = Record<string, any>> {
 
   addEventListener<K extends keyof T>(
     name: K,
-    callback: (arg: T[K]) => void
+    callback: (arg: T[K]) => void,
   ): void {
     if (typeof callback !== "function") {
       return;
@@ -19,14 +19,14 @@ export class EventTarget<T = Record<string, any>> {
 
   removeEventListener<K extends keyof T>(
     name: K,
-    callback: (arg: T[K]) => void
+    callback: (arg: T[K]) => void,
   ): void {
     if (!name || !callback) {
       return;
     }
 
     const events = (this._events[name] || []).filter(
-      listener => callback !== listener
+      listener => callback !== listener,
     );
     if (events.length) {
       this._events[name] = events;

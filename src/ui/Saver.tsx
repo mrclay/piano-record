@@ -1,5 +1,5 @@
-import React, { Fragment, useState } from "react";
-import Clipboard from "react-clipboard.js";
+import React, { useState } from "react";
+import { CopyToClipboardButton } from "react-clipboard-button";
 import { escape } from "html-escaper";
 
 import * as C from "../constants";
@@ -23,33 +23,29 @@ export default function Saver({ href, getMidi, title = "" }: SaverProps) {
 
   return (
     <span key={url}>
-      <Clipboard
-        className="btn btn-dark"
-        data-clipboard-text={url}
-        onSuccess={() => setSaved(url)}
-      >
-        <Fragment>URL {saved === url && "copied!"}</Fragment>
-      </Clipboard>
-      <Clipboard
-        className="btn btn-dark"
-        data-clipboard-text={embedHtml}
+      <CopyToClipboardButton text={url} onSuccess={() => setSaved(url)}>
+        <button type="button" className="btn btn-dark">
+          URL {saved === url && "copied!"}
+        </button>
+      </CopyToClipboardButton>
+      <CopyToClipboardButton
+        text={embedHtml}
         onSuccess={() => setSaved(embedHtml)}
       >
-        <Fragment>
+        <button type="button" className="btn btn-dark">
           <i className="fa fa-code" aria-hidden="true" /> Embed code{" "}
           {saved === embedHtml && "copied!"}
-        </Fragment>
-      </Clipboard>
-      <Clipboard
-        className="btn btn-dark"
-        data-clipboard-text={markdownLink}
+        </button>
+      </CopyToClipboardButton>
+      <CopyToClipboardButton
+        text={markdownLink}
         onSuccess={() => setSaved(markdownLink)}
       >
-        <Fragment>
+        <button type="button" className="btn btn-dark">
           <i className="fa fa-code" aria-hidden="true" /> Markdown link{" "}
           {saved === markdownLink && "copied!"}
-        </Fragment>
-      </Clipboard>
+        </button>
+      </CopyToClipboardButton>
       {getMidi ? (
         <button
           type="button"

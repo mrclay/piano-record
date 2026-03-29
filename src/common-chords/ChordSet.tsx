@@ -1,6 +1,6 @@
 import React, {
-  MouseEvent,
-  ReactNode,
+  type MouseEvent,
+  type ReactNode,
   useCallback,
   useContext,
   useEffect,
@@ -12,10 +12,10 @@ import clsx from "clsx";
 import Ops from "../Ops";
 import { useStore } from "../store";
 import { useCommonChordsQuery } from "./useCommonChordsQuery";
-import { sequenceFromStream, SequencerListener } from "../Sequencer";
+import { sequenceFromStream, type SequencerListener } from "../Sequencer";
 import { ChordSetKeyboard } from "./ChordSetKeyboard";
 import { pushTourItems, TourContext } from "../TourContext";
-import { RecorderListener, RecorderState } from "../Recorder";
+import { type RecorderListener, RecorderState } from "../Recorder";
 
 export interface Chord {
   func: string;

@@ -1,6 +1,6 @@
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams } from "react-router";
 import React, {
-  ReactNode,
+  type ReactNode,
   useCallback,
   useEffect,
   useRef,
@@ -12,9 +12,9 @@ import { useStore } from "../store";
 import Keyboard from "../ui/Keyboard";
 import Play from "../ui/BigPlay";
 import { sequenceFromStream } from "../Sequencer";
-import Ops, { TimedOp } from "../Ops";
+import Ops, { type TimedOp } from "../Ops";
 import * as C from "../constants";
-import { ActiveKeys } from "../Piano";
+import { type ActiveKeys } from "../Piano";
 
 const isolateSong = (songUrl: string) => songUrl.split("/").pop();
 

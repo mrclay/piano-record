@@ -2,14 +2,14 @@ import { useEffect, useMemo, useRef } from "react";
 import {
   ArcElement,
   Chart,
-  ChartData,
-  ChartOptions,
+  type ChartData,
+  type ChartOptions,
   Legend,
   PieController,
   Tooltip,
 } from "chart.js";
 import { draw } from "patternomaly";
-import { GuessKeyScore } from "../pages/GuessKeyPage";
+import { type GuessKeyScore } from "../pages/GuessKeyPage";
 import { keyColors } from "../music-theory/opinion/key-colors";
 import { ThirdQuality } from "../music-theory/constants";
 

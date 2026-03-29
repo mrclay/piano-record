@@ -1,4 +1,4 @@
-import { Chord } from "./common-chords/ChordSet";
+import { type Chord } from "./common-chords/ChordSet";
 import { createContext, useReducer } from "react";
 
 interface TourItem {

@@ -1,6 +1,6 @@
 import * as Tone from "tone";
 import * as C from "../constants";
-import { Playable } from "./index";
+import { type Playable } from "./index";
 
 export default class SimplePiano implements Playable {
   sampler;
@@ -16,7 +16,7 @@ export default class SimplePiano implements Playable {
     this.sampler.triggerAttack(
       Tone.Frequency(midi, "midi").toFrequency(),
       undefined,
-      velocity
+      velocity,
     );
     this.triggeredNotes.add(midi);
     this.heldKeys.add(midi);

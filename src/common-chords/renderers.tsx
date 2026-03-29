@@ -1,8 +1,8 @@
-import React, { ReactNode } from "react";
+import React, { type ReactNode } from "react";
 import { ThirdQuality, unicodeAccidentalsMap } from "../music-theory/constants";
 import Key from "../music-theory/Key";
 import Paths from "../Paths";
-import { Chord } from "./ChordSet";
+import { type Chord } from "./ChordSet";
 
 const rom = (str: string) => <b className="roman">{str}</b>;
 

@@ -1,7 +1,7 @@
 import Paths from "../Paths";
 import React, { Fragment } from "react";
 import { displayDelta } from "../music-theory/opinion/score-boosts";
-import { GuessKeyScore } from "../pages/GuessKeyPage";
+import { type GuessKeyScore } from "../pages/GuessKeyPage";
 
 interface GuessKeyTableProps {
   scores: GuessKeyScore[];

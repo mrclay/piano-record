@@ -1,7 +1,7 @@
 import * as Tone from "tone";
 import * as C from "./constants";
 import { EventTarget } from "./dom-event-target";
-import Piano, { ActiveKeys } from "./Piano";
+import Piano, { type ActiveKeys } from "./Piano";
 import { midiFromNoteOctave, noteOctaveFromMidi } from "./music-theory/Note";
 
 export interface SequencerEvents {
@@ -82,13 +82,12 @@ export class Sequencer extends EventTarget<SequencerEvents> {
   }
 
   getDataIdx() {
-    return this.#allSteps[this.#step];
+    return this.#allSteps[this.#step] || 0;
   }
 
   getActiveGroupIdx() {
     let offset = 0;
-    for (let i = 0; i < this.#groups.length; i++) {
-      const group = this.#groups[i];
+    for (const [i, group] of this.#groups.entries()) {
       if (this.#step < group.length + offset) {
         return i;
       }
@@ -243,6 +242,9 @@ export class Sequencer extends EventTarget<SequencerEvents> {
     const piano = injectedPiano || this.piano;
 
     const dataStep = this.#allSteps[this.#step];
+    if (typeof dataStep === "undefined") {
+      throw new Error();
+    }
 
     const currentNotes = this.stepData[dataStep]!;
     const currentJoins = this.joinData[dataStep]!;
@@ -464,7 +466,7 @@ export class Sequencer extends EventTarget<SequencerEvents> {
 
     trk.add(tick, JZZ.MIDI.smfEndOfTrack());
 
-    return new Blob([smf.toInt8Array(false)]);
+    return new Blob([smf.toInt8Array(false) as unknown as ArrayBuffer], {});
   }
 }
 
@@ -612,7 +614,7 @@ export function sequenceFromStream(
           colorMap.set(m[0], colorIdx);
         }
 
-        return { start: parseInt(m[1]), length: parseInt(m[2]), colorIdx };
+        return { start: parseInt(m[1]!), length: parseInt(m[2]!), colorIdx };
       })
     : [{ start: 0, length: newStepData.length, colorIdx: 0 }];
 

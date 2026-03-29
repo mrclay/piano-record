@@ -13,7 +13,7 @@ const degreeSet = new CircularSet<Degree>(
     roman,
     scale: idx + 1,
     idx,
-  }))
+  })),
 );
 
 export function degreeFromRoman(roman: FlexDegree): Degree {

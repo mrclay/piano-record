@@ -1,5 +1,5 @@
 import Key from "../Key";
-import { Chord, getChordPitches, parseChord } from "../Chord";
+import { type Chord, getChordPitches, parseChord } from "../Chord";
 import { Char, majorKeys, minorKeys, ThirdQuality } from "../constants";
 import {
   chordIsDiminished,
@@ -11,7 +11,7 @@ import {
   Boosts,
   calculateChordBoosts,
   calculateProgressionBoosts,
-  ScoreBoost,
+  type ScoreBoost,
 } from "./score-boosts";
 
 // Notes about the chord that may affect scoring later.

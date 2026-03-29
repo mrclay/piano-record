@@ -1,5 +1,5 @@
 import { Char } from "../../music-theory/constants";
-import React, { PropsWithChildren, ReactNode } from "react";
+import React, { type PropsWithChildren, type ReactNode } from "react";
 
 interface LabelProps extends PropsWithChildren {
   inKey?: true;
