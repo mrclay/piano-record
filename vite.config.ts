@@ -1,7 +1,7 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 
-const localBuild = process.env.LOCAL === "1";
+const localBuild = process.env.VITE_LOCAL === "1";
 
 export default defineConfig(({ command }) => ({
   plugins: [react()],

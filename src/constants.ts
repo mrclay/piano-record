@@ -3,9 +3,7 @@ import { type Command } from "./Ops";
 
 export const SAMPLES_URL =
   // @ts-ignore
-  process.env.NODE_ENV === "production"
-    ? "//mrclay.org/piano/media/"
-    : "/media/";
+  import.meta.env.VITE_LOCAL === "1" ? "/media/" : "//mrclay.org/piano/media/";
 
 export const RANGE: [number, number] = [29, 89];
 export const TIME_RESOLUTION_DIVISOR = 4;

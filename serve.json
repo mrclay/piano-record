@@ -1,0 +1,10 @@
+{
+  "public": "dist",
+  "rewrites": [
+    { "source": "/chord/**", "destination": "/index.html" },
+    { "source": "/common-chords/**", "destination": "/index.html" },
+    { "source": "/guess-the-key/**", "destination": "/index.html" },
+    { "source": "/piano/**", "destination": "/index.html" },
+    { "source": "/sequence/**", "destination": "/index.html" }
+  ]
+}

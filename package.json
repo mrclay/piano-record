@@ -4,11 +4,10 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "VITE_LOCAL=1 vite",
     "tsc": "tsgo -p tsconfig.app.json",
     "build": "npm run tsc && npm run test && vite build",
-    "build:local": "npm run tsc && npm run test && LOCAL=1 vite build && npx serve dist",
-    "preview": "vite preview",
+    "preview": "scripts/preview.sh",
     "fmt": "oxfmt",
     "fmt:check": "oxfmt --check",
     "test": "vitest run",
