@@ -9,3 +9,5 @@ DEST=/home/mrclayor/public_html/piano/
 npm run build
 
 rsync -avzh ${SRC} mrclay:${DEST}
+
+open https://mrclay.org/piano/record
