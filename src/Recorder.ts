@@ -1,7 +1,10 @@
+import * as Tone from "tone";
 import * as C from "./constants";
 import { type TimedOp, type Op } from "./Ops";
 import Piano from "./Piano";
 import { EventTarget } from "./dom-event-target";
+import { OP_NOTE_DOWN, OP_NOTE_UP } from "./constants";
+import type { Note } from "tone/Tone/core/type/NoteUnits.ts";
 
 type RecorderEvents = {
   state: RecorderState;
@@ -145,6 +148,41 @@ export default class Recorder extends EventTarget<RecorderEvents> {
     if (!numOperations) {
       return false;
     }
+
+    interface ValueType {
+      time: Tone.TimeClass;
+      note: Note;
+      comm: number;
+    }
+
+    const synth = new Tone.PolySynth(Tone.Synth, {
+      oscillator: {
+        partials: [0, 2, 3, 4],
+      },
+    }).toDestination();
+
+    const multiplyForSeconds = C.TIME_RESOLUTION_DIVISOR / this.speed / 1000;
+    const part = new Tone.Part<ValueType>(
+      (time, value: ValueType) => {
+        if (value.comm === OP_NOTE_DOWN) {
+          synth.triggerAttack(value.note, time);
+        } else if (value.comm === OP_NOTE_UP) {
+          synth.triggerRelease(value.note, time);
+        }
+      },
+      this.operations.map(el => {
+        const [op, time] = el;
+        const [comm, midiValue] = op;
+        return {
+          time: Tone.Time(time * multiplyForSeconds, "s"),
+          note: Tone.Frequency(midiValue, "midi").toNote(),
+          comm,
+        };
+      }),
+    );
+    part.start(0);
+    Tone.getTransport().start();
+    return;
 
     const lastTime =
       this.operations[this.operations.length - 1]![1] *
