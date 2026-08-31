@@ -19,9 +19,10 @@ export function useRootSoundManager() {
     console.info("Loading", playerSpec);
     loadingRef.current = true;
     setPlayerLoading(true);
+    const { sf, name, cents } = playerSpec;
 
     // Load the desired player
-    createPlayer(playerSpec.sf, playerSpec.name).then(loaded => {
+    createPlayer(sf, name, cents).then(loaded => {
       console.info("Loaded", loaded);
       if (loaded) {
         setPlayer(loaded);

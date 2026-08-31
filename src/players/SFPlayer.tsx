@@ -2,36 +2,47 @@ import { type Player } from "soundfont-player";
 import { type Playable } from "./index";
 
 export default class SFPlayer implements Playable {
+  midiOffset: number;
   instrument: Player;
   isPedalled = false;
   nodes: Map<number, AudioBufferSourceNode> = new Map();
   heldKeys: Set<number> = new Set();
   triggeredNotes: Set<number> = new Set();
 
-  constructor(instrument: Player) {
+  constructor(instrument: Player, cents: number) {
     this.instrument = instrument;
+    this.midiOffset = cents / 100;
   }
 
   keyDown({ midi, velocity = 1 }: { midi: number; velocity: number }) {
+    const effectiveMidi = midi + this.midiOffset;
+
     // @ts-ignore
-    const node: AudioBufferSourceNode = this.instrument.start(midi, 0, {
-      gain: velocity,
-    });
-    this.nodes.set(midi, node);
-    this.triggeredNotes.add(midi);
-    this.heldKeys.add(midi);
+    const node: AudioBufferSourceNode = this.instrument.start(
+      // @ts-ignore
+      effectiveMidi,
+      0,
+      {
+        gain: velocity,
+      },
+    );
+    this.nodes.set(effectiveMidi, node);
+    this.triggeredNotes.add(effectiveMidi);
+    this.heldKeys.add(effectiveMidi);
   }
 
   keyUp({ midi }: { midi: number }) {
-    const node = this.nodes.get(midi);
+    const effectiveMidi = midi + this.midiOffset;
+
+    const node = this.nodes.get(effectiveMidi);
     if (node) {
       node.stop();
-      this.nodes.delete(midi);
+      this.nodes.delete(effectiveMidi);
     }
 
-    this.heldKeys.delete(midi);
+    this.heldKeys.delete(effectiveMidi);
     if (!this.isPedalled) {
-      this.triggeredNotes.delete(midi);
+      this.triggeredNotes.delete(effectiveMidi);
     }
   }
 

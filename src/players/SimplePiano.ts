@@ -3,30 +3,36 @@ import * as C from "../constants";
 import { type Playable } from "./index";
 
 export default class SimplePiano implements Playable {
+  midiOffset: number;
   sampler;
   isPedalled = false;
   heldKeys: Set<number> = new Set();
   triggeredNotes: Set<number> = new Set();
 
-  constructor(loadedSampler: Tone.Sampler) {
+  constructor(loadedSampler: Tone.Sampler, cents: number) {
     this.sampler = loadedSampler;
+    this.midiOffset = cents / 100;
   }
 
   keyDown({ midi, velocity = 1 }: { midi: number; velocity: number }) {
+    const effectiveMidi = midi + this.midiOffset;
     this.sampler.triggerAttack(
-      Tone.Frequency(midi, "midi").toFrequency(),
+      Tone.Frequency(effectiveMidi, "midi").toFrequency(),
       undefined,
       velocity,
     );
-    this.triggeredNotes.add(midi);
-    this.heldKeys.add(midi);
+    this.triggeredNotes.add(effectiveMidi);
+    this.heldKeys.add(effectiveMidi);
   }
 
   keyUp({ midi }: { midi: number }) {
-    this.sampler.triggerRelease(Tone.Frequency(midi, "midi").toFrequency());
-    this.heldKeys.delete(midi);
+    const effectiveMidi = midi + this.midiOffset;
+    this.sampler.triggerRelease(
+      Tone.Frequency(effectiveMidi, "midi").toFrequency(),
+    );
+    this.heldKeys.delete(effectiveMidi);
     if (!this.isPedalled) {
-      this.triggeredNotes.delete(midi);
+      this.triggeredNotes.delete(effectiveMidi);
     }
   }
 
@@ -51,7 +57,7 @@ export default class SimplePiano implements Playable {
     this.heldKeys = new Set();
   }
 
-  static async fromJsonUrl(url: string, volume = -6) {
+  static async fromJsonUrl(url: string, volume = -6, cents: number) {
     const urls = await fetch(url).then(res => {
       if (!res.ok) {
         throw new Error(res.statusText);
@@ -69,6 +75,6 @@ export default class SimplePiano implements Playable {
       }).toDestination();
     });
 
-    return new SimplePiano(loadedSampler);
+    return new SimplePiano(loadedSampler, cents);
   }
 }

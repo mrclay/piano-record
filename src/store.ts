@@ -33,12 +33,14 @@ export interface PlayerSpec {
   sf: TSoundFont;
   name: string;
   midiProgram: number;
+  cents: number;
 }
 
 export const pianoSpec: PlayerSpec = {
   sf: SoundFont.TonePiano,
   name: availableInstruments[SoundFont.TonePiano]![0]!,
   midiProgram: 1,
+  cents: 0,
 };
 
 export function keyFromUrl(): Key | null {
@@ -58,7 +60,7 @@ export function keyFromUrl(): Key | null {
   return minor ? Key.minor(note) : Key.major(note);
 }
 
-export function playerSpecFromUrl(): PlayerSpec | undefined {
+export function playerSpecFromUrl(): PlayerSpec {
   let params = new URLSearchParams(window.location.search);
 
   if (window.location.pathname.includes("/piano/embed")) {
@@ -68,17 +70,37 @@ export function playerSpecFromUrl(): PlayerSpec | undefined {
     }
   }
 
-  const [sf = "", name = ""] = (params.get("sf") || ".").split(".");
-
-  const available = availableInstruments[sf as TSoundFont];
-  if (!available) {
-    return;
+  let [sf = "", name = ""] = (params.get("sf") || ".").split(".");
+  if (!Object.hasOwn(availableInstruments, sf)) {
+    sf = SoundFont.TonePiano;
   }
+  const available = availableInstruments[sf as TSoundFont] as string[];
+  const cents = Number(params.get("cents") || 0);
 
-  const idx = available.indexOf(name);
-  if (idx !== -1) {
-    return { sf: sf as TSoundFont, name, midiProgram: idx + 1 };
+  let idx = available.indexOf(name);
+  if (idx === -1) {
+    idx = 0;
   }
+  name = available[idx]!;
+
+  return { sf: sf as TSoundFont, name, midiProgram: idx + 1, cents };
+}
+
+export function updateParamsByPlayerSpec(
+  params: URLSearchParams,
+  playerSpec: PlayerSpec,
+) {
+  if (playerSpec.sf === SoundFont.TonePiano) {
+    params.delete("sf");
+  } else {
+    params.set("sf", `${playerSpec.sf}.${playerSpec.name}`);
+  }
+  if (playerSpec.cents === 0) {
+    params.delete("cents");
+  } else {
+    params.set("cents", playerSpec.cents.toString());
+  }
+  return params;
 }
 
 export const atoms = {
@@ -92,7 +114,7 @@ export const atoms = {
   song: atom(""),
   songChords: atom(undefined as ReactNode | undefined),
   offset: atom(0),
-  playerSpec: atom(playerSpecFromUrl() || pianoSpec),
+  playerSpec: atom(playerSpecFromUrl()),
   pianoSpeed: atomWithStorage(SPEED_KEY, 100),
 };
 

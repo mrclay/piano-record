@@ -63,6 +63,7 @@ const simpleUrls: Record<
 export async function createPlayer(
   soundfont: TSoundFont,
   instrument: string,
+  cents: number,
 ): Promise<Playable | null> {
   if (soundfont === "Null") {
     return new NullPlayer();
@@ -77,14 +78,14 @@ export async function createPlayer(
   if (simple) {
     const SimplePiano = (await import("./SimplePiano")).default;
     const url = simple.url(instrument);
-    return SimplePiano.fromJsonUrl(url, simple.volume);
+    return SimplePiano.fromJsonUrl(url, simple.volume, cents);
   }
 
   const [SFPlayer, sound] = await Promise.all([
     import("./SFPlayer").then(module => module.default),
     getInstrument(ctx, instrument as InstrumentName, { soundfont }),
   ]);
-  return new SFPlayer(sound);
+  return new SFPlayer(sound, cents);
 }
 
 export function isShepardToneActive(midi: number, activeKeys: ActiveKeys) {

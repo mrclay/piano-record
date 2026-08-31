@@ -19,7 +19,7 @@ import Title from "../ui/Title";
 import Preview from "../ui/Preview";
 import Saver from "../ui/Saver";
 import PianoSpeed from "../ui/PianoSpeed";
-import { useStore } from "../store";
+import { updateParamsByPlayerSpec, useStore } from "../store";
 import SoundSelector, {
   type UseSfStorage,
   useSfStorage,
@@ -306,7 +306,7 @@ class PianoPage extends React.Component<PianoPageProps, PianoPageState> {
   };
 
   override render() {
-    const { title, mode, activeKeys, progress, stream } = this.state;
+    const { title, mode, progress, stream } = this.state;
 
     const recorderState = this.recorder.getState();
     const hasOperations = Boolean(this.recorder.operations.length);
@@ -325,7 +325,6 @@ class PianoPage extends React.Component<PianoPageProps, PianoPageState> {
       recorderState === RecorderState.stopped &&
       hasOperations;
     const canRecordMore = !canMakeChanges && hasOperations;
-    const canReset = mode === Mode.oneKey || hasOperations;
 
     return (
       <>
@@ -464,7 +463,13 @@ class PianoPage extends React.Component<PianoPageProps, PianoPageState> {
         </Container900>
 
         <Content900>
-          <SoundSelector />
+          <SoundSelector
+            onChange={newSpec => {
+              const url = new URL(window.location.href);
+              updateParamsByPlayerSpec(url.searchParams, newSpec);
+              window.location.href = url.toString();
+            }}
+          />
         </Content900>
 
         <Content900>
